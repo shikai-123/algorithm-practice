@@ -1569,19 +1569,6 @@ void test()
 	vector<int>a{ 1,2,3,4 };
 }
 
-/*
-
-
-stest
-asdas
-asdasd
-
-asdasd 
-
-
-*/
-
-
 int main()
 {
 	vector<int> nums{ 2,3,1,2,4,3 };
