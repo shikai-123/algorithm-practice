@@ -1569,7 +1569,17 @@ void test()
 	vector<int>a{ 1,2,3,4 };
 }
 
+/*
 
+
+stest
+asdas
+asdasd
+
+asdasd 
+
+
+*/
 
 
 int main()
@@ -1583,7 +1593,8 @@ int main()
 	vector<vector<int>> board = { {1,1,1},{1,0,1}, {7,8,9} };
 	Solution a;
 
-	/*for (size_t i = 0; i < num1.size(); i++)
+	/*
+	for (size_t i = 0; i < num1.size(); i++)
 	{
 		std::cout << num1[i] << endl;
 	}*/
