@@ -1338,7 +1338,7 @@ int main()
 	a.setZeroes(board);
 	/*for (size_t i = 0; i < num1.size(); i++)
 	{
-		std::cout << num1[i] << endl;
+		std::cout << num1[i] << endl;    123123123
 	}*/
 
 	//std::cout << a.rotate(nums,3) << endl;
