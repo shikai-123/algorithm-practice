@@ -791,11 +791,19 @@ public:
 
 		}
 	}
-	vector<int> twoSum(vector<int>& numbers, int target) {
 
-		/*
+
+	/*
+	167. 两数之和 II - 输入有序数组
+
+	参考：
 		https://leetcode.cn/problems/two-sum-ii-input-array-is-sorted/solutions/87919/yi-zhang-tu-gao-su-ni-on-de-shuang-zhi-zhen-jie-fa/?envType=study-plan-v2&envId=top-interview-150
-		*/
+
+	其他：
+		这个和“1. 两数之和”这个题目很相似，但是编号1的题目中的数组的元素是无序的，
+		这个题目中的元素是有序的。
+	*/
+	vector<int> twoSum2(vector<int>& numbers, int target) {
 		int i = 0;
 		int l = numbers.size() - 1;
 		while (1)
@@ -1601,9 +1609,14 @@ public:
 
 	/*
 	1. 两数之和
-	
-	思路：
-		
+		这个题目和“167. 两数之和 II - 输入有序数组”很想。上面有twoSum2函数 就是他。
+		即使对数组排序了，这里不能直接用它的方法。
+
+		我要做时间复杂的n的
+
+	思路1：
+		结合个“167. 两数之和 II - 输入有序数组”中的双指针的方法，另外在加上哈希表的方法。
+		先排序，为了能用上双指针的方法。
 
 	*/
 	vector<int> twoSum(vector<int>& nums, int target) {
