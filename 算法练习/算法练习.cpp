@@ -1320,14 +1320,10 @@ public:
 };
 
 
-
-
 void test()
 {
 	vector<int>a{ 1,2,3,4 };
 }
-
-
 
 
 int main()
@@ -1345,7 +1341,7 @@ int main()
 		std::cout << num1[i] << endl;
 	}*/
 
-	//std::cout << a.rotate(nums,3) << endl;123123123
+	//std::cout << a.rotate(nums,3) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
