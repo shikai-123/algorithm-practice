@@ -1,4 +1,4 @@
-﻿#include <map>
+﻿﻿#include <map>
 #include <vector>
 #include <algorithm>
 #include <iostream>
@@ -1297,7 +1297,7 @@ public:
 		{
 			for (size_t l = 0; l < matrix[i].size(); l++)
 			{
-				if (row[i] == 1&& rol[l] == 1)
+				if (row[i] == 1 && rol[l] == 1)
 				{
 					for (size_t lie0 = 0; lie0 < matrix[0].size(); lie0++)
 					{
@@ -1316,8 +1316,252 @@ public:
 	}
 
 
+	/*
+	生命游戏
+	思路1：
+		参考73. 矩阵置零的思路。为了消除在原矩阵中直接改变数值后，对后续数计算的影响
+		所以还是先遍历矩阵，然后把要变1的变0的记录下来。
+		省点空间复杂度的话就得是和73题一样（m+n），做两个数组。但是会有俩个if，影响点性能
+		节省点性能，就要做个矩阵（二维数组）也就是空间复杂的是m*n.
+		这个时候就看你的取舍了
+		这个思路还是这一套，虽然没有动手做，但毕竟和73题不一样。
+		为了提高效率 换新方法。学习新的方法
+		https://leetcode.cn/problems/game-of-life/solutions/179750/sheng-ming-you-xi-by-leetcode-solution/?envType=study-plan-v2&envId=top-interview-150
+		这个题解中的“毒爪的小新”就是这种方法
+
+	思路2：
+		位操作思路；
+		vec是32的数据 给的矩阵中只有0、1 那么只占据一位数据 所以用次低位数据来记录后期该位要置0还是置1
+		最后的时候通过移位来把更改后的矩阵遍历出来。
+		该思路中和思路1相比较，其实都是用到了4个for循环 时间复杂的一致。但是空间复杂的从m+n或者是m*n 变成了固定的 也就是i 这一点特别好
+	参考：
+	https://leetcode.cn/problems/game-of-life/submissions/477229256/?envType=study-plan-v2&envId=top-interview-150
+	*/
+	void  gameOfLife(vector<vector<int>>& board) {
+		//这是元素的相邻的8个元素
+		int dx[] = { -1,  0,  1, -1, 1, -1, 0, 1 };
+		int dy[] = { -1, -1, -1,  0, 0,  1, 1, 1 };
+
+		for (int i = 0; i < board.size(); i++) {
+			for (int j = 0; j < board[0].size(); j++) {
+				int sum = 0;
+				for (int k = 0; k < 8; k++) {
+					int nx = i + dx[k];
+					int ny = j + dy[k];
+					if (nx >= 0 && nx < board.size() && ny >= 0 && ny < board[0].size()) {
+						sum += (board[nx][ny] & 1); // 只累加最低位
+					}
+				}
+				if (board[i][j] == 1) {//=1就是细胞存活
+					if (sum == 2 || sum == 3) {//如果活细胞周围八个位置有两个或三个活细胞，则该位置活细胞仍然存活；
+						board[i][j] |= 2;  // 使用第二个bit标记是否存活 !！次低位1就是活 0就是死 默认是0
+					}
+					else//这种就是死亡的。 ——细胞周围八个位置的活细胞数少于两个，则该位置活细胞死亡；——活细胞周围八个位置有超过三个活细胞，则该位置活细胞死亡；
+					{
+						//board[i][j];//这一步可以省掉
+					}
+				}
+				else {//这种就是细胞死亡
+					if (sum == 3) {
+						board[i][j] |= 2; // 使用第二个bit标记是否存活
+					}
+				}
+			}
+		}
+		for (int i = 0; i < board.size(); i++) {
+			for (int j = 0; j < board[i].size(); j++) {
+				board[i][j] >>= 1; //右移一位，用第二bit覆盖第一个bit。
+			}
+		}
+	}
+
+
+	/*
+	383. 赎金信
+	前言：
+		因为这是“哈希表”题目中第一题，所以就直接参考了题解
+
+	思路：
+		一开始想着用滑动窗口的方式，但是后来发现，他不是要求连续的，只要magazine能拿出一部分拼上就行，所以不哟个这个
+
+	参考思路1：
+		链接：
+		https://leetcode.cn/problems/ransom-note/solutions/948784/qiao-yong-stringrong-qi-de-cha-zhao-han-kao7r/?envType=study-plan-v2&envId=top-interview-150
+		利用find的方式，从magazine中找ransomNote字符。找到就从magazine消掉这个字符，避免像aa  ab的情况。这种是不对的
+		只要是找不到就说明不行。
+		这个方法不错，但是不是我想要的“哈希表”的方法。
+
+	参考思路2：
+		这个就是我想要的“哈希表”的方法。
+		链接：
+		https://leetcode.cn/problems/ransom-note/solutions/369114/383-shu-jin-xin-bao-li-jie-fa-zi-dian-ji-shu-fa-2/?envType=study-plan-v2&envId=top-interview-150
+		思路毕竟简单，时间复杂度上肯定是比思路1好很多，只是空间复杂度差点。
+		先是记录magazine各个字母出现的次数，然后在遍历ransomNote要是出现了对应的字符，就从record--
+		如果小于0，就说明ransomNote中的字母比magazine中的多，那么不符合要求
+
+
+	*/
+	bool canConstruct(string ransomNote, string magazine) {
+		int record[26] = { 0 };//0-25代表26个英文字母 
+		for (int i = 0; i < magazine.length(); i++) {
+			// 通过recode数据记录 magazine里各个字符出现次数
+			record[magazine[i] - 'a'] ++;
+		}
+		for (int j = 0; j < ransomNote.length(); j++) {
+			// 遍历ransomNote，在record里对应的字符个数做--操作
+			record[ransomNote[j] - 'a']--;
+			// 如果小于零说明 magazine里出现的字符，ransomNote没有
+			if (record[ransomNote[j] - 'a'] < 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+	/*
+		205. 同构字符串
+		思路：
+			哈希表：
+			两个字符串中，比如abc。他对应的字符一定是每个不同的字符加不同的固定值。
+			所以可以做个数组，下标是“字符-a”，值是“固定值”
+			重要的思路就是下面的那个for遍历
+			他这个题目说的不明白。他说的“如果 s 中的字符可以按某种映射关系替换得到 t ，那么这两个字符串是同构的”
+			乍一看只需要管s到t就行了，其实不行！t到s的映射也得是唯一的。
+			所以需要后面的判断
+	*/
+	bool isIsomorphic(string s, string t) {
+		if (s.length() != t.length()) return false;
+
+		int record1[256] = { 0 };//256个ASCII 字符
+		int record2[256] = { 0 };//256个ASCII 字符
+		for (size_t i = 0; i < 256; i++)
+		{
+			record1[i] = 1000;//设置成1000  是因为两个字符的差值 不可能是1000
+			record2[i] = 1000;//设置成1000  是因为两个字符的差值 不可能是1000
+		}
+
+
+		for (size_t i = 0; i < s.size(); i++)
+		{
+			if (record1[t[i]] == 1000)
+			{
+				record1[t[i]] = s[i] - t[i];
+			}
+			else
+			{
+				if (record1[t[i]] != s[i] - t[i])
+				{
+					return 0;
+				}
+			}
+			if (record2[s[i]] == 1000)
+			{
+				record2[s[i]] = s[i] - t[i];
+			}
+			else
+			{
+				if (record2[s[i]] != s[i] - t[i])
+				{
+					return 0;
+				}
+			}
+		}
+		return 1;
+	}
+
+
+	/*
+	290. 单词规律
+
+	思路：
+		哈希表
+		这个题目和“205. 同构字符串”思路是一样的，就最后多了一个if判断。
+		重要的思路就是下面的那个for遍历
+		他这个题目说的就清楚了。他说的“这里的 遵循 指完全匹配，例如， pattern 里的每个字母和字符串 s 中的每个非空单词之间存在着双向连接的对应规律。”
+		所以还是做个双向的判断。
+	*/
+	bool wordPattern(string pattern, string s) {
+		string record1[26] = { "" };//0-25代表26个英文字母 
+		map<string, string> record;
+		istringstream ss(s);
+		string word;
+		for (size_t i = 0; i < pattern.size(); i++)
+		{
+			ss >> word;
+			if (record1[pattern[i] - 'a'] == "")
+			{
+				record1[pattern[i] - 'a'] = word;
+			}
+			else
+			{
+				if (record1[pattern[i] - 'a'] != word)
+				{
+					return false;
+				}
+			}
+		}
+		ss.clear();//重新赋值之前必须清空，这个api我用的也不多。
+		ss.str(s);
+		int i = 0;
+		while (ss >> word) {
+
+			if (record[word] == "")
+			{
+				record[word] = pattern[i];
+			}
+			else
+			{
+				if (record[word] != pattern.substr(i, 1))
+				{
+					return false;
+				}
+			}
+			i++;
+		}
+		if (i != pattern.size())
+		{
+			return false;
+
+		}
+		return true;
+	}
+
+	/*
+	242. 有效的字母异位词
+
+	思路：
+		哈希表
+		三个for
+		前两个for分别遍历s、t的字符，相同的字符加进去.
+		最后就是判断各个字符出现的次数
+	*/
+	bool isAnagram(string s, string t) {
+		int record1[26] = { 0 };//0-25代表26个英文字母 
+		int record2[26] = { 0 };//0-25代表26个英文字母 
+
+		for (size_t i = 0; i < s.size(); i++)
+		{
+			record1[s[i] - 'a']++;
+		}
+		for (size_t i = 0; i < t.size(); i++)
+		{
+			record2[t[i] - 'a']++;
+		}
+
+		for (size_t i = 0; i < 26; i++)
+		{
+			if (record1[i] - record2[i] != 0)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 
 };
+
+
 
 
 void test()
@@ -1326,22 +1570,25 @@ void test()
 }
 
 
+
+
 int main()
 {
 	vector<int> nums{ 2,3,1,2,4,3 };
 	vector<int> num1{ };
 	vector<string> srtVec{ "foo","bar" };
-	string str = "pwwkew";
+	string str = "anagram";
+	string t = "anagram";
 	string strs{ "Marge, let's \"[went].\" I await {news} telegram." };
 	vector<vector<int>> board = { {1,1,1},{1,0,1}, {7,8,9} };
 	Solution a;
-	a.setZeroes(board);
+
 	/*for (size_t i = 0; i < num1.size(); i++)
 	{
-		std::cout << num1[i] << endl;    123123123
+		std::cout << num1[i] << endl;
 	}*/
 
-	//std::cout << a.rotate(nums,3) << endl;
+	std::cout << a.isAnagram(str, t) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
