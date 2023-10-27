@@ -1559,6 +1559,37 @@ public:
 		return true;
 	}
 
+
+
+	/*
+	49. 字母异位词分组
+		首先需要理解字母异位词的含义，简单理解为：两字符串长度相同，字母相同，但顺序不同。
+		字母异位词简意为两字符串长度相同，字母相同，顺序不同。
+
+	参考：
+		https://leetcode.cn/problems/group-anagrams/solutions/84916/c-yin-ru-hashbiao-shi-jian-32ms-ji-bai-9948-nei-cu/?envType=study-plan-v2&envId=top-interview-150
+	
+	思路：
+		
+
+
+	
+	*/
+	vector<vector<string>> groupAnagrams(vector<string>& strs) {
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 };
 
 void test()
