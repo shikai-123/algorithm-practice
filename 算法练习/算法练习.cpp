@@ -1561,13 +1561,6 @@ public:
 
 };
 
-
-
-
-
-
-
-
 void test()
 {
 	vector<int>a{ 1,2,3,4 };
@@ -1583,6 +1576,9 @@ int main()
 	string strs{ "Marge, let's \"[went].\" I await {news} telegram." };
 	vector<vector<int>> board = { {1,1,1},{1,0,1}, {7,8,9} };
 	Solution a;
+
+
+
 
 	/*
 	for (size_t i = 0; i < num1.size(); i++)
