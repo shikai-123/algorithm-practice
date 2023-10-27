@@ -1617,10 +1617,38 @@ public:
 	思路1：
 		结合个“167. 两数之和 II - 输入有序数组”中的双指针的方法，另外在加上哈希表的方法。
 		先排序，为了能用上双指针的方法。
+		然后做个哈希表。数组的值做key，下标做value
+		双指针遍历后，会得到新数组中符合条件的元素，然后从map中根据元素返回下表
 
+		!!这个方法解决不了。重复的元素问题
 	*/
 	vector<int> twoSum(vector<int>& nums, int target) {
 
+		map<int, int> num;
+		int i = 0;
+		int l = nums.size() - 1;
+
+		for (size_t i = 0; i < nums.size(); i++)
+		{
+			num[nums[i]] = i;
+		}
+		sort(nums.begin(), nums.end());
+		while (1)
+		{
+			int sun = nums[i] + nums[l];
+			if (sun < target)
+			{
+				i++;
+			}
+			else if (sun > target)
+			{
+				l--;
+			}
+			else
+			{
+				return vector<int>{ num[nums[i]], num[nums[l]]};
+			}
+		}
 	}
 
 
