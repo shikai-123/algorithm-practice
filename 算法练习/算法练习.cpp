@@ -1579,13 +1579,11 @@ int main()
 
 
 
-
 	/*
 	for (size_t i = 0; i < num1.size(); i++)
 	{
 		std::cout << num1[i] << endl;
 	}*/
-
 	std::cout << a.isAnagram(str, t) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
