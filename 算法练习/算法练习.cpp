@@ -1436,6 +1436,7 @@ public:
 			他这个题目说的不明白。他说的“如果 s 中的字符可以按某种映射关系替换得到 t ，那么这两个字符串是同构的”
 			乍一看只需要管s到t就行了，其实不行！t到s的映射也得是唯一的。
 			所以需要后面的判断
+
 	*/
 	bool isIsomorphic(string s, string t) {
 		if (s.length() != t.length()) return false;
@@ -1575,25 +1576,25 @@ public:
 
 	参考：
 		https://leetcode.cn/problems/group-anagrams/solutions/84916/c-yin-ru-hashbiao-shi-jian-32ms-ji-bai-9948-nei-cu/?envType=study-plan-v2&envId=top-interview-150
-	
+
 	思路：
 		对strs排序，这样的话，所谓的“字母异位词”就变成一样了。
 		然后用“字母异位词”做map的key，value和这个单词往二维的vec中的行号。
-	
+
 	*/
 	vector<vector<string>> groupAnagrams(vector<string>& strs) {
 
 		vector<vector<string>> ret;
-		map<string,int> words;
+		map<string, int> words;
 		string strTemp;
 		int i = 0;//二维的vec中的行号
-		for (string str:strs)
+		for (string str : strs)
 		{
 			strTemp = str;
-			sort(str.begin(),str.end());
-			if (words.count(str)==0)//找不到对应的key
+			sort(str.begin(), str.end());
+			if (words.count(str) == 0)//找不到对应的key
 			{
-				vector<string> temp(1,strTemp);
+				vector<string> temp(1, strTemp);
 				ret.push_back(temp);
 				words[str] = i;
 				i++;
@@ -1621,16 +1622,27 @@ public:
 		双指针遍历后，会得到新数组中符合条件的元素，然后从map中根据元素返回下表
 
 		!!这个方法解决不了。重复的元素问题
+		因为只存在一个有效答案，那么一旦出现重复的元素，则重复元素就是我们想要的值
 	*/
 	vector<int> twoSum(vector<int>& nums, int target) {
 
-		map<int, int> num;
+		unordered_map<int, int> num;
 		int i = 0;
 		int l = nums.size() - 1;
 
-		for (size_t i = 0; i < nums.size(); i++)
+		for (int i = 0; i < nums.size(); i++)
 		{
-			num[nums[i]] = i;
+			if (num.count(nums[i])==0)//map中没找到这个元素
+			{
+				num[nums[i]] = i;
+			}
+			else//找到了这个元素，把相同的元素的下标返回
+			{
+				if (nums[num[nums[i]]] + nums[i] == target)
+				{
+					return vector<int>{ num[nums[i]], i};
+				}
+			}
 		}
 		sort(nums.begin(), nums.end());
 		while (1)
@@ -1667,7 +1679,7 @@ void test()
 
 int main()
 {
-	vector<int> nums{ 2,3,1,2,4,3 };
+	vector<int> nums{3,3};
 	vector<int> num1{ };
 	vector<string> srtVec{ "eat","tea","tan","ate","nat","bat" };
 	string str = "anagram";
@@ -1676,7 +1688,7 @@ int main()
 	vector<vector<int>> board = { {1,1,1},{1,0,1}, {7,8,9} };
 	Solution a;
 
-	a.groupAnagrams(srtVec);
+	a.twoSum(nums,6);
 
 	/*
 	for (size_t i = 0; i < num1.size(); i++)
