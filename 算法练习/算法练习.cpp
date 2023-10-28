@@ -1,4 +1,6 @@
-﻿#include <vector>
+﻿#pragma warning(disable : 4996)
+
+#include <vector>
 #include <algorithm>
 #include <iostream>
 #include <cstdlib> 
@@ -9,7 +11,6 @@
 #include <numeric> 
 #include <map>
 using namespace std;
-
 
 class RandomizedSet {
 public:
@@ -1664,6 +1665,43 @@ public:
 	}
 
 
+	/*
+	202. 快乐数
+	思路：
+		哈希表-借助无序map，不是数组的形式
+		这个题目的难在的是这个题目的理解，理解这个数学题
+		最后的结果要不就是1返回true，而返回false的条件就是出现了之前出现过的值。
+		根据这个条件以及思路，代码就好做了
+	*/
+	bool isHappy(int n) {
+
+		string strNums = to_string(n);
+		int sum = 0;
+		unordered_map<unsigned long long,int > tempNums;//放计算的结果
+		while (1)
+		{
+			for (size_t i = 0; i < strNums.size(); i++)
+			{
+				int digit = strNums[i] - '0';
+				sum += digit * digit;
+			}
+			if (sum == 1)
+			{
+				return 1;
+			}
+			if (tempNums.find(sum)== tempNums.end())
+			{
+				tempNums[sum]=1;
+			}
+			else//如果计算的结果之前就出现过，那么肯定是不行的。
+			{
+				return 0;
+			}
+			strNums = to_string(sum);
+			sum = 0;
+		}
+		return 0;
+	}
 
 
 
@@ -1688,14 +1726,14 @@ int main()
 	vector<vector<int>> board = { {1,1,1},{1,0,1}, {7,8,9} };
 	Solution a;
 
-	a.twoSum(nums,6);
+	//a.twoSum(nums,6);
 
 	/*
 	for (size_t i = 0; i < num1.size(); i++)
 	{
 		std::cout << num1[i] << endl;
 	}*/
-	//std::cout << a.groupAnagrams(srtVec) << endl;
+	std::cout << a.isHappy(19) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
