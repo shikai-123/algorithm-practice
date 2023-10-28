@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <numeric> 
 #include <map>
+#include <unordered_set>
+
 using namespace std;
 
 class RandomizedSet {
@@ -1672,12 +1674,14 @@ public:
 		这个题目的难在的是这个题目的理解，理解这个数学题
 		最后的结果要不就是1返回true，而返回false的条件就是出现了之前出现过的值。
 		根据这个条件以及思路，代码就好做了
+	其他：
+		因为只需要键值，而不需要对应的value，所以用set容器是最好的
 	*/
 	bool isHappy(int n) {
 
 		string strNums = to_string(n);
 		int sum = 0;
-		unordered_map<unsigned long long,int > tempNums;//放计算的结果
+		unordered_set<unsigned long long > tempNums;//放计算的结果
 		while (1)
 		{
 			for (size_t i = 0; i < strNums.size(); i++)
@@ -1691,7 +1695,7 @@ public:
 			}
 			if (tempNums.find(sum)== tempNums.end())
 			{
-				tempNums[sum]=1;
+				tempNums.insert(sum);
 			}
 			else//如果计算的结果之前就出现过，那么肯定是不行的。
 			{
