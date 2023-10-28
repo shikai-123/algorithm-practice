@@ -3,3 +3,12 @@
 ################################################################################
 
 *.ipch
+/算法练习/Debug/算法练习.tlog
+/算法练习/.vs/算法练习/v15
+/算法练习/算法练习.sln
+/算法练习/算法练习.vcxproj
+/算法练习/算法练习.vcxproj.filters
+/算法练习/算法练习.vcxproj.user
+/算法练习/Debug
+/.vs/ProjectSettings.json
+/.vs/slnx.sqlite
