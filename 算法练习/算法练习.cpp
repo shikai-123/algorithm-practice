@@ -1,5 +1,5 @@
 ﻿#pragma warning(disable : 4996)
-
+#include <set>
 #include <vector>
 #include <algorithm>
 #include <iostream>
@@ -1708,9 +1708,87 @@ public:
 	}
 
 
+	/*
+	219. 存在重复元素 II
 
+	思路2：
+		哈希表
+		用这个思路，是因为这个题目在哈希表的分类中。
+		unorder_map的key是数组的元素，对应元素的“最新的下标”是valuee
+		最后遍历遍历map，一旦出现符合条件的返回true
 
+	*/
+	bool containsNearbyDuplicate1(vector<int>& nums, int k) {
+		unordered_map<int, int>ret;
 
+		for (size_t i = 0; i < nums.size(); i++)
+		{
+			if (ret.count(nums[i])==0)//没有出现过
+			{
+				ret[nums[i]] = i;//头一次出现距离就是0
+			}
+			else//不是第一次出现
+			{
+				//换成结构体性能肯定会更好
+				auto iter = ret.find(nums[i]);
+				if (i - iter->second <= k)
+				{
+					return 1;
+				}
+				ret[nums[i]] = i;//这个地方不会出现负值
+			}
+		}
+		return 0;
+	}
+
+	/*
+	219. 存在重复元素 II
+
+	思路1：（！！到时候在试试）
+		很明细 这是要用哈希表的思路啊。求一个数组中符号条件的最短的区间。
+		细想，这个滑动窗口比较复杂，难在的是如果满足“nums[i] == nums[j]”有多个的话，那么就得是多个滑动窗口
+
+		这个时候，就要换个思路，题目其实的意思就是在k的长度中，有没用相同的元素
+		k就是滑动窗口，只要滑动窗口中出现了相同的元素，就返回true
+		
+		目前性能差点，时间都是花在set的api上了，可以参考
+		https://leetcode.cn/problems/contains-duplicate-ii/solutions/1219675/gong-shui-san-xie-hua-dong-chuang-kou-yu-q02i/?envType=study-plan-v2&envId=top-interview-150
+	*/
+	bool containsNearbyDuplicate(vector<int>& nums, int k) {
+		int L = 0;
+		set<int>window;
+		for (size_t R = 0; R < nums.size(); R++)
+		{
+			if (R<k+1)
+			{
+				if (window.count(nums[R]) == 0)
+				{
+					window.insert(nums[R]);
+				}
+				else
+				{
+					return 1;
+				}
+			}
+			else
+			{
+				cout <<" " <<nums[L]<< endl;
+				//window.erase(window.begin());//set容器是有序的，删除最前面的肯定不是串口最前面的。unordered_set顺序随机，你都不知道他是怎么拍的。肯定也不行。
+				window.erase(nums[L]);
+				L++;
+				if (window.count(nums[R]) == 0)
+				{
+					window.insert(nums[R]);
+				}
+				else
+				{
+					return 1;
+				}
+			}
+			
+		}
+		return 0;
+	}
 
 };
 
@@ -1721,7 +1799,7 @@ void test()
 
 int main()
 {
-	vector<int> nums{3,3};
+	vector<int> nums{ 1,2,3,1,2,3 };
 	vector<int> num1{ };
 	vector<string> srtVec{ "eat","tea","tan","ate","nat","bat" };
 	string str = "anagram";
@@ -1737,7 +1815,7 @@ int main()
 	{
 		std::cout << num1[i] << endl;
 	}*/
-	std::cout << a.isHappy(19) << endl;
+	std::cout << a.containsNearbyDuplicate(nums,2) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
