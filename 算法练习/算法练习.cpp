@@ -1635,7 +1635,7 @@ public:
 
 		for (int i = 0; i < nums.size(); i++)
 		{
-			if (num.count(nums[i])==0)//map中没找到这个元素
+			if (num.count(nums[i]) == 0)//map中没找到这个元素
 			{
 				num[nums[i]] = i;
 			}
@@ -1693,7 +1693,7 @@ public:
 			{
 				return 1;
 			}
-			if (tempNums.find(sum)== tempNums.end())
+			if (tempNums.find(sum) == tempNums.end())
 			{
 				tempNums.insert(sum);
 			}
@@ -1723,7 +1723,7 @@ public:
 
 		for (size_t i = 0; i < nums.size(); i++)
 		{
-			if (ret.count(nums[i])==0)//没有出现过
+			if (ret.count(nums[i]) == 0)//没有出现过
 			{
 				ret[nums[i]] = i;//头一次出现距离就是0
 			}
@@ -1750,16 +1750,16 @@ public:
 
 		这个时候，就要换个思路，题目其实的意思就是在k的长度中，有没用相同的元素
 		k就是滑动窗口，只要滑动窗口中出现了相同的元素，就返回true
-		
+
 		目前性能差点，时间都是花在set的api上了，可以参考
 		https://leetcode.cn/problems/contains-duplicate-ii/solutions/1219675/gong-shui-san-xie-hua-dong-chuang-kou-yu-q02i/?envType=study-plan-v2&envId=top-interview-150
 	*/
 	bool containsNearbyDuplicate(vector<int>& nums, int k) {
 		int L = 0;
-		set<int>window;
+		unordered_set<int>window;
 		for (size_t R = 0; R < nums.size(); R++)
 		{
-			if (R<k+1)
+			if (R < k + 1)
 			{
 				if (window.count(nums[R]) == 0)
 				{
@@ -1772,7 +1772,7 @@ public:
 			}
 			else
 			{
-				cout <<" " <<nums[L]<< endl;
+				cout << " " << nums[L] << endl;
 				//window.erase(window.begin());//set容器是有序的，删除最前面的肯定不是串口最前面的。unordered_set顺序随机，你都不知道他是怎么拍的。肯定也不行。
 				window.erase(nums[L]);
 				L++;
@@ -1785,10 +1785,59 @@ public:
 					return 1;
 				}
 			}
-			
+
 		}
 		return 0;
 	}
+
+	/*
+		128. 最长连续序列
+			这个题目简单，但是列为中等的原因应该是因为要求时间复杂度位n的要求把
+		思路1：
+			如果直接用sort对vexctor排序，那么时间复杂度肯定不行。其平均时间复杂度为O(n log n)
+			所以这个肯定不行，那么还得排序，还得时间复杂度可以，
+			自然就是无序容器最合适，所以unordered_set。
+
+		思路2：
+			把vec中的元素放到set中，为了不是排序，而是插入和遍历的时候时间复杂度位1
+			从头开始，判断他的+1或者-1是否存在，要是存在就进入while，
+			+1的进去，就一直++,-1的进去就一直--，
+			凡是操作一个值，就把他删掉。
+			为什么删掉，就是已经参与计算的数，哪怕是被其他的数拉来的，已经被完全计算了，所以可以删掉
+			出了循环之后，把两个位置的长度差记录下来，
+			然后遇到新的数，肯定是之前没有计算到数，然后再重新计算。
+	*/
+	int longestConsecutive(vector<int>& nums) {
+		unordered_set<int>set;
+		for (int i = 0; i< nums.size(); i++)
+		{
+			set.insert(nums[i]);
+		}
+		int maxLen = 0;
+		int tempLen = 0;
+		int tempValue = 0;
+		int BeginValue = 0;
+		while (!set.empty())
+		{
+			tempValue = BeginValue = *set.begin();
+			while (set.erase(++tempValue))//如果有下一位的数据就进去,没有可删的返回就是0
+			{
+				tempLen++;
+			}
+			tempValue = BeginValue;
+			while (set.erase(--tempValue))
+			{
+				tempLen++;
+			}
+			set.erase(BeginValue);
+			tempLen++;
+			maxLen = maxLen > tempLen ? maxLen : tempLen;
+			tempLen = 0;
+		}
+		return maxLen;
+	}
+
+
 
 };
 
@@ -1799,7 +1848,7 @@ void test()
 
 int main()
 {
-	vector<int> nums{ 1,2,3,1,2,3 };
+	vector<int> nums{ 9,1,-3,2,4,8,3,-1,6,-2,-4,7 };
 	vector<int> num1{ };
 	vector<string> srtVec{ "eat","tea","tan","ate","nat","bat" };
 	string str = "anagram";
@@ -1815,7 +1864,7 @@ int main()
 	{
 		std::cout << num1[i] << endl;
 	}*/
-	std::cout << a.containsNearbyDuplicate(nums,2) << endl;
+	std::cout << a.longestConsecutive(nums) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
