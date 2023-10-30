@@ -1809,7 +1809,7 @@ public:
 	*/
 	int longestConsecutive(vector<int>& nums) {
 		unordered_set<int>set;
-		for (int i = 0; i< nums.size(); i++)
+		for (int i = 0; i < nums.size(); i++)
 		{
 			set.insert(nums[i]);
 		}
@@ -1837,7 +1837,43 @@ public:
 		return maxLen;
 	}
 
+	/*
+	228. 汇总区间
+		“区间”这个不是思路，而是题型
+	思路：
+		一般思路就是遍历这个vex
+		记录头位置的字符，然后遍历；直到遇到了不连续的数字，然后把对应的字符加上.
+		不断的循环这个方法，不断的。
+		如果只有一个字符和任何字符都不连续，那么s和e相等，放入e即可。
 
+	唯一要注意的就是：
+		nums[i + 1]如果正常遍历的话就会造成遍历越界，那么就应该加上“i + 1 < nums.size()”
+		这个题目中加在for中是不行的，这样会导致最后的一个数字加不上。
+		至于放在哪，根据题目要求来
+	*/
+	vector<string> summaryRanges(vector<int>& nums) {
+		vector<string>ret;
+		int s, e = 0;//连续字符的开始和结束。
+		for (size_t i = 0; i < nums.size(); i++)
+		{
+			s = nums[i];
+			while ((i + 1 < nums.size()) && nums[i] + 1 == nums[i + 1])
+			{
+				i++;
+			}
+			e = nums[i];
+			if (s != e)
+			{
+				string words = to_string(s) + "->" + to_string(e);
+				ret.push_back(words);
+			}
+			else
+			{
+				ret.push_back(to_string(e));
+			}
+		}
+		return ret;
+	}
 
 };
 
@@ -1848,7 +1884,7 @@ void test()
 
 int main()
 {
-	vector<int> nums{ 9,1,-3,2,4,8,3,-1,6,-2,-4,7 };
+	vector<int> nums{ 0,1,2,4,5,7 };
 	vector<int> num1{ };
 	vector<string> srtVec{ "eat","tea","tan","ate","nat","bat" };
 	string str = "anagram";
@@ -1857,14 +1893,13 @@ int main()
 	vector<vector<int>> board = { {1,1,1},{1,0,1}, {7,8,9} };
 	Solution a;
 
-	//a.twoSum(nums,6);
+	vector<string> retStr = a.summaryRanges(nums);
 
-	/*
-	for (size_t i = 0; i < num1.size(); i++)
+	for (size_t i = 0; i < retStr.size(); i++)
 	{
-		std::cout << num1[i] << endl;
-	}*/
-	std::cout << a.longestConsecutive(nums) << endl;
+		std::cout << retStr[i] << endl;
+	}
+	//std::cout << a.summaryRanges(nums) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
