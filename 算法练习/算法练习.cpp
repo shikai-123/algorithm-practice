@@ -1875,6 +1875,35 @@ public:
 		return ret;
 	}
 
+
+	/*
+	56. 合并区间
+	思路：
+
+	*/
+	vector<vector<int>> merge(vector<vector<int>>& intervals) {
+		int b, e = 0;//存放的是开始、结束的字符
+		int newRow = 0;
+		vector<vector<int>> ret();
+		for (size_t i = 0; i < intervals.size(); i++)
+		{
+			b = intervals[i][0];
+			e = intervals[i][1];
+			ret[newRow][0] = b;
+			while ((i + 1 < intervals.size()) && e >= intervals[i + 1][0])
+			{
+				e = intervals[i+1][0];
+				i++;
+			}
+			ret[newRow][1] = e;
+			newRow++;
+		}
+		return ret;
+
+	}
+
+
+
 };
 
 void test()
@@ -1890,15 +1919,24 @@ int main()
 	string str = "anagram";
 	string t = "anagram";
 	string strs{ "Marge, let's \"[went].\" I await {news} telegram." };
-	vector<vector<int>> board = { {1,1,1},{1,0,1}, {7,8,9} };
+	vector<vector<int>> board = { {1,3},{2,6}, {8,10},{15,18} };
 	Solution a;
 
-	vector<string> retStr = a.summaryRanges(nums);
+	vector<vector<int>> retStr = a.merge(board);
+	
+	for (auto i : retStr)
+	{
+		for (auto l : i)
+		{
+			cout << l<<" ";
+		}
+		cout << endl;
+	}
 
-	for (size_t i = 0; i < retStr.size(); i++)
+	/*for (size_t i = 0; i < retStr.size(); i++)
 	{
 		std::cout << retStr[i] << endl;
-	}
+	}*/
 	//std::cout << a.summaryRanges(nums) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
