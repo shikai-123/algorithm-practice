@@ -1883,23 +1883,40 @@ public:
 	*/
 	vector<vector<int>> merge(vector<vector<int>>& intervals) {
 		int b, e = 0;//存放的是开始、结束的字符
+		int oldb, olde = 0;
 		int newRow = 0;
-		vector<vector<int>> ret();
+		int l = 0;
+		bool flag = false;
+		vector<vector<int>> ret;
 		for (size_t i = 0; i < intervals.size(); i++)
 		{
 			b = intervals[i][0];
 			e = intervals[i][1];
-			ret[newRow][0] = b;
-			while ((i + 1 < intervals.size()) && e >= intervals[i + 1][0])
+			l = 0;
+			while ((l + 1 < intervals.size()))
 			{
-				e = intervals[i+1][0];
-				i++;
+				//后面一组的左边在他的中间，可以确定可以他们合在一起，那么右值就是看这两个组谁的右值大了
+				if (intervals[l + 1][0]<e  && intervals[l + 1][0]>b || intervals[l + 1][1]<e  && intervals[l + 1][1]>b)
+				{
+					e = max(intervals[l][1], intervals[l + 1][1]);
+					b = min(intervals[l][0], intervals[l + 1][0]);
+					flag = true;
+					i++;
+				}
+				l++;
+				//上面的就是情况就是整个区间往后涨。
+				//那么剩下的就是整个区间往前涨
 			}
-			ret[newRow][1] = e;
-			newRow++;
+			if (e != intervals[i][1] || b != intervals[i][0] || flag==false)
+			{
+				ret.push_back(vector<int>{b});
+				ret[newRow].push_back(e);
+				newRow++;
+			}
+			flag = false;
+
 		}
 		return ret;
-
 	}
 
 
@@ -1919,16 +1936,16 @@ int main()
 	string str = "anagram";
 	string t = "anagram";
 	string strs{ "Marge, let's \"[went].\" I await {news} telegram." };
-	vector<vector<int>> board = { {1,3},{2,6}, {8,10},{15,18} };
+	vector<vector<int>> board = { {1,4},{4,5}};
 	Solution a;
 
 	vector<vector<int>> retStr = a.merge(board);
-	
+
 	for (auto i : retStr)
 	{
 		for (auto l : i)
 		{
-			cout << l<<" ";
+			cout << l << " ";
 		}
 		cout << endl;
 	}
@@ -1942,7 +1959,4 @@ int main()
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
 	//std::cout << a.canCompleteCircuit(nums, num1) << endl;
-
-
-
 }
