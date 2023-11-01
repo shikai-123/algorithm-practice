@@ -1880,6 +1880,7 @@ public:
 	56. 合并区间
 	思路：
 
+
 	*/
 	vector<vector<int>> merge(vector<vector<int>>& intervals) {
 		int b, e = 0;//存放的是开始、结束的字符
@@ -1921,6 +1922,78 @@ public:
 
 
 
+	/*
+	57. 插入区间
+	思路1：
+		拿到newInterval左右两端。
+		然后开始遍历intervals，遍历的时候，要开始和newInterval对比。
+		从第一个元素开始，就开始对比
+		先比较newInterval左值，如果intervals中的左值小于newInterval左值，那么ret中就插入newInterval左值，否则就是插入intervals中的左值。
+		newInterval左值和右值会有相等的情况，我想了下，无论怎么样，先插入左值，然后才是右值，这个思路不会变。
+		左值插入完毕之后，就不用在比较左值了，只需要在比较右值就行。
+		然后开始比较newInterval右值。如果intervals中的右值小于newInterval右值，那么ret中就插入intervals左值，否则就是插入newInterval中的左值。
+		!!!WCTMD, 思路不行 瞎搞了！！
+
+	思路2：
+		本来想着思路1就可以了，没想到瞎弄了一个
+
+
+
+	
+	*/
+	vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+		vector<vector<int>> ret;
+		int b = newInterval[0];
+		int e = newInterval[1];
+		bool l_InsertFlag = false;//newInterval的左值已经被插入的标志 1被插入了
+		bool r_InsertFlag = false;//newInterval的右值已经被插入的标志 1被插入了
+
+		for (size_t i = 0; i < intervals.size(); i++)
+		{
+			if (i >= ret.size()) {
+				ret.push_back(vector<int>{0, 0});
+			}
+			if (l_InsertFlag == false)
+			{
+				if (intervals[i][0]< newInterval[0])//如果intervals中的左值小于newInterval左值，那么ret中就插入intervals左值
+				{
+					ret[i][0] = intervals[i][0];
+
+				}
+				else//否则就是插入newInterval中的左值
+				{
+					ret[i][0] = newInterval[0];
+					l_InsertFlag = true;
+				}
+			}
+			else//当newInterval的左值已经被插入后，就完全不用考虑newInterval的左值，这个时候只需要插入intervals就行
+			{
+				ret[i][0] = intervals[i][0];
+			}
+			
+			if (r_InsertFlag == false)
+			{
+				if (intervals[i][1]< newInterval[1])//如果intervals中的右值小于newInterval右值，那么ret中就插入newInterval右值
+				{
+					ret[i][1] = newInterval[1];
+
+					r_InsertFlag = true;//为什么插入右值后，两个标志都要置1呢
+					l_InsertFlag = true;//这是因为有可能左值无法满足条件，可能一直都没法插入，但是只要是右值插入了，就意味着整个newInterval的作用已经结束了，所以左边的表计也可以跟着进去
+				}
+				else//否则就是插入intervals中的右值
+				{
+					ret[i][1] = intervals[i][1];
+				}
+			}
+			else//当newInterval的右值已经被插入后，就完全不用考虑newInterval的右值，这个时候只需要插入intervals右值就行
+			{
+				ret[i][1] = intervals[i][1];
+			}
+		}
+		return ret;
+	}
+
+
 };
 
 void test()
@@ -1936,10 +2009,11 @@ int main()
 	string str = "anagram";
 	string t = "anagram";
 	string strs{ "Marge, let's \"[went].\" I await {news} telegram." };
-	vector<vector<int>> board = { {1,4},{4,5}};
+	vector<vector<int>> board = { {1,2},{3,5},{6,7},{8,10},{12,16} };
+	vector<int> newInterval{ 4,8 };
 	Solution a;
 
-	vector<vector<int>> retStr = a.merge(board);
+	vector<vector<int>> retStr = a.insert(board, newInterval);
 
 	for (auto i : retStr)
 	{
