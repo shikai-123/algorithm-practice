@@ -2172,6 +2172,39 @@ public:
 		}
 		return vector<vector<int>>(ret.begin(), ret.begin() + index + 1);
 	}
+
+	/*
+	452. 用最少数量的箭引爆气球
+	思路：
+		
+	*/
+	int findMinArrowShots(vector<vector<int>>& points) {
+
+		int ret = 1;
+		int index = 0;
+		for (auto point : points)
+		{
+
+			if (index+1< points.size())
+			{
+				int l = min(points[index][0], points[index + 1][0]);
+				int r = max(points[index][1], points[index + 1][1]);
+				if (l<= points[index][0]&& l <= points[index+1][0])
+				{
+
+				}
+			}
+		}
+
+	}
+
+
+
+
+
+
+
+
 };
 
 void test()
