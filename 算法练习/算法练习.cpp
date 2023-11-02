@@ -1880,44 +1880,30 @@ public:
 	56. 合并区间
 	思路：
 
-
+	参考：
+	https://leetcode.cn/problems/merge-intervals/solutions/204805/chi-jing-ran-yi-yan-miao-dong-by-sweetiee/?envType=study-plan-v2&envId=top-interview-150
 	*/
-	vector<vector<int>> merge(vector<vector<int>>& intervals) {
-		int b, e = 0;//存放的是开始、结束的字符
-		int oldb, olde = 0;
-		int newRow = 0;
-		int l = 0;
-		bool flag = false;
-		vector<vector<int>> ret;
-		for (size_t i = 0; i < intervals.size(); i++)
-		{
-			b = intervals[i][0];
-			e = intervals[i][1];
-			l = 0;
-			while ((l + 1 < intervals.size()))
-			{
-				//后面一组的左边在他的中间，可以确定可以他们合在一起，那么右值就是看这两个组谁的右值大了
-				if (intervals[l + 1][0]<e  && intervals[l + 1][0]>b || intervals[l + 1][1]<e  && intervals[l + 1][1]>b)
-				{
-					e = max(intervals[l][1], intervals[l + 1][1]);
-					b = min(intervals[l][0], intervals[l + 1][0]);
-					flag = true;
-					i++;
-				}
-				l++;
-				//上面的就是情况就是整个区间往后涨。
-				//那么剩下的就是整个区间往前涨
-			}
-			if (e != intervals[i][1] || b != intervals[i][0] || flag == false)
-			{
-				ret.push_back(vector<int>{b});
-				ret[newRow].push_back(e);
-				newRow++;
-			}
-			flag = false;
+	vector<vector<int>> merge1(vector<vector<int>>& intervals) {
+		//先按照intervals中元左值排序——升序
+		sort(intervals.begin(), intervals.end(), [](const vector<int>& v1, const vector<int>& v2) {
+			return v1[0] < v2[0];
+		});
 
+		vector<vector<int>> res(intervals.size());
+		int idx = -1;
+		for (const vector<int>& interval : intervals) {
+			// 如果结果数组是空的，或者当前区间的起始位置 > 结果数组中最后区间的终止位置， ——或者说是新的一组interval元素在res的右侧，也就是两者没有任何交集。
+			// 则不合并，直接将当前区间加入结果数组。  
+			if (idx == -1 || res[idx][1] >= interval[0]) {
+				res[++idx] = interval;
+			}
+			else {
+				// 反之将当前区间合并至结果数组的最后区间 ——意思是说当interval和res有交集的话，那么新的数据区间的右侧的数据就是看res右值大，还是interval得右值大！
+				res[idx][1] = max(res[idx][1], interval[1]);
+			}
 		}
-		return ret;
+		//这个是这样做，而不是直接返回res的原因是：vector<vector<int>> res(intervals.size());这回导致res的大小和原先是一样的
+		return vector<vector<int>>(res.begin(), res.begin() + idx + 1);
 	}
 
 
@@ -2135,7 +2121,7 @@ public:
 			index++;
 		}
 		ret.push_back(newInterval);
-		
+
 		/*
 			剩下的就是直接往ret中放就行了
 		*/
@@ -2149,6 +2135,43 @@ public:
 	}
 
 
+	/*
+	56. 合并区间
+	思路：
+
+	参考：
+	https://leetcode.cn/problems/merge-intervals/solutions/204805/chi-jing-ran-yi-yan-miao-dong-by-sweetiee/?envType=study-plan-v2&envId=top-interview-150
+	*/
+	vector<vector<int>> merge(vector<vector<int>>& intervals) {
+		//因为intervals中的各组元组的排序没有一个规律，这种解法需要升序，所以需要排列
+		sort(intervals.begin(), intervals.end(), [](const vector<int> &v1, const vector<int> &v2)->int
+		{
+			return v1[0] < v2[0];
+		});
+		vector<vector<int>>ret(intervals.size());
+		int index = -1;
+		/*
+		因为intervals.length大小不为空。所以ret中最少是有1个元素的。
+		所以，当遍历intervals一开始的时候，要把intervals都放到ret中。或者当intervals左值大于ret中的右值，也要另起一个新的vec。也就是新的intervals和ret不再重叠的时候
+		要是不大于，就说明当前intervals和ret的中的元素有重叠，那么就要合并
+		合并的方法，就是判断当前intervals的右值和ret右值，谁大用谁的谁的值
+		*/
+		for (auto interval : intervals  )
+		{
+			/*
+			在ret中开辟新的vec，这个时候有了左值和右值
+			*/
+			if (index == -1 || interval[0]> ret[index][1])
+			{
+				ret[++index] = interval;
+			}
+			else//vec中的右值更新
+			{
+				ret[index][1] = max(interval[1], ret[index][1]);
+			}
+		}
+		return vector<vector<int>>(ret.begin(), ret.begin() + index + 1);
+	}
 };
 
 void test()
@@ -2164,11 +2187,11 @@ int main()
 	string str = "anagram";
 	string t = "anagram";
 	string strs{ "Marge, let's \"[went].\" I await {news} telegram." };
-	vector<vector<int>> board = { {1,5} };
+	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 	Solution a;
 
-	vector<vector<int>> retStr = a.insert(board, newInterval);
+	vector<vector<int>> retStr = a.merge(board);
 
 	for (auto i : retStr)
 	{
