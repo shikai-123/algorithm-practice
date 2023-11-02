@@ -1908,7 +1908,7 @@ public:
 				//上面的就是情况就是整个区间往后涨。
 				//那么剩下的就是整个区间往前涨
 			}
-			if (e != intervals[i][1] || b != intervals[i][0] || flag==false)
+			if (e != intervals[i][1] || b != intervals[i][0] || flag == false)
 			{
 				ret.push_back(vector<int>{b});
 				ret[newRow].push_back(e);
@@ -1933,15 +1933,8 @@ public:
 		左值插入完毕之后，就不用在比较左值了，只需要在比较右值就行。
 		然后开始比较newInterval右值。如果intervals中的右值小于newInterval右值，那么ret中就插入intervals左值，否则就是插入newInterval中的左值。
 		!!!WCTMD, 思路不行 瞎搞了！！
-
-	思路2：
-		本来想着思路1就可以了，没想到瞎弄了一个
-
-
-
-	
 	*/
-	vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+	vector<vector<int>> insert2(vector<vector<int>>& intervals, vector<int>& newInterval) {
 		vector<vector<int>> ret;
 		int b = newInterval[0];
 		int e = newInterval[1];
@@ -1955,7 +1948,7 @@ public:
 			}
 			if (l_InsertFlag == false)
 			{
-				if (intervals[i][0]< newInterval[0])//如果intervals中的左值小于newInterval左值，那么ret中就插入intervals左值
+				if (intervals[i][0] < newInterval[0])//如果intervals中的左值小于newInterval左值，那么ret中就插入intervals左值
 				{
 					ret[i][0] = intervals[i][0];
 
@@ -1966,14 +1959,17 @@ public:
 					l_InsertFlag = true;
 				}
 			}
-			else//当newInterval的左值已经被插入后，就完全不用考虑newInterval的左值，这个时候只需要插入intervals就行
+			else//当newInterval的左值已经被插入后，再往后遍历还是要和intervals对比。
 			{
-				ret[i][0] = intervals[i][0];
+				if (intervals[i][0] > newInterval[0])//如果intervals的左值大于newInterval右值，然后ret中在开始插入intervals的左值
+				{
+					ret[i][0] = intervals[i][0];
+				}
 			}
-			
+
 			if (r_InsertFlag == false)
 			{
-				if (intervals[i][1]< newInterval[1])//如果intervals中的右值小于newInterval右值，那么ret中就插入newInterval右值
+				if (intervals[i][0] <= newInterval[1] && intervals[i][1] < newInterval[1])//如果intervals中的右值小于newInterval右值，那么ret中就插入newInterval右值
 				{
 					ret[i][1] = newInterval[1];
 
@@ -1987,9 +1983,168 @@ public:
 			}
 			else//当newInterval的右值已经被插入后，就完全不用考虑newInterval的右值，这个时候只需要插入intervals右值就行
 			{
-				ret[i][1] = intervals[i][1];
+				if (intervals[i][0] > newInterval[0])//如果intervals的左值大于newInterval右值，然后ret中在开始插入intervals的左值
+				{
+					ret[i][1] = intervals[i][1];
+				}
 			}
 		}
+		return ret;
+	}
+
+
+	/*
+	57. 插入区间
+	思路2：
+		本来想着思路1就可以了，没想这用思路2.没想到瞎弄了一个不行，只能对部分的demo适用
+		新的思路更简单，
+		intervals中肯定不会有重复的元素，所有就把intervals中的所有的元素都方法一维的数组中。
+		把newInterval放到一维数组中。
+		然后遍历这个intervals数组，把每个元素都和newInterval左值对比。
+		如果元素小于newInterval左值，那么就添加intervals元素，
+		碰到两者相等的元素，
+		如果一直没有，就把newInterval左、右值加载ret的最后。
+		我们注意到每遍历了
+
+		我感觉这个思路也不行，麻烦，或者是不对。~！
+
+
+	思路3：
+		这个思路肯定是没问题的。 我哭了卧槽
+
+		拿到newInterval左右两端。
+		然后开始遍历intervals，遍历的时候，要开始和newInterval对比。
+		从第一个元素开始，就开始对比
+		先比较newInterval左值：
+		如果在intervals的区间内，那么久ret就插入intervals的左值。
+		如果不在区间，比较intervals的左值和newInterval左值。
+		intervals的左值》newInterval左值：ret插入newInterval左值；
+		intervals的左值《newInterval左值：进入下次循环。
+
+		然后开始接着比较右值
+		如果i在ntervals的区间内，那么久ret就插入intervals的右值。
+		intervals的右值《newInterval右值：进入下次循环。
+		intervals的右值》newInterval右值：ret插入newInterval右值；
+	*/
+	vector<vector<int>> insert1(vector<vector<int>>& intervals, vector<int>& newInterval) {
+		vector<vector<int>> ret;
+		int b = newInterval[0];
+		int e = newInterval[1];
+
+		bool l_InsertFlag = false;//newInterval的左值已经被插入的标志 1被插入了
+		bool r_InsertFlag = false;//newInterval的右值已经被插入的标志 1被插入了
+		for (size_t i = 0; i < intervals.size(); i++)
+		{
+			//肯定是先插入左值，然后再是右值。那么应该去掉这个东西，只在左值的地方，用pushback，然后再右值的地方，用【】
+			//这样的话，就得用一个新的index，来记录ret的有的数量，这个数量不会是和i一直相等的。
+			if (i >= ret.size()) {
+				ret.push_back(vector<int>{0, 0});
+			}
+
+			if (intervals[i][0] <= newInterval[0] && newInterval[0] <= intervals[i][1])//如果在intervals的区间内，那么久ret就插入intervals的左值。
+			{
+				ret[i][0] = intervals[i][0];
+				l_InsertFlag = true;
+			}
+			else if (intervals[i][0] > newInterval[0] && l_InsertFlag == false)//intervals的左值》newInterval左值：ret插入newInterval左值；
+			{
+				ret[i][0] = newInterval[0];
+			}
+			else//intervals的左值《newInterval左值：进入下次循环。
+			{
+				ret[i][0] = intervals[i][0];
+
+				if (i == intervals[0].size() - 1 && newInterval[0] > intervals[i][1])//如果到了循环的最后,并且最后newInterval的左值还大于intervals右值，那么就把newInterval都加入到ret中
+				{
+					ret[i][0] = newInterval[0];
+					ret[i][1] = newInterval[1];
+				}
+			}
+
+			if (intervals[i][0] <= newInterval[1] && newInterval[1] <= intervals[i][1])//如果i在ntervals的区间内，那么久ret就插入intervals的右值。
+			{
+				ret[i][1] = intervals[i][1];
+
+			}
+			else if (intervals[i][1] > newInterval[1])//intervals的右值》newInterval右值：ret插入intervals右值；
+			{
+				ret[i][1] = intervals[i][1];
+			}
+			else//intervals的右值《newInterval右值：进入下次循环。
+			{
+				if (l_InsertFlag == false)
+				{
+					ret[i][1] = intervals[i][1];
+				}
+			}
+		}
+		return ret;
+	}
+
+
+
+	/*
+	57. 插入区间
+	参考：
+		https://leetcode.cn/problems/insert-interval/solutions/472553/57-cha-ru-qu-jian-mo-ni-cha-ru-xiang-jie-by-carlsu/?envType=study-plan-v2&envId=top-interview-150
+	思路：
+		参考了“代码随想”的思路
+		一开始想着做些优化，尤其是min，max这几个函数的重复调用。
+		如果把这两个函数冲while中拿出来的话。我试了好几次，没有完美的方案，而且会弄的很乱。就会造成问题，
+		所以直接复现她的思路
+	*/
+	vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+		vector<vector<int>> ret;
+		int index = 0;
+
+		//首先判断intervals在newInterval之外的数据（在newInterval左边的）——判断依据就是intervals右值值《newInterval左值，有几个就在ret加几个
+		while (index < intervals.size() && intervals[index][1] < newInterval[0])
+		{
+			ret.push_back(intervals[index]);
+			index++;
+		}
+
+		/*
+		左边干完之后，开始干中间和newInterval有交集的部分
+		这部分最重要的就是mix和max函数在while中不断的使用
+		具体思路就是：
+		因为上面的while已经把不和newInterval接触的部分都弄上了，现在就处理接触的部分，这样的话，代码的判断就简单了。
+		只要是接触到newInterval就进去while，上面的while中已经是没接触的判断，所以只需要判断右边，只要是intervals的左值一旦出现没有和newInterval右边接触了，那这一部分就是接触部分
+		也就是intervals的左值不大于newInterval右值的都得进while
+		一开始的思路都会想，没必要把mix和max函数在while中不断的使用，这样省不了性能，max min的时间复杂度是1，即使拿出去性能基本上没有变化。
+
+		*/
+		/*
+		这样省不了性能
+		if (index < intervals.size() && intervals[index][0] <= newInterval[1])
+		{
+			newInterval[0] = min(intervals[index][0], newInterval[0]);
+			while (index < intervals.size()&& intervals[index][0] <= newInterval[1])
+			{
+				index++;
+			}
+			newInterval[1] = max(intervals[index-1][1], newInterval[1]);
+		}*/
+
+
+
+		while (index < intervals.size() && intervals[index][0] <= newInterval[1])
+		{
+			newInterval[0] = min(intervals[index][0], newInterval[0]);
+			newInterval[1] = max(intervals[index][1], newInterval[1]);
+			index++;
+		}
+		ret.push_back(newInterval);
+		
+		/*
+			剩下的就是直接往ret中放就行了
+		*/
+		while (index < intervals.size())
+		{
+			ret.push_back(intervals[index]);
+			index++;
+		}
+
 		return ret;
 	}
 
@@ -2009,8 +2164,8 @@ int main()
 	string str = "anagram";
 	string t = "anagram";
 	string strs{ "Marge, let's \"[went].\" I await {news} telegram." };
-	vector<vector<int>> board = { {1,2},{3,5},{6,7},{8,10},{12,16} };
-	vector<int> newInterval{ 4,8 };
+	vector<vector<int>> board = { {1,5} };
+	vector<int> newInterval{ 0,0 };
 	Solution a;
 
 	vector<vector<int>> retStr = a.insert(board, newInterval);
