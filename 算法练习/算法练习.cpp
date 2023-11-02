@@ -1906,169 +1906,6 @@ public:
 		return vector<vector<int>>(res.begin(), res.begin() + idx + 1);
 	}
 
-
-
-	/*
-	57. 插入区间
-	思路1：
-		拿到newInterval左右两端。
-		然后开始遍历intervals，遍历的时候，要开始和newInterval对比。
-		从第一个元素开始，就开始对比
-		先比较newInterval左值，如果intervals中的左值小于newInterval左值，那么ret中就插入newInterval左值，否则就是插入intervals中的左值。
-		newInterval左值和右值会有相等的情况，我想了下，无论怎么样，先插入左值，然后才是右值，这个思路不会变。
-		左值插入完毕之后，就不用在比较左值了，只需要在比较右值就行。
-		然后开始比较newInterval右值。如果intervals中的右值小于newInterval右值，那么ret中就插入intervals左值，否则就是插入newInterval中的左值。
-		!!!WCTMD, 思路不行 瞎搞了！！
-	*/
-	vector<vector<int>> insert2(vector<vector<int>>& intervals, vector<int>& newInterval) {
-		vector<vector<int>> ret;
-		int b = newInterval[0];
-		int e = newInterval[1];
-		bool l_InsertFlag = false;//newInterval的左值已经被插入的标志 1被插入了
-		bool r_InsertFlag = false;//newInterval的右值已经被插入的标志 1被插入了
-
-		for (size_t i = 0; i < intervals.size(); i++)
-		{
-			if (i >= ret.size()) {
-				ret.push_back(vector<int>{0, 0});
-			}
-			if (l_InsertFlag == false)
-			{
-				if (intervals[i][0] < newInterval[0])//如果intervals中的左值小于newInterval左值，那么ret中就插入intervals左值
-				{
-					ret[i][0] = intervals[i][0];
-
-				}
-				else//否则就是插入newInterval中的左值
-				{
-					ret[i][0] = newInterval[0];
-					l_InsertFlag = true;
-				}
-			}
-			else//当newInterval的左值已经被插入后，再往后遍历还是要和intervals对比。
-			{
-				if (intervals[i][0] > newInterval[0])//如果intervals的左值大于newInterval右值，然后ret中在开始插入intervals的左值
-				{
-					ret[i][0] = intervals[i][0];
-				}
-			}
-
-			if (r_InsertFlag == false)
-			{
-				if (intervals[i][0] <= newInterval[1] && intervals[i][1] < newInterval[1])//如果intervals中的右值小于newInterval右值，那么ret中就插入newInterval右值
-				{
-					ret[i][1] = newInterval[1];
-
-					r_InsertFlag = true;//为什么插入右值后，两个标志都要置1呢
-					l_InsertFlag = true;//这是因为有可能左值无法满足条件，可能一直都没法插入，但是只要是右值插入了，就意味着整个newInterval的作用已经结束了，所以左边的表计也可以跟着进去
-				}
-				else//否则就是插入intervals中的右值
-				{
-					ret[i][1] = intervals[i][1];
-				}
-			}
-			else//当newInterval的右值已经被插入后，就完全不用考虑newInterval的右值，这个时候只需要插入intervals右值就行
-			{
-				if (intervals[i][0] > newInterval[0])//如果intervals的左值大于newInterval右值，然后ret中在开始插入intervals的左值
-				{
-					ret[i][1] = intervals[i][1];
-				}
-			}
-		}
-		return ret;
-	}
-
-
-	/*
-	57. 插入区间
-	思路2：
-		本来想着思路1就可以了，没想这用思路2.没想到瞎弄了一个不行，只能对部分的demo适用
-		新的思路更简单，
-		intervals中肯定不会有重复的元素，所有就把intervals中的所有的元素都方法一维的数组中。
-		把newInterval放到一维数组中。
-		然后遍历这个intervals数组，把每个元素都和newInterval左值对比。
-		如果元素小于newInterval左值，那么就添加intervals元素，
-		碰到两者相等的元素，
-		如果一直没有，就把newInterval左、右值加载ret的最后。
-		我们注意到每遍历了
-
-		我感觉这个思路也不行，麻烦，或者是不对。~！
-
-
-	思路3：
-		这个思路肯定是没问题的。 我哭了卧槽
-
-		拿到newInterval左右两端。
-		然后开始遍历intervals，遍历的时候，要开始和newInterval对比。
-		从第一个元素开始，就开始对比
-		先比较newInterval左值：
-		如果在intervals的区间内，那么久ret就插入intervals的左值。
-		如果不在区间，比较intervals的左值和newInterval左值。
-		intervals的左值》newInterval左值：ret插入newInterval左值；
-		intervals的左值《newInterval左值：进入下次循环。
-
-		然后开始接着比较右值
-		如果i在ntervals的区间内，那么久ret就插入intervals的右值。
-		intervals的右值《newInterval右值：进入下次循环。
-		intervals的右值》newInterval右值：ret插入newInterval右值；
-	*/
-	vector<vector<int>> insert1(vector<vector<int>>& intervals, vector<int>& newInterval) {
-		vector<vector<int>> ret;
-		int b = newInterval[0];
-		int e = newInterval[1];
-
-		bool l_InsertFlag = false;//newInterval的左值已经被插入的标志 1被插入了
-		bool r_InsertFlag = false;//newInterval的右值已经被插入的标志 1被插入了
-		for (size_t i = 0; i < intervals.size(); i++)
-		{
-			//肯定是先插入左值，然后再是右值。那么应该去掉这个东西，只在左值的地方，用pushback，然后再右值的地方，用【】
-			//这样的话，就得用一个新的index，来记录ret的有的数量，这个数量不会是和i一直相等的。
-			if (i >= ret.size()) {
-				ret.push_back(vector<int>{0, 0});
-			}
-
-			if (intervals[i][0] <= newInterval[0] && newInterval[0] <= intervals[i][1])//如果在intervals的区间内，那么久ret就插入intervals的左值。
-			{
-				ret[i][0] = intervals[i][0];
-				l_InsertFlag = true;
-			}
-			else if (intervals[i][0] > newInterval[0] && l_InsertFlag == false)//intervals的左值》newInterval左值：ret插入newInterval左值；
-			{
-				ret[i][0] = newInterval[0];
-			}
-			else//intervals的左值《newInterval左值：进入下次循环。
-			{
-				ret[i][0] = intervals[i][0];
-
-				if (i == intervals[0].size() - 1 && newInterval[0] > intervals[i][1])//如果到了循环的最后,并且最后newInterval的左值还大于intervals右值，那么就把newInterval都加入到ret中
-				{
-					ret[i][0] = newInterval[0];
-					ret[i][1] = newInterval[1];
-				}
-			}
-
-			if (intervals[i][0] <= newInterval[1] && newInterval[1] <= intervals[i][1])//如果i在ntervals的区间内，那么久ret就插入intervals的右值。
-			{
-				ret[i][1] = intervals[i][1];
-
-			}
-			else if (intervals[i][1] > newInterval[1])//intervals的右值》newInterval右值：ret插入intervals右值；
-			{
-				ret[i][1] = intervals[i][1];
-			}
-			else//intervals的右值《newInterval右值：进入下次循环。
-			{
-				if (l_InsertFlag == false)
-				{
-					ret[i][1] = intervals[i][1];
-				}
-			}
-		}
-		return ret;
-	}
-
-
-
 	/*
 	57. 插入区间
 	参考：
@@ -2156,12 +1993,12 @@ public:
 		要是不大于，就说明当前intervals和ret的中的元素有重叠，那么就要合并
 		合并的方法，就是判断当前intervals的右值和ret右值，谁大用谁的谁的值
 		*/
-		for (auto interval : intervals  )
+		for (auto interval : intervals)
 		{
 			/*
 			在ret中开辟新的vec，这个时候有了左值和右值
 			*/
-			if (index == -1 || interval[0]> ret[index][1])
+			if (index == -1 || interval[0] > ret[index][1])
 			{
 				ret[++index] = interval;
 			}
@@ -2176,26 +2013,46 @@ public:
 	/*
 	452. 用最少数量的箭引爆气球
 	思路：
-		
+		贪心思路；
+		具体，参考注释和链接
+	参考：
+		https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/submissions/479348550/?envType=study-plan-v2&envId=top-interview-150
 	*/
 	int findMinArrowShots(vector<vector<int>>& points) {
+		if (points.empty())
+		{
+			return 0;
+		}
+		/*能用引用，就用引用，节省性能，根据题目的评论中，发现加不加对性能影响很大 */
+		sort(points.begin(), points.end(), [](const vector<int>& v1, const vector<int>& v2) {
+			return v1[0] < v2[0];
+		});
 
 		int ret = 1;
-		int index = 0;
-		for (auto point : points)
+		for (size_t i = 1; i < points.size(); i++)
 		{
-
-			if (index+1< points.size())
+			/*
+				如果两个球不挨着了，那么肯定就是需要一个箭来射穿前面的气球
+				那么判断条件就是左边的球的右边小于右边求的左边，就是两球不挨着，
+				这个题目中，如果两个边边重叠就算挨着，
+				所以判断条件就是《
+			*/
+			if (points[i-1][1] < points[i][0])
 			{
-				int l = min(points[index][0], points[index + 1][0]);
-				int r = max(points[index][1], points[index + 1][1]);
-				if (l<= points[index][0]&& l <= points[index+1][0])
-				{
-
-				}
+				ret++;
+			}
+			else
+			{
+				/*
+				如果挨着了，那么就更新左边气球的右边界。
+				是两个右边界的较小的值
+				如果想要和这两个挨着的球，用同一只箭，那么一定要和较小的右边来比较。
+				所以这里保存了较小的边。
+				*/
+				points[i][1] = min(points[i - 1][1], points[i][1]);
 			}
 		}
-
+		return ret;
 	}
 
 
