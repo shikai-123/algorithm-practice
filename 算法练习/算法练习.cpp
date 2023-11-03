@@ -2066,9 +2066,9 @@ public:
 		拿的时候，不能像左边那样，直接就弄了。得有个判断条件
 		得判断你要拿的这个括号是不是和栈最上面的元素有对应关系。
 		如果有对应关系，那么就那，没有就直接返回false。
-		
+
 		对应关系就是：(40  )41   [91 ]93      {123      }125
-		
+
 		遍历结束后，如果栈里面被拿空了，那么说明整个字符串没有问题，只要不是空的，说明不行
 	*/
 	bool isValid(string s) {
@@ -2076,13 +2076,13 @@ public:
 
 		for (const char& c : s)
 		{
-			if (c == '('|| c == '['|| c == '{'|| stk.empty())
+			if (c == '(' || c == '[' || c == '{' || stk.empty())
 			{
 				stk.push(c);
 			}
 			else
 			{
-				if (stk.top()+1==c  || stk.top() + 2 == c)
+				if (stk.top() + 1 == c || stk.top() + 2 == c)
 				{
 					stk.pop();
 				}
@@ -2099,8 +2099,67 @@ public:
 		return false;
 	}
 
-	string simplifyPath(string path) {
-
+	/*
+	71. 简化路径
+	思路：
+		这个也简单，不同的字符，代表出栈和入栈，然后看看最后栈里面留的是谁
+		我这个思路毕竟是自己想的，虽然有点丑，但是记忆方便
+		总的来说，就是先分割字符，然后判断字符是什么样的，
+		再决定是入栈，出栈，还是无操作。
+		和这个题解的性能一样。
+		https://leetcode.cn/problems/simplify-path/?envType=study-plan-v2&envId=top-interview-150
+	*/string simplifyPath(string path)
+	{
+		int pos = 0;//上次找到关键词的下一处位置
+		string tmp = "";
+		string retStr = "";
+		stack<string>stk;
+		while (true)
+		{
+			int ret = path.find("/", pos);
+			if (ret < 0)
+			{
+				tmp = path.substr(pos, path.size() - pos);//有可能最后不是以/结尾，但是要把最后的字符拿出来就得是总的长度-上次关键字的长度
+				if (tmp == "")
+				{
+					break;
+				}
+				if (tmp != "."&&tmp != "..")
+				{
+					stk.push(tmp);
+				}
+				else if (tmp == ".."&& !stk.empty())
+				{
+					stk.pop();
+				}
+				break;
+			}
+			tmp = path.substr(pos, ret - pos);
+			if (tmp == "")
+			{
+				pos = ret + 1;
+				continue;
+			}
+			else if (tmp != "."&&tmp != "..")
+			{
+				stk.push(tmp);
+			}
+			else if (tmp == ".." && !stk.empty())
+			{
+				stk.pop();
+			}
+			pos = ret + 1;
+		}
+		if (stk.empty())
+		{
+			retStr = retStr + "/";
+		}
+		while (!stk.empty())
+		{
+			retStr.insert(0, "/" + stk.top());
+			stk.pop();
+		}
+		return retStr;
 	}
 
 
@@ -2118,7 +2177,7 @@ int main()
 	vector<int> nums{ 0,1,2,4,5,7 };
 	vector<int> num1{ };
 	vector<string> srtVec{ "eat","tea","tan","ate","nat","bat" };
-	string str = "()[]{}";
+	string str = "/home/";
 	string t = "anagram";
 	string strs{ "Marge, let's \"[went].\" I await {news} telegram." };
 	vector<vector<int>> board = { {1,4},{4,5} };
@@ -2140,7 +2199,7 @@ int main()
 	{
 		std::cout << retStr[i] << endl;
 	}*/
-	std::cout << a.isValid(str) << endl;
+	std::cout << a.simplifyPath(str) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
