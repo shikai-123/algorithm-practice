@@ -2037,7 +2037,7 @@ public:
 				这个题目中，如果两个边边重叠就算挨着，
 				所以判断条件就是《
 			*/
-			if (points[i-1][1] < points[i][0])
+			if (points[i - 1][1] < points[i][0])
 			{
 				ret++;
 			}
@@ -2056,8 +2056,52 @@ public:
 	}
 
 
+	/*
+	20. 有效的括号
+	前言：
+		这是“栈”思路的第一个题目，
+	思路：
+		括号要一一匹配，这个是最适合用栈容器的。
+		遍历这个s，如果是括号的左边的就往栈里放，
+		拿的时候，不能像左边那样，直接就弄了。得有个判断条件
+		得判断你要拿的这个括号是不是和栈最上面的元素有对应关系。
+		如果有对应关系，那么就那，没有就直接返回false。
+		
+		对应关系就是：(40  )41   [91 ]93      {123      }125
+		
+		遍历结束后，如果栈里面被拿空了，那么说明整个字符串没有问题，只要不是空的，说明不行
+	*/
+	bool isValid(string s) {
+		stack<char> stk;
 
+		for (const char& c : s)
+		{
+			if (c == '('|| c == '['|| c == '{'|| stk.empty())
+			{
+				stk.push(c);
+			}
+			else
+			{
+				if (stk.top()+1==c  || stk.top() + 2 == c)
+				{
+					stk.pop();
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+		if (stk.empty())
+		{
+			return true;
+		}
+		return false;
+	}
 
+	string simplifyPath(string path) {
+
+	}
 
 
 
@@ -2074,14 +2118,14 @@ int main()
 	vector<int> nums{ 0,1,2,4,5,7 };
 	vector<int> num1{ };
 	vector<string> srtVec{ "eat","tea","tan","ate","nat","bat" };
-	string str = "anagram";
+	string str = "()[]{}";
 	string t = "anagram";
 	string strs{ "Marge, let's \"[went].\" I await {news} telegram." };
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 	Solution a;
 
-	vector<vector<int>> retStr = a.merge(board);
+	/*vector<vector<int>> retStr = a.merge(board);
 
 	for (auto i : retStr)
 	{
@@ -2090,13 +2134,13 @@ int main()
 			cout << l << " ";
 		}
 		cout << endl;
-	}
+	}*/
 
 	/*for (size_t i = 0; i < retStr.size(); i++)
 	{
 		std::cout << retStr[i] << endl;
 	}*/
-	//std::cout << a.summaryRanges(nums) << endl;
+	std::cout << a.isValid(str) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
