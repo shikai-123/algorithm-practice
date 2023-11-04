@@ -2210,7 +2210,7 @@ public:
 		知道结束，返回计算的结果。
 	*/
 	int evalRPN(vector<string>& tokens) {
-		if (stk.size() < 2)
+		if (tokens.size() < 2)
 		{
 			return stoi(tokens[0]);
 		}
@@ -2250,6 +2250,65 @@ public:
 		}
 		return ret;
 	}
+
+	/*
+	224. 基本计算器
+	！！还没做，思路有点复杂
+	参考
+	https://leetcode.cn/problems/basic-calculator/solutions/465311/chai-jie-fu-za-wen-ti-shi-xian-yi-ge-wan-zheng-j-2/?envType=study-plan-v2&envId=top-interview-150
+	*/
+	int calculate(string s) {
+		if (s.size() < 2)
+		{
+			return stoi(s);
+		}
+		stack<string>stk;
+		int ret = 0;
+		string temp = "";
+
+		for (const char& token : s)
+		{
+			if (token == ')')
+			{
+
+			}
+			else
+			{
+				if (token == '+' || token == '-' || token == '*' || token == '/')
+				{
+					int r = stoi(stk.top());
+					stk.pop();
+					int l = stoi(stk.top());
+					stk.pop();
+					switch (token)
+					{
+					case 42:
+						ret = r * l;
+						break;
+					case 43:
+						ret = r + l;
+						break;
+					case 45:
+						ret = l - r;
+						break;
+					case 47:
+						ret = l / r;
+						break;
+					default:
+						break;
+					}
+					stk.push(to_string(ret));
+				}
+				else
+				{
+					temp += token;
+				}
+			}
+		}
+
+		return ret;
+	}
+
 };
 
 
@@ -2266,7 +2325,7 @@ int main()
 	vector<int> nums{ 0,1,2,4,5,7 };
 	vector<int> num1{ };
 	vector<string> srtVec{ "2","1","+","3","*" };
-	string str = "/home/";
+	string str = "(1+(4+5+2)-3)+(6+8)";
 	string t = "anagram";
 	string strs{ "Marge, let's \"[went].\" I await {news} telegram." };
 	vector<vector<int>> board = { {1,4},{4,5} };
@@ -2288,7 +2347,7 @@ int main()
 	{
 		std::cout << retStr[i] << endl;
 	}*/
-	std::cout << a.evalRPN(srtVec) << endl;
+	std::cout << a.calculate(str) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
