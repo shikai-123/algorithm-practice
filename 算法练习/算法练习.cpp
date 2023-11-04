@@ -2165,7 +2165,7 @@ public:
 				{
 					stk.push(tmp);
 				}
-				else if (tmp == ".."&& !stk.empty())
+				else if (tmp == ".." && !stk.empty())
 				{
 					stk.pop();
 				}
@@ -2200,6 +2200,56 @@ public:
 	}
 
 
+	/*
+	150. 逆波兰表达式求值
+	思路：
+		遍历tokens，到栈中，
+		遇到运算符的时候，就往前遍历两个元素，
+		然后根据这个运算符来计算结果，
+		算到的结果再次放到栈中。
+		知道结束，返回计算的结果。
+	*/
+	int evalRPN(vector<string>& tokens) {
+		if (stk.size() < 2)
+		{
+			return stoi(tokens[0]);
+		}
+		stack<string>stk;
+		int ret = 0;
+		for (const string& token : tokens)
+		{
+			if (token == "+" || token == "-" || token == "*" || token == "/")
+			{
+				int r = atoi(stk.top().c_str());
+				stk.pop();
+				int l = atoi(stk.top().c_str());
+				stk.pop();
+				switch (token[0])
+				{
+				case 42:
+					ret = r * l;
+					break;
+				case 43:
+					ret = r + l;
+					break;
+				case 45:
+					ret = l - r;
+					break;
+				case 47:
+					ret = l / r;
+					break;
+				default:
+					break;
+				}
+				stk.push(to_string(ret));
+			}
+			else
+			{
+				stk.push(token);
+			}
+		}
+		return ret;
+	}
 };
 
 
@@ -2212,20 +2262,10 @@ void test()
 int main()
 {
 
-	MinStack m;
-	m.push(0);
-	m.push(1);
-	m.push(0);
-	m.getMin();
-	m.pop();
-	m.getMin();
-
-	return 0;
-
 
 	vector<int> nums{ 0,1,2,4,5,7 };
 	vector<int> num1{ };
-	vector<string> srtVec{ "eat","tea","tan","ate","nat","bat" };
+	vector<string> srtVec{ "2","1","+","3","*" };
 	string str = "/home/";
 	string t = "anagram";
 	string strs{ "Marge, let's \"[went].\" I await {news} telegram." };
@@ -2248,7 +2288,7 @@ int main()
 	{
 		std::cout << retStr[i] << endl;
 	}*/
-	std::cout << a.simplifyPath(str) << endl;
+	std::cout << a.evalRPN(srtVec) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
