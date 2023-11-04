@@ -14,6 +14,43 @@
 
 using namespace std;
 
+/*
+155. 最小栈
+思路：
+	用multiset和和stack容器搭配使用即可
+
+*/
+class MinStack {
+public:
+	MinStack() {
+
+	}
+
+	void push(int val) {
+		stk.push(val);
+		set.insert(val);
+	}
+
+	void pop() {
+		set.erase(set.find(stk.top()));
+		stk.pop();
+	}
+
+	int top() {
+		return  stk.top();
+	}
+	//并能在常数时间内检索到最小元素的栈。
+	int getMin() {
+		return *set.begin();
+	}
+
+private:
+	stack<int>stk;
+	multiset<int>set;
+};
+
+
+
 class RandomizedSet {
 public:
 	RandomizedSet() {
@@ -2163,9 +2200,9 @@ public:
 	}
 
 
-
-
 };
+
+
 
 void test()
 {
@@ -2174,6 +2211,18 @@ void test()
 
 int main()
 {
+
+	MinStack m;
+	m.push(0);
+	m.push(1);
+	m.push(0);
+	m.getMin();
+	m.pop();
+	m.getMin();
+
+	return 0;
+
+
 	vector<int> nums{ 0,1,2,4,5,7 };
 	vector<int> num1{ };
 	vector<string> srtVec{ "eat","tea","tan","ate","nat","bat" };
