@@ -2397,7 +2397,7 @@ public:
 	2. 两数相加
 		转成数字不行，有的数特别大，小点的数我这个代码没问题。
 	*/
-	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+	ListNode* addTwoNumbers1(ListNode* l1, ListNode* l2) {
 		unsigned long long l = 0, r=0, sum=0;
 		int exponent = 0;//指数
 		ListNode* ret =nullptr;
@@ -2421,6 +2421,58 @@ public:
 		return ret;
 	}
 
+	/*
+	2. 两数相加
+	参考：
+		https://leetcode.cn/problems/add-two-numbers/solutions/4375/liang-shu-xiang-jia-by-gpe3dbjds1/comments/1554952
+		他的代码是根据这个回答中改进的，思路是一样的，代码更简洁
+	思路：
+		放弃里把链表中的全部数字组合到一块，然后再计算的方法。
+		这样避免了数据较大导致的数据溢出。
+		一个一个加，然后得到的结果大于10，就出10，得到的结果，
+		给下一次计算加上。不断的这样循环。
+		循环结束的条件就是两个链表都是空的情况。
+	*/
+	ListNode* addTwoNumbers(ListNode *l1, ListNode *l2) {
+		ListNode * note = new ListNode(0);
+		ListNode *pre = note;
+		int jinwei = 0;
+		int sum = 0;
+
+		while (l1 != nullptr|| l2 != nullptr)
+		{
+			int l = l1 != nullptr ? l1->val: 0;
+			int r = l2 != nullptr ? l2->val: 0;
+			sum = 0;
+			sum = l + r+jinwei;
+			jinwei = 0;
+			jinwei = sum / 10;
+
+			/*
+				!!通过循环结构，往后插数据的代码，
+				就是下面这两句，
+				非常的重要！
+				pre 我们理解为链表当前最后面的数据，
+				next就是我们要插入的数据
+			   然后，pre = pre->next;
+			   这样pre就又可以代表最后的数据了
+			   这样的话，就是需要两个ListNode变量。
+			   一个代表总的链表，也就是note
+			   一个就是代表最后的节点，也就是pre。
+			 */
+			pre->next = new ListNode(sum % 10);
+			pre = pre->next;
+			//如果l1 l2的长度不一样，这里的if的作用就显出来了
+			if (l1 != nullptr) l1 = l1->next;
+			if (l2 != nullptr) l2 = l2->next;
+		}
+		if (jinwei > 0)
+		{
+			pre->next = new ListNode(jinwei);
+		}
+
+		return note->next;
+	}
 };
 
 
@@ -2443,10 +2495,10 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 	Solution a;
-	Solution::ListNode lb(1);
-	Solution::ListNode lb1(2);
-	Solution::ListNode lb2(2);
-	Solution::ListNode lb3(2);
+	Solution::ListNode lb(2);
+	Solution::ListNode lb1(4);
+	Solution::ListNode lb2(5);
+	Solution::ListNode lb3(6);
 
 	lb.next=&lb1;
 	lb2.next=&lb3;
