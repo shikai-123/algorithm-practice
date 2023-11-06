@@ -2312,7 +2312,7 @@ public:
 		int val;
 		ListNode *next;
 		ListNode(int x) : val(x), next(NULL) {}
-		
+		ListNode(int x, ListNode *next) : val(x), next(next) {}
 	};
 
 
@@ -2374,6 +2374,53 @@ public:
 		return false;
 	}
 
+	ListNode* insertData(ListNode* head, int data) {
+		ListNode* newNode = new ListNode(data); // 创建新节点
+
+		if (head == NULL) {
+			head = newNode; // 如果链表为空，新节点成为头节点
+		}
+		else {
+			ListNode* curr = head;
+
+			while (curr->next != NULL) {
+				curr = curr->next; // 遍历链表找到最后一个节点
+			}
+
+			curr->next = newNode; // 将新节点插入到链表末尾
+		}
+
+		return head; // 返回更新后的头节点
+	}
+
+	/*
+	2. 两数相加
+		转成数字不行，有的数特别大，小点的数我这个代码没问题。
+	*/
+	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+		unsigned long long l = 0, r=0, sum=0;
+		int exponent = 0;//指数
+		ListNode* ret =nullptr;
+		while (l1!= nullptr)
+		{
+			l += l1->val*pow(10, exponent++);
+			l1 = l1->next;
+		}
+		exponent = 0;
+		while (l2!= nullptr)
+		{
+			r += l2->val*pow(10, exponent++);
+			l2 = l2->next;
+		}
+		sum = r + l;
+		string sumStr = to_string(sum);
+		for (int i = sumStr.size() - 1; i >= 0; i--)
+		{
+ 			ret = insertData(ret, stoi(string(1,sumStr[i])));
+		}
+		return ret;
+	}
+
 };
 
 
@@ -2396,16 +2443,14 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 	Solution a;
-	Solution::ListNode lb(3);
+	Solution::ListNode lb(1);
 	Solution::ListNode lb1(2);
-	Solution::ListNode lb2(0);
-	Solution::ListNode lb3(-4);
-/*
+	Solution::ListNode lb2(2);
+	Solution::ListNode lb3(2);
+
 	lb.next=&lb1;
-	lb1.next=&lb2;
 	lb2.next=&lb3;
-	lb3.next=&lb2;
-*/
+
 	/*vector<vector<int>> retStr = a.merge(board);
 
 	for (auto i : retStr)
@@ -2421,7 +2466,7 @@ int main()
 	{
 		std::cout << retStr[i] << endl;
 	}*/
-	std::cout << a.hasCycle(&lb) << endl;
+	std::cout << a.addTwoNumbers(&lb,&lb2) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
