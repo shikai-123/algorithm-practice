@@ -2443,9 +2443,7 @@ public:
 		{
 			int l = l1 != nullptr ? l1->val: 0;
 			int r = l2 != nullptr ? l2->val: 0;
-			sum = 0;
 			sum = l + r+jinwei;
-			jinwei = 0;
 			jinwei = sum / 10;
 
 			/*
