@@ -2308,6 +2308,71 @@ public:
 
 		return ret;
 	}
+	struct ListNode {
+		int val;
+		ListNode *next;
+		ListNode(int x) : val(x), next(NULL) {}
+		
+	};
+
+
+	/*
+	141. 环形链表
+		哈希表方法
+		核心在于要把节点指针放进去，因为有可能出现节点数据val相同，但是数据指针不会相同的。
+		如果发现了重复的指针，那么就是同一个节点，
+		说明该链表出现了环。
+	*/
+	bool hasCycle1(ListNode *head) {
+		unordered_set<ListNode *> p;
+		while (head!=nullptr)
+		{
+			if (p.find(head)==p.end())
+			{
+				p.insert(head);
+			}
+			else
+			{
+				return true;
+			}
+			head = head->next;
+		}
+
+		if (p.size()==1)
+		{
+			return false;
+		}
+		return false;
+	}
+	/*
+	141. 环形链表
+	思路：
+		双指针	
+		思路也很简单，主要是熟悉一下双指针用法。
+		性能和我上面差不多
+		一个快的，一个慢的。所谓快慢就是在一个循环中，快的走两个next慢的走一个next
+		如果有环，快的慢的，早晚会遇上
+	参考：
+		https://leetcode.cn/problems/linked-list-cycle/solutions/175734/yi-wen-gao-ding-chang-jian-de-lian-biao-wen-ti-h-2/?envType=study-plan-v2&envId=top-interview-150
+	*/
+	bool hasCycle(ListNode *head) {
+		ListNode *fast = head, *low = head;
+		//链表有环的话，他的节点中，就不会有nullptr，如果出现了nullptr，就说明链表没有环
+		while (low != nullptr&&fast != nullptr&& low->next!= nullptr&&fast->next!= nullptr)
+		{
+			fast = fast->next;
+			if (fast->next != nullptr)
+			{
+				fast = fast->next;
+			}
+			if (fast == low)
+			{
+				return true;
+			}
+			low = low->next;
+		}
+		return false;
+	}
 
 };
 
@@ -2331,7 +2396,16 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 	Solution a;
-
+	Solution::ListNode lb(3);
+	Solution::ListNode lb1(2);
+	Solution::ListNode lb2(0);
+	Solution::ListNode lb3(-4);
+/*
+	lb.next=&lb1;
+	lb1.next=&lb2;
+	lb2.next=&lb3;
+	lb3.next=&lb2;
+*/
 	/*vector<vector<int>> retStr = a.merge(board);
 
 	for (auto i : retStr)
@@ -2347,7 +2421,7 @@ int main()
 	{
 		std::cout << retStr[i] << endl;
 	}*/
-	std::cout << a.calculate(str) << endl;
+	std::cout << a.hasCycle(&lb) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
