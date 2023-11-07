@@ -2325,9 +2325,9 @@ public:
 	*/
 	bool hasCycle1(ListNode *head) {
 		unordered_set<ListNode *> p;
-		while (head!=nullptr)
+		while (head != nullptr)
 		{
-			if (p.find(head)==p.end())
+			if (p.find(head) == p.end())
 			{
 				p.insert(head);
 			}
@@ -2338,7 +2338,7 @@ public:
 			head = head->next;
 		}
 
-		if (p.size()==1)
+		if (p.size() == 1)
 		{
 			return false;
 		}
@@ -2347,7 +2347,7 @@ public:
 	/*
 	141. 环形链表
 	思路：
-		双指针	
+		双指针
 		思路也很简单，主要是熟悉一下双指针用法。
 		性能和我上面差不多
 		一个快的，一个慢的。所谓快慢就是在一个循环中，快的走两个next慢的走一个next
@@ -2358,7 +2358,7 @@ public:
 	bool hasCycle(ListNode *head) {
 		ListNode *fast = head, *low = head;
 		//链表有环的话，他的节点中，就不会有nullptr，如果出现了nullptr，就说明链表没有环
-		while (low != nullptr&&fast != nullptr&& low->next!= nullptr&&fast->next!= nullptr)
+		while (low != nullptr&&fast != nullptr&& low->next != nullptr&&fast->next != nullptr)
 		{
 			fast = fast->next;
 			if (fast->next != nullptr)
@@ -2398,16 +2398,16 @@ public:
 		转成数字不行，有的数特别大，小点的数我这个代码没问题。
 	*/
 	ListNode* addTwoNumbers1(ListNode* l1, ListNode* l2) {
-		unsigned long long l = 0, r=0, sum=0;
+		unsigned long long l = 0, r = 0, sum = 0;
 		int exponent = 0;//指数
-		ListNode* ret =nullptr;
-		while (l1!= nullptr)
+		ListNode* ret = nullptr;
+		while (l1 != nullptr)
 		{
 			l += l1->val*pow(10, exponent++);
 			l1 = l1->next;
 		}
 		exponent = 0;
-		while (l2!= nullptr)
+		while (l2 != nullptr)
 		{
 			r += l2->val*pow(10, exponent++);
 			l2 = l2->next;
@@ -2416,7 +2416,7 @@ public:
 		string sumStr = to_string(sum);
 		for (int i = sumStr.size() - 1; i >= 0; i--)
 		{
- 			ret = insertData(ret, stoi(string(1,sumStr[i])));
+			ret = insertData(ret, stoi(string(1, sumStr[i])));
 		}
 		return ret;
 	}
@@ -2439,11 +2439,11 @@ public:
 		int jinwei = 0;
 		int sum = 0;
 
-		while (l1 != nullptr|| l2 != nullptr)
+		while (l1 != nullptr || l2 != nullptr)
 		{
-			int l = l1 != nullptr ? l1->val: 0;
-			int r = l2 != nullptr ? l2->val: 0;
-			sum = l + r+jinwei;
+			int l = l1 != nullptr ? l1->val : 0;
+			int r = l2 != nullptr ? l2->val : 0;
+			sum = l + r + jinwei;
 			jinwei = sum / 10;
 
 			/*
@@ -2471,8 +2471,145 @@ public:
 
 		return note->next;
 	}
-};
 
+
+
+	/*
+	21. 合并两个有序链表
+	我自己的方法，性能差点，思路还行，代码麻烦点
+	*/
+	ListNode* mergeTwoLists1(ListNode* list1, ListNode* list2) {
+
+		ListNode *note = new ListNode(0);
+		ListNode *end = note;
+
+		while (list1 != nullptr || list2 != nullptr)
+		{
+
+			int t = list1 != nullptr ? list1->val : 0;
+			int l = list2 != nullptr ? list2->val : 0;
+
+			if (t > l&&list2 != nullptr)
+			{
+				end->next = new ListNode(l);
+				end = end->next;
+				if (list2 != nullptr) list2 = list2->next;
+
+			}
+			else if (l > t&&list1 != nullptr)
+			{
+				end->next = new ListNode(t);
+				end = end->next;
+				if (list1 != nullptr) list1 = list1->next;
+			}
+			else
+			{
+
+				if (list1 != nullptr)
+				{
+					end->next = new ListNode(t);
+					end = end->next;
+					list1 = list1->next;
+				}
+				if (list2 != nullptr)
+				{
+					end->next = new ListNode(l);
+					end = end->next;
+					list2 = list2->next;
+				}
+
+			}
+		}
+		return note->next;
+	}
+
+
+	/*
+	21. 合并两个有序链表
+	参考：
+	https://leetcode.cn/problems/merge-two-sorted-lists/solutions/227293/merge-two-sorted-lists-by-ikaruga/comments/2128427
+	思路：
+		思路也是比较简单；
+		先创建一个链表，然后比较两个已有的链表，
+		谁的数值小，就把谁的节点接在后面，
+		直到把其中的一个接完。
+		因为每次都是只接一个，所以必然存在有一个先接完，有一个还没接完。
+		所以任意一个接完了，都退出while。
+		因为给的两个链表都是递增链表。
+		所以没接完的一定比现在的数都大。
+		所以直接接在后面就行
+	*/
+	ListNode* mergeTwoLists2(ListNode* list1, ListNode* list2) {
+
+		auto dummy = new ListNode(0);
+		auto cur = dummy;
+		while (list1 && list2) {
+			auto pp = (list1->val < list2->val) ? &list1 : &list2;  // 获取俩链表当前值小的结点
+			cur->next = *pp;    // cur 指向值小的结点
+			cur = cur->next;    // cur 后移
+			*pp = (*pp)->next;  // *pp 也要后移，不然下次循环比较的还是旧的list1或list2结点
+		}
+		// 循环结束，list1 和 list2 其中有一个为空，但不知道是哪个
+		cur->next = (list1) ? list1 : list2;
+
+		return dummy->next;
+	}
+
+
+
+
+
+
+
+
+
+
+	ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+		ListNode* note = new ListNode(0);
+		ListNode* end = note;
+		while (list1 != nullptr && list2 != nullptr)
+		{
+			/*
+			那个节点的数值小，就用谁的节点。
+			这里取指针的原因有两个。
+			1、用二级指针，来统一管理list1，list2，这两个变量。
+				这样做的好处，下面的代码中，不用在特意对list1和list2做两个判断来分别做处理。
+				直接用指针代替他俩，一处代码就能解决。
+			2、如果不用二级指针的话；
+				假设用一级指针的：
+				ListNode * cur = list1;
+				后面的代码
+				cur = (*cur)->next;
+				只能改变cur，而不能改变list1或者是list2。
+				指针的核心就是：
+				给变量去另外一个名字，然后去管理他。
+				ListNode * cur = list1;
+				cur=xx; 这种就是单纯的赋值，不会改变list1对应变量的值。
+
+				但是如果用二级指针的话。
+				ListNode ** cur = &list1;
+				*cur = xx;就是改变list1的值。
+
+			*/
+			ListNode **cur = list1->val < list2->val ? &list1 : &list2;
+			/*把符合条件的节点，接到后面*/
+			end->next = *cur;
+			end = end->next;
+			/*然后，把谁接了，就完后移动节点
+			!这里要注意优先级的问题；
+			优先级依次是：
+			（） -》 *
+			如果是这种*cur = *(cur)->next;
+			就是先访问(cur)->next。这种就是错误的。
+			*/
+			*cur = (*cur)->next;
+		}
+		end->next = list1 == nullptr ? list2 : list1;
+		return note->next;
+	}
+
+
+};
 
 
 void test()
@@ -2493,13 +2630,13 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 	Solution a;
-	Solution::ListNode lb(2);
-	Solution::ListNode lb1(4);
-	Solution::ListNode lb2(5);
+	Solution::ListNode lb(1);
+	Solution::ListNode lb1(5);
+	Solution::ListNode lb2(2);
 	Solution::ListNode lb3(6);
 
-	lb.next=&lb1;
-	lb2.next=&lb3;
+	lb.next = &lb1;
+	lb2.next = &lb3;
 
 	/*vector<vector<int>> retStr = a.merge(board);
 
@@ -2516,7 +2653,7 @@ int main()
 	{
 		std::cout << retStr[i] << endl;
 	}*/
-	std::cout << a.addTwoNumbers(&lb,&lb2) << endl;
+	std::cout << a.mergeTwoLists(&lb, &lb2) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
