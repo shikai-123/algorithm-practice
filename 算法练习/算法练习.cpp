@@ -2609,6 +2609,66 @@ public:
 	}
 
 
+	class Node {
+	public:
+		int val;
+		Node* next;
+		Node* random;
+
+		Node(int _val) {
+			val = _val;
+			next = NULL;
+			random = NULL;
+		}
+	};
+
+
+	/*
+	138. 随机链表的复制
+	思路：
+		这个题目，难度有2，一是理解题目，二是链表中的“random”指针的指向
+		1、如果是空空链表，就返回空的
+		2、构建无序map，然后用链表节点的指针做key，表节点的指针做key.
+		这么做的原因1是方便找到链表，2是找链表的下一个节点的时候也好弄，
+		把这个map按照链表的顺序加满。
+		这样的话，可以直接用链表的节点的指针地址，直接访问对应的链表节点。
+
+		3、通过链表节点的指针，遍历所有的map，顺便赋值。
+		通过指针，找到对应的节点数据
+		比如val就赋值同一个节点的map
+		next自然就是“下一个节点地址”，而下个节点的地址自然就是以下个节点地址为key的map；
+		同理，random也是同样的道理。
+
+		4、最后返回的就是map的“map[head]”
+
+	参考：
+		https://leetcode.cn/problems/copy-list-with-random-pointer/solutions/2361362/138-fu-zhi-dai-sui-ji-zhi-zhen-de-lian-b-6jeo/?envType=study-plan-v2&envId=top-interview-150
+		中的哈希表的方法
+	*/
+	Node* copyRandomList(Node* head) {
+		if (head == nullptr)
+		{
+			return head;
+		}
+		unordered_map<Node*, Node*>map;
+		Node* cur = head;
+		Node* ret = nullptr;
+		while (cur != nullptr)
+		{
+			map[cur] = new Node(0);
+			cur = cur->next;
+		}
+		cur = head;
+		while (cur != nullptr)
+		{
+			map[cur]->val = cur->val;
+			map[cur]->next = map[cur->next];
+			map[cur]->random = map[cur->random];
+			cur = cur->next;
+		}
+		return map[head];
+
+	}
 };
 
 
