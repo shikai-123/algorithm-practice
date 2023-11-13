@@ -2311,6 +2311,7 @@ public:
 	struct ListNode {
 		int val;
 		ListNode *next;
+		ListNode() : val(0), next(nullptr) {}
 		ListNode(int x) : val(x), next(NULL) {}
 		ListNode(int x, ListNode *next) : val(x), next(next) {}
 	};
@@ -2555,15 +2556,6 @@ public:
 		return dummy->next;
 	}
 
-
-
-
-
-
-
-
-
-
 	ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
 		ListNode* note = new ListNode(0);
 		ListNode* end = note;
@@ -2669,6 +2661,111 @@ public:
 		return map[head];
 
 	}
+
+	/*
+	92. 反转链表 II——没做出来，题解没看懂。。
+	
+	思路：
+		遍历这个链表。
+		然后主要是在left和right中间的，就按照顺序放在stack容器中。
+		然后再遍历这个链表。把数据放到新链表中，
+		在left和right中间的数据，就去遍历stack中的数据，然后放到新的链表中。
+		同时，原始的链表也要不断的往后走。
+		什么时候，新的元素也不在left和right中间，就开始继续接元素。
+
+
+	参考：
+	这个用递归的方法，没看懂。后期再看看
+	https://leetcode.cn/problems/reverse-linked-list-ii/solutions/37247/bu-bu-chai-jie-ru-he-di-gui-di-fan-zhuan-lian-biao/?envType=study-plan-v2&envId=top-interview-150
+
+	*/
+	ListNode* reverseBetween(ListNode* head, int left, int right) {
+		stack<ListNode*> stk;
+		int index = 1;
+		ListNode* Lhead = head;
+		
+		ListNode* note = new ListNode(0);
+		ListNode* end = note;
+
+
+
+		while (head!= nullptr)
+		{
+			if (left <= index && index <= right)
+			{
+				stk.push(head);
+			}
+			index++;
+			head = head->next;
+		}
+		head = Lhead;
+		index = 1;
+
+
+ 		while (head != nullptr)
+		{
+			if (left <= index && index <= right)
+			{
+				while (!stk.empty())
+				{
+					/*
+					！有问题在于stk.top()返回的不是一个点，而是返回的是这个点以及之后到尾巴的链表。
+					*/
+					end->next = stk.top();
+					end = end->next;
+					stk.pop();
+
+					index++;
+					head = head->next;
+				}
+			}
+			end->next = head;
+			end = end->next;
+
+			index++;
+			head = head->next;
+		}
+
+		return note->next;
+	}
+
+
+	/*
+	19. 删除链表的倒数第 N 个结点
+	参考：
+		https://leetcode.cn/problems/remove-nth-node-from-end-of-list/?envType=study-plan-v2&envId=top-interview-150
+	思路：
+		双指针，这样就能遍历一遍的时候，直接拿到要删除节点的对应位置。
+		1、增加虚拟头结点。
+			这么做的好处是方便删除头节点；具体参考：https://mp.weixin.qq.com/s/L5aanfALdLEwVWGvyXPDqA
+		2、定义双指针，fast和low。
+			fast先走n+1。这样的目的是为了让low落在要删除的点的前面，这样的话，才能走链表删除的统一逻辑——要删除的节点，p->next=p->next->next;p是要被删除的节点前一个节点
+		3、然后移动双指针，知道fast到了最后的位置。
+		4、然后low->next=low->next->next删除对应的点
+		5、返回dummy->nest;
+	*/
+	ListNode* removeNthFromEnd(ListNode* head, int n) {
+    ListNode* dummy = new ListNode(0);
+    dummy->next = head;
+    ListNode* fast = dummy, *slow = dummy;
+
+    // 让fast指针先走n+1步
+    for (int i = 0; i <= n; i++) {
+        fast = fast->next;
+    }
+
+    // 当fast指针到达末尾时，slow指针就指向了要删除节点的前一个节点
+    while (fast != nullptr) {
+        fast = fast->next;
+        slow = slow->next;
+    }
+	//https://leetcode.cn/problems/remove-nth-node-from-end-of-list/solutions/655411/dai-ma-sui-xiang-lu-19-shan-chu-lian-bia-2hxt/comments/2172664
+	//delete low->next;//!!!!!!!!访问到这句就奔溃！！！
+    slow->next = slow->next->next;
+	return dummy->next;
+}
+
+
 };
 
 
@@ -2691,12 +2788,24 @@ int main()
 	vector<int> newInterval{ 0,0 };
 	Solution a;
 	Solution::ListNode lb(1);
-	Solution::ListNode lb1(5);
-	Solution::ListNode lb2(2);
-	Solution::ListNode lb3(6);
+	Solution::ListNode lb1(2);
+	Solution::ListNode lb2(3);
+	Solution::ListNode lb3(4);
+	Solution::ListNode lb4(5);
+
+	Solution::ListNode* head = &lb;
 
 	lb.next = &lb1;
+	lb1.next = &lb2;
 	lb2.next = &lb3;
+	lb3.next = &lb4;
+	a.removeNthFromEnd(&lb, 2);
+	while (head != nullptr)
+	{
+		cout << head->val << endl;
+		head = head->next;
+	}
+	
 
 	/*vector<vector<int>> retStr = a.merge(board);
 
@@ -2713,7 +2822,6 @@ int main()
 	{
 		std::cout << retStr[i] << endl;
 	}*/
-	std::cout << a.mergeTwoLists(&lb, &lb2) << endl;
 	//std::cout << a.trap(nums) << endl;
 	//std::cout << a.isSubsequence("b", "abc") << endl;
 	//std::cout << a.hIndex(nums) << endl;
