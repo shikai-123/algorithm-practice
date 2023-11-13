@@ -2664,7 +2664,7 @@ public:
 
 	/*
 	92. 反转链表 II——没做出来，题解没看懂。。
-	
+
 	思路：
 		遍历这个链表。
 		然后主要是在left和right中间的，就按照顺序放在stack容器中。
@@ -2683,13 +2683,13 @@ public:
 		stack<ListNode*> stk;
 		int index = 1;
 		ListNode* Lhead = head;
-		
+
 		ListNode* note = new ListNode(0);
 		ListNode* end = note;
 
 
 
-		while (head!= nullptr)
+		while (head != nullptr)
 		{
 			if (left <= index && index <= right)
 			{
@@ -2702,7 +2702,7 @@ public:
 		index = 1;
 
 
- 		while (head != nullptr)
+		while (head != nullptr)
 		{
 			if (left <= index && index <= right)
 			{
@@ -2745,25 +2745,25 @@ public:
 		5、返回dummy->nest;
 	*/
 	ListNode* removeNthFromEnd(ListNode* head, int n) {
-    ListNode* dummy = new ListNode(0);
-    dummy->next = head;
-    ListNode* fast = dummy, *slow = dummy;
+		ListNode* dummy = new ListNode(0);
+		dummy->next = head;
+		ListNode* fast = dummy, *slow = dummy;
 
-    // 让fast指针先走n+1步
-    for (int i = 0; i <= n; i++) {
-        fast = fast->next;
-    }
+		// 让fast指针先走n+1步
+		for (int i = 0; i <= n; i++) {
+			fast = fast->next;
+		}
 
-    // 当fast指针到达末尾时，slow指针就指向了要删除节点的前一个节点
-    while (fast != nullptr) {
-        fast = fast->next;
-        slow = slow->next;
-    }
-	//https://leetcode.cn/problems/remove-nth-node-from-end-of-list/solutions/655411/dai-ma-sui-xiang-lu-19-shan-chu-lian-bia-2hxt/comments/2172664
-	//delete low->next;//!!!!!!!!访问到这句就奔溃！！！
-    slow->next = slow->next->next;
-	return dummy->next;
-}
+		// 当fast指针到达末尾时，slow指针就指向了要删除节点的前一个节点
+		while (fast != nullptr) {
+			fast = fast->next;
+			slow = slow->next;
+		}
+		//https://leetcode.cn/problems/remove-nth-node-from-end-of-list/solutions/655411/dai-ma-sui-xiang-lu-19-shan-chu-lian-bia-2hxt/comments/2172664
+		//delete low->next;//!!!!!!!!访问到这句就奔溃！！！
+		slow->next = slow->next->next;
+		return dummy->next;
+	}
 
 
 };
@@ -2805,7 +2805,7 @@ int main()
 		cout << head->val << endl;
 		head = head->next;
 	}
-	
+
 
 	/*vector<vector<int>> retStr = a.merge(board);
 
