@@ -2766,6 +2766,125 @@ public:
 	}
 
 
+
+	/*
+	82. 删除排序链表中的重复元素 II
+	思路：
+		为了方便删除头结点，要加一个虚拟头结点。
+	参考：
+		https://leetcode.cn/problems/remove-duplicates-from-sorted-list-ii/solutions/678600/tong-yong-shan-chu-zhong-fu-jie-dian-lia-od9g/?envType=study-plan-v2&envId=top-interview-150
+
+		核心就是2部分，看下面的注释即可
+	*/
+
+	ListNode* deleteDuplicates1(ListNode* head)
+	{
+		ListNode* dummy = new ListNode(-200), *tail = dummy;//tail接上了dummy
+		while (head)
+		{
+			if (head->next == nullptr or head->val != head->next->val)
+			{
+				//tail接上了head。
+				tail->next = head;
+				tail = head;
+			}
+			while (head->next and head->val == head->next->val)
+			{
+				/*
+					每次执行这个代码的时候，head的位置都会往后移动一下。
+					这样在内存里看的话，haed之前的部分就被删除。
+					删除的原因是因为：
+					head = head->next;导致head的内存地址被更新成新的！
+					然后head之前点的next就失效了。
+					有效的也就只有head以及他之后的这部分链表了。
+
+					可以根据这个特性来做删除。
+
+					一般我们常说的删除就是：跳过这个点。
+					p->next = p->next->next;
+
+					总结的话，要是想在head上删除
+					前面的点：用head=head->next;
+					后面的点：用p->next = p->next->next;
+				*/
+				head = head->next;
+			}
+			head = head->next;
+		}
+		/*
+			每次尾巴的下一个都要清零
+			清零的原因是：
+			1、dummy和tail配合，通过尾插法构建了一个新的链表，但是毕竟tail通过“tail->next = head;”接上了haed整个链表。
+			按道理来说，每接一个都要对dummy尾巴的next设置nullptr，也就是“tail->next = nullptr;”
+			这样就能保证dummy中包含的链表只有新插入的部分。而去掉head部分。
+			“tail->next = head;”
+		*/
+		tail->next = nullptr;
+		return dummy->next;
+	}
+
+
+	ListNode* deleteDuplicates2(ListNode* head)
+	{
+		ListNode* dummy = new ListNode(-200), *tail = dummy;//tail接上了dummy
+		while (head)
+		{
+			if (head->next == nullptr or head->val != head->next->val)
+			{
+				tail->next = new ListNode(head->val);
+				tail = tail->next;
+			}
+			while (head->next and head->val == head->next->val)
+			{
+				head = head->next;
+			}
+			head = head->next;
+		}
+		/*
+			tail->next = new ListNode(head->val);
+			tail = tail->next;
+			如果尾巴往后面的接法是新建的节点，那么tail后面自然就是null（看构造函数）
+			就完全不用管后面了。下面这句“tail->next = nullptr;”就不用做了
+			唯一的不好就是空间复杂度差点。
+		*/
+		//tail->next = nullptr;
+		return dummy->next;
+	}
+
+	/*
+		我自己写的
+	*/
+	ListNode* deleteDuplicates(ListNode* head)
+	{
+		ListNode* dummy = new ListNode(0);
+		ListNode* end = dummy;
+
+		while (head != nullptr)
+		{
+			/*
+				加“head->next==nullptr”，是为了保证能把原始链表中的最后一个元素加上
+				head 已经没有下一个节点，head 可以被插入
+				head 有一下个节点，但是值与 head 不相同，head 可以被插入
+			*/
+			if (head->next == nullptr or head->val != head->next->val)
+			{
+				end->next = new ListNode(head->val);
+				end = end->next;
+			}
+			/*
+				加这个“head->next!=nullptr”是为了保证当原始链表中最后两个是相等的时候，都能抛掉
+				head有下个节点，并且下个节点的值和当前的值是相同的，可以把当前删除。
+			*/
+			while (head->next != nullptr and  head->val == head->next->val)
+			{
+				head = head->next;
+			}
+			head = head->next;
+		}
+		return dummy->next;
+	}
+
+
 };
 
 
@@ -2789,21 +2908,26 @@ int main()
 	Solution a;
 	Solution::ListNode lb(1);
 	Solution::ListNode lb1(2);
-	Solution::ListNode lb2(3);
-	Solution::ListNode lb3(4);
-	Solution::ListNode lb4(5);
+	Solution::ListNode lb2(2);
+	Solution::ListNode lb3(3);
+	Solution::ListNode lb4(4);
+	Solution::ListNode lb5(4);
+	Solution::ListNode lb6(5);
 
 	Solution::ListNode* head = &lb;
+	Solution::ListNode* ret;
 
 	lb.next = &lb1;
 	lb1.next = &lb2;
 	lb2.next = &lb3;
 	lb3.next = &lb4;
-	a.removeNthFromEnd(&lb, 2);
-	while (head != nullptr)
+	lb4.next = &lb5;
+	lb5.next = &lb6;
+	ret = a.deleteDuplicates(&lb);
+	while (ret != nullptr)
 	{
-		cout << head->val << endl;
-		head = head->next;
+		cout << ret->val << endl;
+		ret = ret->next;
 	}
 
 
