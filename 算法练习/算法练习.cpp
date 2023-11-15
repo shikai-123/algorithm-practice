@@ -2953,7 +2953,7 @@ public:
 		while (fast->next != nullptr) {
 			slow = slow->next;
 			fast = fast->next;
-		}
+		} 
 		// 保存新头结点，并将新尾结点的 next 指针置空
 		auto nHead = slow->next;//接上45
 		slow->next = nullptr;// head 只剩123
