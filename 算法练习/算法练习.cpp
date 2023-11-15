@@ -2885,6 +2885,91 @@ public:
 	}
 
 
+	/*
+	61. 旋转链表
+	思路：
+		移动范围%链表长度=实际需要移动的位置。
+		利用双指针的思想，迅速的遍历到尾部
+
+		思路是对的，但是写的代码不行。
+		说到底还是对链表掌握不行
+
+	*/
+	ListNode* rotateRight1(ListNode* head, int k) {
+		ListNode* dummy = new ListNode(0);
+		ListNode* end = dummy;
+		ListNode* oldHead = head;
+		
+		int len = 0;
+		while (head != nullptr)
+		{
+			head = head->next;
+			len++;
+		}
+		if (len == 0) return dummy->next;
+		if (k == 0) return oldHead;
+		len = k % len;
+		head = oldHead;
+		ListNode* fast = head;
+		ListNode* slow = head;
+
+		while (len-- > 0)
+		{
+			fast = fast->next;
+		}
+
+
+		while (fast->next != nullptr)
+		{
+			fast = fast->next;
+			slow = slow->next;
+
+			end->next = fast;
+			end = end->next;//dummy接45
+		}
+		(*slow).next = nullptr;//head只剩123
+		while (head != nullptr)
+		{
+			end->next = head;
+			end = end->next;//dummy接123
+			head = head->next;
+		}
+		return dummy->next;
+	}
+
+
+	ListNode* rotateRight(ListNode* head, int k) 
+	{
+		if (head == nullptr || k == 0) return head;
+		// 计算有效的 k 值：对于与链表长度成整数倍的「旋转」都是没有意义的（旋转前后链表不变）
+		int tot = 0;
+		auto tmp = head;
+		while (tmp != nullptr && ++tot > 0) tmp = tmp->next;
+		k %= tot;
+		if (k == 0) return head;
+		//以上和我的思路 都一样的
+		auto slow = head, fast = head;
+		while (k-- > 0) fast = fast->next;
+		while (fast->next != nullptr) {
+			slow = slow->next;
+			fast = fast->next;
+		}
+		// 保存新头结点，并将新尾结点的 next 指针置空
+		auto nHead = slow->next;//接上45
+		slow->next = nullptr;// head 只剩123
+		// 将新链表的前半部分（原链表的后半部分）与原链表的头结点链接上
+		fast->next = head;
+		return nHead;
+	}
+
+	/*
+	86. 分隔链表	
+
+	*/
+	ListNode* partition(ListNode* head, int x) {
+
+	}
+
 };
 
 
@@ -2908,9 +2993,9 @@ int main()
 	Solution a;
 	Solution::ListNode lb(1);
 	Solution::ListNode lb1(2);
-	Solution::ListNode lb2(2);
-	Solution::ListNode lb3(3);
-	Solution::ListNode lb4(4);
+	Solution::ListNode lb2(3);
+	Solution::ListNode lb3(4);
+	Solution::ListNode lb4(5);
 	Solution::ListNode lb5(4);
 	Solution::ListNode lb6(5);
 
@@ -2920,10 +3005,10 @@ int main()
 	lb.next = &lb1;
 	lb1.next = &lb2;
 	lb2.next = &lb3;
-	lb3.next = &lb4;
+	lb3.next = &lb4;/*
 	lb4.next = &lb5;
-	lb5.next = &lb6;
-	ret = a.deleteDuplicates(&lb);
+	lb5.next = &lb6;*/
+	ret = a.rotateRight(&lb, 2);
 	while (ret != nullptr)
 	{
 		cout << ret->val << endl;
