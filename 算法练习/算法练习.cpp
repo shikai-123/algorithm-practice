@@ -2970,6 +2970,11 @@ public:
 		没有的话，就直接返回大于x的链表
 		这样就能包括所有的情况，小于x的要不有要不没有，有的话就加上，没有就返回其他的
 		性能不错，空间复杂度差点
+
+		后来根据人家的有优化了。
+	参考：
+		https://leetcode.cn/problems/partition-list/solutions/2362068/86-fen-ge-lian-biao-shuang-zhi-zhen-qing-hha7/?envType=study-plan-v2&envId=top-interview-150
+		他这也是双指针，但是和只有双指针的名字，毕竟用了两个指针
 	*/
 	ListNode* partition(ListNode* head, int x) {
 		if (head == nullptr ) return head;
@@ -2984,31 +2989,39 @@ public:
 		{
 			if (head->val<x)
 			{
-				end->next = new ListNode(head->val);
+				//end->next = new ListNode(head->val);
+				end->next = head;
 				end = end->next;
+				//end->next = nullptr;//！加这个想着省newEnd->next = nullptr;，但是不行，因为这样会导致head后面链表断开。
 			}
 			else
 			{
-				newEnd->next =  new ListNode(head->val);;
+				//newEnd->next =  new ListNode(head->val);;
+				newEnd->next = head;
 				newEnd = newEnd->next;
 			}
 			head = head->next;
 		}
-		if (dummy->next != nullptr)
-		{
-			ListNode* newDummy = dummy->next;
-			while (newDummy->next != nullptr)
-			{
-				newDummy = newDummy->next;
-			}
-			//以上拿到dummy最尾巴的指针
-			newDummy->next = newHead->next;
-			return dummy->next;
-		}
-		else
-		{
-			return newHead->next;
-		}
+		//优化了一下。这个end->next就是dummy最尾巴的指针。把这个忘记了。不知道为啥时间复杂度一直到不了0.下面多个while还能到0
+		newEnd->next = nullptr;//如果不用了new了，那么每个节点都会跟着后面的节点，这样的话，有肯能会回环。比如 4321 k=4
+		end->next = newHead->next;
+		return dummy->next;
+
+		//if (dummy->next != nullptr)
+		//{
+		//	ListNode* newDummy = dummy->next;
+		//	while (newDummy->next != nullptr)
+		//	{
+		//		newDummy = newDummy->next;
+		//	}
+		//	//以上拿到dummy最尾巴的指针
+		//	newDummy->next = newHead->next;
+		//	return dummy->next;
+		//}
+		//else
+		//{
+		//	return newHead->next;
+		//}
 	}
 
 };
@@ -3043,13 +3056,13 @@ int main()
 	Solution::ListNode* head = &lb;
 	Solution::ListNode* ret;
 
-	/*lb.next = &lb1;
+	lb.next = &lb1;
 	lb1.next = &lb2;
 	lb2.next = &lb3;
 	lb3.next = &lb4;
-	lb4.next = &lb5;
+	/*lb4.next = &lb5;
 	lb5.next = &lb6;*/
-	ret = a.partition(&lb,1);
+	ret = a.partition(&lb,3);
 	while (ret != nullptr)
 	{
 		cout << ret->val << endl;
