@@ -2964,10 +2964,51 @@ public:
 
 	/*
 	86. 分隔链表	
-
+	思路：
+		遍历链表，和x比较，然后放到不同的链表中。
+		如果存在小于x的链表，就把小于x的链表的指针移动到最后，然后接上大于x的链表即可
+		没有的话，就直接返回大于x的链表
+		这样就能包括所有的情况，小于x的要不有要不没有，有的话就加上，没有就返回其他的
+		性能不错，空间复杂度差点
 	*/
 	ListNode* partition(ListNode* head, int x) {
+		if (head == nullptr ) return head;
 
+		ListNode* dummy = new ListNode(0);//存储小于x的链表
+		ListNode* end = dummy;
+		ListNode* newHead = new ListNode(0);//存储大于等于x的链表
+		ListNode* newEnd = newHead;
+
+
+		while (head!= nullptr)
+		{
+			if (head->val<x)
+			{
+				end->next = new ListNode(head->val);
+				end = end->next;
+			}
+			else
+			{
+				newEnd->next =  new ListNode(head->val);;
+				newEnd = newEnd->next;
+			}
+			head = head->next;
+		}
+		if (dummy->next != nullptr)
+		{
+			ListNode* newDummy = dummy->next;
+			while (newDummy->next != nullptr)
+			{
+				newDummy = newDummy->next;
+			}
+			//以上拿到dummy最尾巴的指针
+			newDummy->next = newHead->next;
+			return dummy->next;
+		}
+		else
+		{
+			return newHead->next;
+		}
 	}
 
 };
@@ -2992,23 +3033,23 @@ int main()
 	vector<int> newInterval{ 0,0 };
 	Solution a;
 	Solution::ListNode lb(1);
-	Solution::ListNode lb1(2);
+	Solution::ListNode lb1(4);
 	Solution::ListNode lb2(3);
-	Solution::ListNode lb3(4);
+	Solution::ListNode lb3(2);
 	Solution::ListNode lb4(5);
-	Solution::ListNode lb5(4);
+	Solution::ListNode lb5(2);
 	Solution::ListNode lb6(5);
 
 	Solution::ListNode* head = &lb;
 	Solution::ListNode* ret;
 
-	lb.next = &lb1;
+	/*lb.next = &lb1;
 	lb1.next = &lb2;
 	lb2.next = &lb3;
-	lb3.next = &lb4;/*
+	lb3.next = &lb4;
 	lb4.next = &lb5;
 	lb5.next = &lb6;*/
-	ret = a.rotateRight(&lb, 2);
+	ret = a.partition(&lb,1);
 	while (ret != nullptr)
 	{
 		cout << ret->val << endl;
