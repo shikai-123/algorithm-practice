@@ -2899,7 +2899,7 @@ public:
 		ListNode* dummy = new ListNode(0);
 		ListNode* end = dummy;
 		ListNode* oldHead = head;
-		
+
 		int len = 0;
 		while (head != nullptr)
 		{
@@ -2938,7 +2938,7 @@ public:
 	}
 
 
-	ListNode* rotateRight(ListNode* head, int k) 
+	ListNode* rotateRight(ListNode* head, int k)
 	{
 		if (head == nullptr || k == 0) return head;
 		// 计算有效的 k 值：对于与链表长度成整数倍的「旋转」都是没有意义的（旋转前后链表不变）
@@ -2953,7 +2953,7 @@ public:
 		while (fast->next != nullptr) {
 			slow = slow->next;
 			fast = fast->next;
-		} 
+		}
 		// 保存新头结点，并将新尾结点的 next 指针置空
 		auto nHead = slow->next;//接上45
 		slow->next = nullptr;// head 只剩123
@@ -2963,7 +2963,7 @@ public:
 	}
 
 	/*
-	86. 分隔链表	
+	86. 分隔链表
 	思路：
 		遍历链表，和x比较，然后放到不同的链表中。
 		如果存在小于x的链表，就把小于x的链表的指针移动到最后，然后接上大于x的链表即可
@@ -2977,7 +2977,7 @@ public:
 		他这也是双指针，但是和只有双指针的名字，毕竟用了两个指针
 	*/
 	ListNode* partition(ListNode* head, int x) {
-		if (head == nullptr ) return head;
+		if (head == nullptr) return head;
 
 		ListNode* dummy = new ListNode(0);//存储小于x的链表
 		ListNode* end = dummy;
@@ -2985,9 +2985,9 @@ public:
 		ListNode* newEnd = newHead;
 
 
-		while (head!= nullptr)
+		while (head != nullptr)
 		{
-			if (head->val<x)
+			if (head->val < x)
 			{
 				//end->next = new ListNode(head->val);
 				end->next = head;
@@ -3027,15 +3027,109 @@ public:
 };
 
 
+/*
+146. LRU 缓存
+	要学会用两种方法去实现。
+	一种是标准std::list
+	一种手动创建双向链表
+
+	参考：
+	思路：
+	https://leetcode.cn/problems/lru-cache/solutions/12711/lru-ce-lue-xiang-jie-he-shi-xian-by-labuladong/?envType=study-plan-v2&envId=top-interview-150
+	代码：
+	https://leetcode.cn/problems/lru-cache/solutions/12711/lru-ce-lue-xiang-jie-he-shi-xian-by-labuladong/comments/162138
+	这个代码中。链表最后的元素，是最老的元素。
+*/
+class LRUCache {
+public:
+	LRUCache(int capacity) : cap(capacity) {
+
+	}
+	int get(int key)
+	{
+		if (map.find(key) == map.end()) return -1;
+		auto key_value = *map[key];
+		cache.erase(map[key]);
+		cache.push_front(key_value);
+		map[key] = cache.begin();
+		return key_value.second;
+	}
+
+	void put(int key, int value) {
+		if (map.find(key) == map.end())
+		{
+			if (cache.size() == cap)
+			{
+				map.erase(cache.back().first);
+				cache.pop_back();
+			}
+		}
+		else
+		{
+			cache.erase(map[key]);
+		}
+		cache.push_front({ key, value });
+		map[key] = cache.begin();//hashmap对应关系也得改变?什么时候变呢？发现都是在插入新的list节点的时候，对应关系要变化。 这是自然，新的list没有对应关系，自然要对应上
+	}
+private:
+	int cap;
+	list<pair<int, int>> cache;//这是双向链表，用双向链表而不是单向链表的原因是因为为了保证删除的时间复杂度是1。
+	unordered_map<int, list<pair<int, int>>::iterator> map;
+
+	/*
+		map存在的唯一目的就是为了查找的时候，时间复杂度是1.用来弥补list查找无法做到时间复杂度是1
+		list是方便处理最新的节点。为了拿到最新得要是排序，hashmap无法排序。所以借用list。
+		所谓的排序就是找到对应的点，把他删掉，然后再接到最前面，（在本代码中代表最新的数据），从而完成了最新的数据在前面，老的数据在后面
+		list是怎么排序的？
+		利用双向list的插入和删除。时间复杂度是1
+		hashmap的插入和删除的时间复杂度是1，那为什么用list呢？
+		应为hashmap无法保证排序，拿不到“最旧”的点，所以借用list。
+		
+		说明要实现这个要求，必须得双方关联，方法就是：hashmap的key是key。value是list的迭代器。
+		hashmap的在这里存在的目的就是为了，保证找到list节点最快。既然要找list节点，那么就放她的迭代器。有了迭代器能立马访问它的对应节点。
+
+		list为什么要存key和value呢？
+		hashmap已经存了key和list的迭代器，那么list中肯定要存value。
+		那为什么要存key呢？
+		如果map要删除一个数据的话，依靠什么删除？
+		依靠的是key！
+		什么时候要删除的呢？当然是map的对应关系改变的时候？
+		什么时候，对应关系改变呢？是list发生变化的时候——删除旧的插入新的或者是排序。
+		我list改动完毕了，hashmap自然也是要改变，也就是也得有删除旧的对应关系，增加的新对应关系。
+		hashmap考什么删除的？
+		hashmap的API有两种方式，一种是给对应的迭代器，一种是给对应的key。很明显是提供key就行。
+		所以说，list要有key，然后提供给map，让他知道，
+
+		一个节点中的key，对应了list中的value，也对应了map中list的迭代器（节点地址）。
+		[key,value,noetAddr]
+
+		记忆点：lsit存key和value map存key和迭代器
+	*/
+};
+
+
+
 void test()
 {
-	vector<int>a{ 1,2,3,4 };
+	LRUCache lRUCache(2);
+	lRUCache.put(1, 1); // 缓存是 {1=1}
+	lRUCache.put(2, 2); // 缓存是 {1=1, 2=2}
+	lRUCache.get(1);    // 返回 1
+	lRUCache.put(3, 3); // 该操作会使得关键字 2 作废，缓存是 {1=1, 3=3}
+	lRUCache.get(2);    // 返回 -1 (未找到)
+	lRUCache.put(4, 4); // 该操作会使得关键字 1 作废，缓存是 {4=4, 3=3}
+	lRUCache.get(1);    // 返回 -1 (未找到)
+	lRUCache.get(3);    // 返回 3
+	lRUCache.get(4);    // 返回 4
+
+
 }
 
 int main()
 {
 
-
+	test();
+	return 0;
 	vector<int> nums{ 0,1,2,4,5,7 };
 	vector<int> num1{ };
 	vector<string> srtVec{ "2","1","+","3","*" };
@@ -3062,7 +3156,7 @@ int main()
 	lb3.next = &lb4;
 	/*lb4.next = &lb5;
 	lb5.next = &lb6;*/
-	ret = a.partition(&lb,3);
+	ret = a.partition(&lb, 3);
 	while (ret != nullptr)
 	{
 		cout << ret->val << endl;
