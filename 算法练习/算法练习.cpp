@@ -2677,14 +2677,12 @@ public:
 
 	// 反转以 head 为起点的 n 个节点，返回新的头结点
 	ListNode* reverseN(ListNode* head, int n) {
-		if (n == 1) {
-			// 记录第 n + 1 个节点
+		if (n == 1) {//n==1代表链表反转到最后一个点了。这个递归该结束了
 			successor = head->next;
 			return head;
 		}
-		// 以 head->next 为起点，需要反转前 n - 1 个节点
-		ListNode* last = reverseN(head->next, n - 1);
-
+		ListNode* last = reverseN(head->next, n - 1);//返回的依旧是反转后的头结点
+		//1->2->1
 		head->next->next = head;
 		// 让反转之后的 head 节点和后面的节点连起来
 		head->next = successor;
@@ -2705,7 +2703,7 @@ public:
 	12 43
 	*/
 	ListNode* reverseBetween(ListNode* head, int m, int n) {
-		// base case
+		//n==1代表链表反转到最后一个点了。这个递归该结束了
 		if (m == 1) {
 			return reverseN(head, n);
 		}
@@ -3058,6 +3056,35 @@ public:
 		//}
 	}
 
+
+	/*
+		25. K 个一组翻转链表
+		和92题对着看，在理解92的基础上，这个很简单。
+		思路：
+			用链表翻转中的中间点翻转
+			用while遍历，每k个开始调用函数。
+
+	*/
+	ListNode* reverseKGroup(ListNode* head, int k) {
+
+		int index = 0;
+		int b = 1;
+
+		ListNode* oldHead = head;
+		while (head!=nullptr)
+		{
+			head = head->next;
+			index++;
+			if (index % k == 0)
+			{
+				oldHead = reverseBetween(oldHead,b,b+k-1);
+				b = b + k;
+			}
+		}
+
+		return oldHead;
+	}
+
 };
 
 
@@ -3184,13 +3211,15 @@ int main()
 	lb.next = &lb1;
 	lb1.next = &lb2;
 	lb2.next = &lb3;
-	lb3.next = &lb4;
+	lb3.next = &lb4;/*
 	lb4.next = &lb5;
-	lb5.next = &lb6;
+	lb5.next = &lb6;*/
 
 	//ret = reverse_link(&lb);
 	//ret = reverse(&lb);
-	ret = reverseN(&lb,2);
+	ret = a.reverseKGroup(&lb,2);
+	//ret = a.reverseBetween(&lb,1,2);
+
 	while (ret != nullptr)
 	{
 		cout << ret->val << endl;
