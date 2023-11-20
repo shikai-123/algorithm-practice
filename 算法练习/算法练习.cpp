@@ -2663,23 +2663,58 @@ public:
 	}
 
 	/*
-	92. 反转链表 II——没做出来，题解没看懂。。
+	92. 反转链表 II
 
 	思路：
-		遍历这个链表。
-		然后主要是在left和right中间的，就按照顺序放在stack容器中。
-		然后再遍历这个链表。把数据放到新链表中，
-		在left和right中间的数据，就去遍历stack中的数据，然后放到新的链表中。
-		同时，原始的链表也要不断的往后走。
-		什么时候，新的元素也不在left和right中间，就开始继续接元素。
-
-
+		具体思路参考：这个链接
+		另外的，关于链表翻转的好几种情况的写法，已经放在笔记中的-《链表》部分。
+		这个一定要看看
 	参考：
-	这个用递归的方法，没看懂。后期再看看
 	https://leetcode.cn/problems/reverse-linked-list-ii/solutions/37247/bu-bu-chai-jie-ru-he-di-gui-di-fan-zhuan-lian-biao/?envType=study-plan-v2&envId=top-interview-150
 
 	*/
-	ListNode* reverseBetween(ListNode* head, int left, int right) {
+	ListNode* successor = nullptr; // 后驱节点
+
+	// 反转以 head 为起点的 n 个节点，返回新的头结点
+	ListNode* reverseN(ListNode* head, int n) {
+		if (n == 1) {
+			// 记录第 n + 1 个节点
+			successor = head->next;
+			return head;
+		}
+		// 以 head->next 为起点，需要反转前 n - 1 个节点
+		ListNode* last = reverseN(head->next, n - 1);
+
+		head->next->next = head;
+		// 让反转之后的 head 节点和后面的节点连起来
+		head->next = successor;
+		return last;
+	}
+
+	/*
+	用3个节点的链表。m=n=3来表示
+
+	压栈
+	1 2 34
+
+	出栈
+	返回翻转的43
+	head->next接43  然后返回head 2
+	再然后返回 head->next接2  然后返回head 1
+	最后，上面返回的这个1即使整个链表的头指针
+	12 43
+	*/
+	ListNode* reverseBetween(ListNode* head, int m, int n) {
+		// base case
+		if (m == 1) {
+			return reverseN(head, n);
+		}
+		//每次执行的时候，一定是head->nex，因为reverseBetween返回的是head后面的节点
+		head->next = reverseBetween(head->next, m - 1, n - 1);
+		return head;//返回一定要是head，具体看注释
+	}
+
+	ListNode* reverseBetween1(ListNode* head, int left, int right) {
 		stack<ListNode*> stk;
 		int index = 1;
 		ListNode* Lhead = head;
@@ -2764,7 +2799,6 @@ public:
 		slow->next = slow->next->next;
 		return dummy->next;
 	}
-
 
 
 	/*
@@ -3127,9 +3161,6 @@ void test()
 
 int main()
 {
-
-	test();
-	return 0;
 	vector<int> nums{ 0,1,2,4,5,7 };
 	vector<int> num1{ };
 	vector<string> srtVec{ "2","1","+","3","*" };
@@ -3140,12 +3171,12 @@ int main()
 	vector<int> newInterval{ 0,0 };
 	Solution a;
 	Solution::ListNode lb(1);
-	Solution::ListNode lb1(4);
+	Solution::ListNode lb1(2);
 	Solution::ListNode lb2(3);
-	Solution::ListNode lb3(2);
+	Solution::ListNode lb3(4);
 	Solution::ListNode lb4(5);
-	Solution::ListNode lb5(2);
-	Solution::ListNode lb6(5);
+	Solution::ListNode lb5(6);
+	Solution::ListNode lb6(7);
 
 	Solution::ListNode* head = &lb;
 	Solution::ListNode* ret;
@@ -3154,9 +3185,12 @@ int main()
 	lb1.next = &lb2;
 	lb2.next = &lb3;
 	lb3.next = &lb4;
-	/*lb4.next = &lb5;
-	lb5.next = &lb6;*/
-	ret = a.partition(&lb, 3);
+	lb4.next = &lb5;
+	lb5.next = &lb6;
+
+	//ret = reverse_link(&lb);
+	//ret = reverse(&lb);
+	ret = reverseN(&lb,2);
 	while (ret != nullptr)
 	{
 		cout << ret->val << endl;
