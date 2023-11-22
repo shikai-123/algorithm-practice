@@ -3439,7 +3439,26 @@ namespace Tree {
 			return isSameTree(p->left,q->left) && isSameTree(p->right,q->right);
 		}
 
-	
+		/*
+		226. 翻转二叉树
+		参考思路：
+			从根节点往下遍历
+			只要这个节点不是空的，你不用管他下面的子节点是不是空，都要交换。有的情况是左有，右没有，这种也得交换。
+			交换之后，然后处理左边的点和左边的点。
+			然后返回处理完的“根节点”
+
+		参考：
+			https://programmercarl.com/0226.%E7%BF%BB%E8%BD%AC%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+			
+		*/
+		TreeNode* invertTree(TreeNode* root) {
+			if (root == nullptr) return nullptr;
+
+			swap(root->right, root->left);
+			invertTree(root->right);
+			invertTree(root->left);
+			return root;
+		}
 		void test()
 		{
 			cout << "测试树结构" << endl;
