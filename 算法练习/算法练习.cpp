@@ -3311,23 +3311,7 @@ namespace Tree {
 	
 	class Solution {
 	public:
-		void test()
-		{
-			cout << "测试树结构" << endl;
-			
-			TreeNode tree1(1);
-			TreeNode tree2(2);
-			TreeNode tree7(7);
-			TreeNode tree8(8);
-
-			TreeNode tree4(4, &tree1, &tree2);
-			TreeNode tree6(6, &tree7, &tree8);
-			TreeNode treeRoot(5, &tree4, &tree6);
-
-
-			cout << "104. 二叉树的最大深度=" << maxDepth(&treeRoot) << endl;
-
-		}
+		
 
 		
 
@@ -3425,13 +3409,54 @@ namespace Tree {
 		}
 
 		/*
-		
+		100. 相同的树
+
+		参考思路：
+			采用相同的遍历方式，然后判断，不相同就返回false
+			！在return上进行递归，就能保证返回的结果，不会受到递归函数中，其他代码的影响；这样就是——返回结果后，接着再返回。不受其他的影响
+			1、如果两个都是null就返回true，不能再下去了
+			2、如果一个是null一个不是null，返回fals
+			一定要在判断值之前，对地址判断。
+			3、如果两个点的值不一样返回false。
+
+			剩下的情况就是两个点是一样，并且是存在的。
+			既然是一样的，接着往下走，然后接着判断
+
+			判断的方式是——在return上开始递归，并且是左右两个递归都在一起，并且是&&。
+			一旦有一个false，开始每次递归函数就都光执行return &&。最后返回的就是false。
+
+		参考：
+			https://leetcode.cn/problems/same-tree/?envType=study-plan-v2&envId=top-interview-150
+
 
 		*/
 		bool isSameTree(TreeNode* p, TreeNode* q) {
 
+			if (p == nullptr && q == nullptr)  return true;
+			if (p == nullptr || q == nullptr)  return false;
+			if (p->val != q->val)  return false;
+
+			return isSameTree(p->left,q->left) && isSameTree(p->right,q->right);
 		}
 
+	
+		void test()
+		{
+			cout << "测试树结构" << endl;
+
+			TreeNode tree1(1);
+			TreeNode tree2(2);
+			TreeNode tree7(7);
+			TreeNode tree8(8);
+
+			TreeNode tree4(4, &tree1, &tree2);
+			TreeNode tree6(6, &tree7, &tree8);
+			TreeNode treeRoot(5, &tree4, &tree6);
+
+
+			//cout << "104. 二叉树的最大深度=" << maxDepth(&treeRoot) << endl;
+			cout << "100. 相同的树=" << isSameTree(&treeRoot, &tree4) << endl;
+		}
 	};
 }
 
