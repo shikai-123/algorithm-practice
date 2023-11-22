@@ -3325,8 +3325,8 @@ namespace Tree {
 			TreeNode treeRoot(5, &tree4, &tree6);
 
 
-			posTraversal(&treeRoot);
-			//maxDepth(&treeRoot);
+			cout << "104. 二叉树的最大深度=" << maxDepth(&treeRoot) << endl;
+
 		}
 
 		
@@ -3385,32 +3385,53 @@ namespace Tree {
 			vector<int> node;
 			postorderTraversal(root, node);
 		}
-		
-		
-		
-
-
-
-
-
-
-
 
 
 
 		/*
-			104. 二叉树的最大深度
-
-			思路：用前序遍历的思路，（那种遍历方式都可以）
-				每增加一个左节点，深度就加一。
-				但是要注意的是，左右节点的深度不一样，
-				最后返回的是深度最大的那个
+		104. 二叉树的最大深度
+			
+		参考思路：（这个思路相当牛逼）
+			从树的根节点开始，一直往下遍历，直到叶子节点。
+			然后开始往上返回，每次往上返回都是+1.
+			这样就能算出高度
+		参考：
+			https://leetcode.cn/problems/maximum-depth-of-binary-tree/?envType=study-plan-v2&envId=top-interview-150
 		*/
-		int maxDepth(TreeNode* root) {
-			int deep = 0;
-
-			return deep;
+		int maxDepth1(TreeNode* root) {
+			if (root == nullptr) return 0;
+			return max(maxDepth1(root->right), maxDepth1(root->left)) + 1;
 		}
+
+
+		/*
+		104. 二叉树的最大深度
+
+		参考思路：
+			
+		参考：
+			https://leetcode.cn/problems/maximum-depth-of-binary-tree/solutions/1797307/by-carlsun-2-ojzh/?envType=study-plan-v2&envId=top-interview-150
+		*/
+		int getdepth(TreeNode* node) {
+			if (node == NULL) return 0;
+			int rightdepth = getdepth(node->right);     // 右
+			int leftdepth = getdepth(node->left);       // 左
+			//以上两行代码可以互换，代码随想说的，只是更细一点。内容实质基本上一样。其实也不用考虑后序遍历啥的
+			int depth = 1 + max(leftdepth, rightdepth); // 中
+			return depth;
+		}
+		int maxDepth(TreeNode* root) {
+			return getdepth(root);
+		}
+
+		/*
+		
+
+		*/
+		bool isSameTree(TreeNode* p, TreeNode* q) {
+
+		}
+
 	};
 }
 
