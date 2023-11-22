@@ -3314,18 +3314,102 @@ namespace Tree {
 		void test()
 		{
 			cout << "测试树结构" << endl;
+			
+			TreeNode tree1(1);
+			TreeNode tree2(2);
+			TreeNode tree7(7);
+			TreeNode tree8(8);
 
-			TreeNode treenode;
-			maxDepth(&treenode);
+			TreeNode tree4(4, &tree1, &tree2);
+			TreeNode tree6(6, &tree7, &tree8);
+			TreeNode treeRoot(5, &tree4, &tree6);
+
+
+			posTraversal(&treeRoot);
+			//maxDepth(&treeRoot);
 		}
+
+		
+
+		//前序遍历-细节实现
+		void preorderTraversal(TreeNode* root, vector<int> &node)
+		{
+			if (root == nullptr)return;
+
+			node.push_back(root->val);
+			cout << root->val << endl;
+			preorderTraversal(root->left, node);
+			preorderTraversal(root->right, node);
+		}
+		//前序遍历-对外接口
+		void preTraversal(TreeNode* root)
+		{
+			cout << "前序遍历" << endl;
+			vector<int> node;
+			preorderTraversal(root, node);
+		}
+
+		
+		//中序遍历-细节实现
+		void inorderTraversal(TreeNode* root,vector<int> &node)
+		{
+			if (root == nullptr)return;
+
+			inorderTraversal(root->left, node);
+			node.push_back(root->val);
+			cout << root->val << endl;
+			inorderTraversal(root->right, node);
+		}
+		//中序遍历-对外接口
+		void inoTraversal(TreeNode* root)
+		{
+			cout << "中序遍历" << endl;
+			vector<int> node;
+			inorderTraversal(root, node);
+		}
+		
+		//后序遍历-细节实现
+		void postorderTraversal(TreeNode* root,vector<int> &node)
+		{
+			if (root == nullptr)return;
+
+			postorderTraversal(root->left, node);
+			postorderTraversal(root->right, node);
+			node.push_back(root->val);
+			cout << root->val << endl;
+		}
+		//后序遍历-对外接口
+		void posTraversal(TreeNode* root)
+		{
+			cout << "后序遍历" << endl;
+			vector<int> node;
+			postorderTraversal(root, node);
+		}
+		
+		
+		
+
+
+
+
+
+
+
+
+
 
 		/*
 			104. 二叉树的最大深度
+
+			思路：用前序遍历的思路，（那种遍历方式都可以）
+				每增加一个左节点，深度就加一。
+				但是要注意的是，左右节点的深度不一样，
+				最后返回的是深度最大的那个
 		*/
 		int maxDepth(TreeNode* root) {
+			int deep = 0;
 
-
-
+			return deep;
 		}
 	};
 }
