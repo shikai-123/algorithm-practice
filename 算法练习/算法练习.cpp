@@ -3332,6 +3332,15 @@ namespace Tree {
 			vector<int> node;
 			preorderTraversal(root, node);
 		}
+		//前序遍历-一个函数
+		void preTraversalONE(TreeNode* root)
+		{
+			if (root == nullptr)return;
+			cout << root->val << endl;
+			preTraversalONE(root->left);
+			preTraversalONE(root->right);
+		}
+
 
 		
 		//中序遍历-细节实现
@@ -3351,7 +3360,18 @@ namespace Tree {
 			vector<int> node;
 			inorderTraversal(root, node);
 		}
-		
+		//中序遍历-一个函数
+		void inoTraversalONE(TreeNode* root)
+		{
+			if (root == nullptr)return;
+			inoTraversalONE(root->left);
+			cout << root->val << endl;
+			inoTraversalONE(root->right);
+		}
+
+
+
+
 		//后序遍历-细节实现
 		void postorderTraversal(TreeNode* root,vector<int> &node)
 		{
@@ -3369,6 +3389,17 @@ namespace Tree {
 			vector<int> node;
 			postorderTraversal(root, node);
 		}
+		//后序遍历-一个函数
+		void posTraversalONE(TreeNode* root)
+		{
+			if (root == nullptr)return;
+			posTraversalONE(root->left);
+			posTraversalONE(root->right);
+			cout << root->val << endl;
+		}
+
+
+
 
 
 
@@ -3459,6 +3490,42 @@ namespace Tree {
 			invertTree(root->left);
 			return root;
 		}
+
+		/*
+		101. 对称二叉树
+		
+		*/
+		bool isSymmetric(TreeNode* root) {
+
+			return isSame(root->left, root->right);
+		}
+
+		/*
+		101. 对称二叉树
+		参考思路：
+			和100. 相同的树的思路很想。
+			判断出来需要返回的false或者是true的。
+			剩下的就是可以进入下次递归的，
+			另外在return实现递归，就可以保证一旦出现return能够一直往上返回，不受影响。
+		参考连接：
+			https://leetcode.cn/problems/symmetric-tree/solutions/862694/dai-ma-sui-xiang-lu-dai-ni-xue-tou-er-ch-hnjo/?envType=study-plan-v2&envId=top-interview-150
+		*/
+		bool isSymmetric(TreeNode* root) {
+
+			return isSame(root->left, root->right);
+		}
+
+		bool isSame(TreeNode* Lroot, TreeNode* Rroot) {
+			if (Lroot == nullptr && Rroot == nullptr) return true;
+			if (Lroot != nullptr && Rroot == nullptr) return false;
+			if (Lroot == nullptr && Rroot != nullptr) return false;
+			if (Lroot->val != Rroot->val) return false;
+
+			return isSame(Lroot->left, Rroot->right) && isSame(Lroot->right, Rroot->left);
+		}
+
+
+
 		void test()
 		{
 			cout << "测试树结构" << endl;
@@ -3472,9 +3539,10 @@ namespace Tree {
 			TreeNode tree6(6, &tree7, &tree8);
 			TreeNode treeRoot(5, &tree4, &tree6);
 
-
+			inoTraversalONE(&treeRoot);
 			//cout << "104. 二叉树的最大深度=" << maxDepth(&treeRoot) << endl;
-			cout << "100. 相同的树=" << isSameTree(&treeRoot, &tree4) << endl;
+			//cout << "100. 相同的树=" << isSameTree(&treeRoot, &tree4) << endl;
+			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
 		}
 	};
 }
