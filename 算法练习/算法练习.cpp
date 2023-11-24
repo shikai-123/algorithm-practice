@@ -3421,6 +3421,7 @@ namespace Tree {
 					TreeNode* note = que.front();
 					que.pop();
 					vec.push_back(note->val);
+					cout << note->val << endl;
 					if (note->left) que.push(note->left);
 					if (note->right) que.push(note->right);
 				}
@@ -3753,8 +3754,32 @@ namespace Tree {
 			return root;
 		}
 
+		/*
+		114. 二叉树展开为链表
+		思路：
+			不要嫌蛮烦，就是这个思路。
+			先往左遍历一个点，然后一直往右遍历，直到最后一个右节点。
+			让这个右节点接到根节点的左节点。
+			然后根节点的右节点接上他原来的左节点。
 
-
+			然后根节点再往左下走，直到空
+		参考：
+		https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/solutions/1498323/by-lin-shen-shi-jian-lu-k-z5vv/?envType=study-plan-v2&envId=top-interview-150
+		*/
+		void flatten(TreeNode* root) {
+			while (root)
+			{
+				TreeNode* p = root->left;
+				if (p)
+				{
+					while (p->right) p = p->right;
+					p->right = root->right;
+					root->right = root->left;
+					root->left = nullptr;//根节点左树被右节点接上后，左节点一定要赋值为空。也就是断开这个左树，要不然会出问题
+				}
+				root = root->right;
+			}
+		}
 
 		void test()
 		{
@@ -3762,18 +3787,24 @@ namespace Tree {
 			vector<int> nums0{ 2,1 };
 			vector<int> nums1{ 2,1 };
 
+			/*
+			   1
+			 2  5
+			3 4   6 
+			*/
 
-
-			TreeNode tree1(1);
-			TreeNode tree2(2);
+			TreeNode tree1(3);
+			TreeNode tree2(4);
 			TreeNode tree7(7);
-			TreeNode tree8(8);
+			TreeNode tree8(6);
 
-			TreeNode tree4(4, &tree1, &tree2);
-			TreeNode tree6(6, &tree7, &tree8);
-			TreeNode treeRoot(5, &tree4, &tree6);
+			TreeNode tree4(2, &tree1, &tree2);
+			TreeNode tree6(5, nullptr, &tree8);
+			TreeNode treeRoot(1, &tree4, &tree6);
 
-			buildTree(nums0, nums1);
+			flatten(&treeRoot);
+			preTraversalONE(&treeRoot);
+
 			//cout << "104. 二叉树的最大深度=" << maxDepth(&treeRoot) << endl;
 			//cout << "100. 相同的树=" << isSameTree(&treeRoot, &tree4) << endl;
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
