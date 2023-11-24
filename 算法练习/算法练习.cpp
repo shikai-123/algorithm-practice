@@ -3298,21 +3298,22 @@ namespace LinkedList
 }
 
 namespace Tree {
-	
+
 	struct TreeNode {
-	    int val;
-	    TreeNode *left;
-	    TreeNode *right;
-	    TreeNode() : val(0), left(nullptr), right(nullptr) {}
-	    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-	    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+		int val;
+		TreeNode *left;
+		TreeNode *right;
+		TreeNode* next;
+		TreeNode() : val(0), left(nullptr), right(nullptr) {}
+		TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+		TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 	};
-	
+
 	class Solution {
 	public:
-		
 
-		
+
+
 
 		//前序遍历-细节实现
 		void preorderTraversal(TreeNode* root, vector<int> &node)
@@ -3341,9 +3342,9 @@ namespace Tree {
 		}
 
 
-		
+
 		//中序遍历-细节实现
-		void inorderTraversal(TreeNode* root,vector<int> &node)
+		void inorderTraversal(TreeNode* root, vector<int> &node)
 		{
 			if (root == nullptr)return;
 
@@ -3372,7 +3373,7 @@ namespace Tree {
 
 
 		//后序遍历-细节实现
-		void postorderTraversal(TreeNode* root,vector<int> &node)
+		void postorderTraversal(TreeNode* root, vector<int> &node)
 		{
 			if (root == nullptr)return;
 
@@ -3397,10 +3398,36 @@ namespace Tree {
 			cout << root->val << endl;
 		}
 
-		//层序遍历
-		vector<vector<int>> levelOrder(TreeNode* root) {
 
-			queue
+
+		//层序遍历——把遍历的元素，放到二维的vec中
+		vector<vector<int>> levelOrder(TreeNode* root) {
+			if (root == nullptr) return vector<vector<int>>();
+			vector<vector<int>> result;
+			queue<TreeNode*> que;
+			que.push(root);
+			while (!que.empty())
+			{
+				vector<int> vec;
+				int size = que.size();
+				for (size_t i = 0; i < size; i++)
+				{
+					/*
+					!核心在这，层序遍历方式不是递归。
+					遍历的开始，把队列中的一一拿出来，拿一个的同时把这个子树的左右子节点，都放进去了。直到把这一层的拿完。
+					这样这一层的就遍历完毕，下一层的也都放进去了。
+					然后开始下一层的遍历。
+					*/
+					TreeNode* note = que.front();
+					que.pop();
+					vec.push_back(note->val);
+					if (note->left) que.push(note->left);
+					if (note->right) que.push(note->right);
+				}
+				result.push_back(vec);
+
+			}
+			return result;
 		}
 
 
@@ -3410,7 +3437,7 @@ namespace Tree {
 
 		/*
 		104. 二叉树的最大深度
-			
+
 		参考思路：（这个思路相当牛逼）
 			从树的根节点开始，一直往下遍历，直到叶子节点。
 			然后开始往上返回，每次往上返回都是+1.
@@ -3428,7 +3455,7 @@ namespace Tree {
 		104. 二叉树的最大深度
 
 		参考思路：
-			
+
 		参考：
 			https://leetcode.cn/problems/maximum-depth-of-binary-tree/solutions/1797307/by-carlsun-2-ojzh/?envType=study-plan-v2&envId=top-interview-150
 		*/
@@ -3472,7 +3499,7 @@ namespace Tree {
 			if (p == nullptr || q == nullptr)  return false;
 			if (p->val != q->val)  return false;
 
-			return isSameTree(p->left,q->left) && isSameTree(p->right,q->right);
+			return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
 		}
 
 		/*
@@ -3485,7 +3512,7 @@ namespace Tree {
 
 		参考：
 			https://programmercarl.com/0226.%E7%BF%BB%E8%BD%AC%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
-			
+
 		*/
 		TreeNode* invertTree(TreeNode* root) {
 			if (root == nullptr) return nullptr;
@@ -3633,9 +3660,6 @@ namespace Tree {
 			return root;
 		}
 
-
-
-
 		/*
 			目前感觉这个方法简单一些。
 			注意：
@@ -3686,13 +3710,48 @@ namespace Tree {
 
 			return root;
 		}
-	TreeNode* buildTree3(vector<int>& inorder, vector<int>& postorder) {
-		if (inorder.size() == 0 || postorder.size() == 0) return NULL;
-		// 左闭右开的原则
-		return traversal1(inorder, 0, inorder.size(), postorder, 0, postorder.size());
-	}
+		TreeNode* buildTree3(vector<int>& inorder, vector<int>& postorder) {
+			if (inorder.size() == 0 || postorder.size() == 0) return NULL;
+			// 左闭右开的原则
+			return traversal1(inorder, 0, inorder.size(), postorder, 0, postorder.size());
+		}
 
-
+		/*
+		填充每个节点的下一个右侧节点指针 II
+		参考思路：
+			遍历每一层的时候，第一个是“链表”头指针，其他的就是从头指针往下接。
+		参考：
+			https://www.programmercarl.com/0102.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86.html#_116-%E5%A1%AB%E5%85%85%E6%AF%8F%E4%B8%AA%E8%8A%82%E7%82%B9%E7%9A%84%E4%B8%8B%E4%B8%80%E4%B8%AA%E5%8F%B3%E4%BE%A7%E8%8A%82%E7%82%B9%E6%8C%87%E9%92%88
+		*/
+		TreeNode* connect(TreeNode* root) {
+			if (root == nullptr) return nullptr;
+			queue<TreeNode*> que;
+			que.push(root);
+			TreeNode *preNote;
+			while (!que.empty())
+			{
+				int size = que.size();
+				for (size_t i = 0; i < size; i++)
+				{
+					TreeNode* note = que.front();
+					que.pop();
+					if (i == 0)
+					{
+						preNote = note;
+						if (note->left)que.push(note->left);
+						if (note->right)que.push(note->right);
+					}
+					else
+					{
+						preNote->next = note;
+						preNote = preNote->next;
+						if (note->left)que.push(note->left);
+						if (note->right)que.push(note->right);
+					}
+				}
+			}
+			return root;
+		}
 
 
 
@@ -3700,8 +3759,8 @@ namespace Tree {
 		void test()
 		{
 			cout << "测试树结构" << endl;
-			vector<int> nums0{ 2,1};
-			vector<int> nums1{ 2,1};
+			vector<int> nums0{ 2,1 };
+			vector<int> nums1{ 2,1 };
 
 
 
@@ -3714,7 +3773,7 @@ namespace Tree {
 			TreeNode tree6(6, &tree7, &tree8);
 			TreeNode treeRoot(5, &tree4, &tree6);
 
-			buildTree(nums0,nums1);
+			buildTree(nums0, nums1);
 			//cout << "104. 二叉树的最大深度=" << maxDepth(&treeRoot) << endl;
 			//cout << "100. 相同的树=" << isSameTree(&treeRoot, &tree4) << endl;
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
