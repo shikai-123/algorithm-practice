@@ -3782,41 +3782,60 @@ namespace Tree {
 		}
 
 		/*
-		112. 路径总和
+		112. 路径总和——复杂但思路清晰的写法
 		思路：
-			首先一次往左树走，左树没有，就走右树。右树也没有，返回上层结构
+			核心思路，就是在递归函数中，判断是不是到了叶子节点，以及count是否减到了0
+			先遍历左边的左边，一直到底，不行了就往右一个一个遍历。直到成功，否则就是false
+		总结：
+			像这种返回bool的递归，一定要确定什么时候返回true，什么时候返回false。
+			然后在return的地方调用递归。
+			参考101. 对称二叉树
 		参考：
 			https://www.programmercarl.com/0112.%E8%B7%AF%E5%BE%84%E6%80%BB%E5%92%8C.html#%E6%80%9D%E8%B7%AF
 		*/
-
-
-
-
 		bool traversal(TreeNode* root, int count)
 		{
-			if (root == nullptr && count == 0) return true;
+			if (root->left == nullptr &&root->right == nullptr && count == 0) return true;//走到了叶子节点，并且cont是0了
+			if (root->left == nullptr &&root->right == nullptr && count != 0) return false;//走到了叶子节点，但是cout还没减到0
+			//都是一下都是未到叶子节点的情况
+			if (root->left)//如果有左叶子
+			{
+				count -= root->left->val;//减去左叶子的值
+				if (traversal(root->left, count)) return true;//沿着左节点的轨迹，进去递归，一直到左叶子节点，如果符合要求的话，就返回true，否则就是false。
+				count += root->val;//如果上面是false的话，才能走到这里。说明上面遍历的结果是不对的，然后就应该把那个值加回去。
+			}
+			if (root->right)//右叶子节点处理的方式是一样的
+			{
+				count -= root->right->val;
+				if (traversal(root->right, count)) return true;
+				count += root->val;
+			}
+			return false;//如果这个点的左右节点都不行的话，那说明这个节点不行，要返回false。
+		}
+		bool hasPathSum1(TreeNode* root, int targetSum) {
 			if (root == nullptr) return false;
-			count -= root->val;
-			if (root->left)
-			{
-				if (traversal(root->left, count - root->left->val)) return true;
-				count += root->val;
-
-			}
-			if (root->right)
-			{
-				if (traversal(root->right, count - root->right->val)) return true;
-				count += root->val;
-			}
-			return false;
+			return traversal(root, targetSum - root->val);
+			//这里要传,targetSum- root->val而不能targetSum。是因为traversal调用之后，里面处理的是root的子节点，肯定要传减去 root->val 之后的值
 		}
 
+		/*
+		112. 路径总和——代码简洁，思路复杂一些
+		思路：
+			先遍历左边的左边，一直到底，不行了就往右一个一个遍历。直到成功，否则就是false
+			无论是那种方式，思路都是一样的。
+
+		总结：
+			像这种返回bool的递归，一定要确定什么时候返回true，什么时候返回false。
+			然后在return的地方调用递归。
+			参考101. 对称二叉树、112. 路径总和
+		*/
 		bool hasPathSum(TreeNode* root, int targetSum) {
-			
-			return traversal(root,targetSum);
+			if (root == nullptr) return false;//都走到叶子节点的后面了，还没有减到合适的值，就说明不满足。
+			if (root->left == nullptr &&root->right == nullptr && targetSum != root->val) return false;//走到了叶子节点，并且targetSum和当前节点的值不相同相同。说明不行，这句话可以不用加，不加的话，他会继续往下走，就会在if (root == nullptr) return false;返回法拉瑟
+			if (root->left == nullptr &&root->right == nullptr && targetSum == root->val) return true;//走到了叶子节点，并且targetSum和当前节点的值相同。
+
+			return hasPathSum(root->left, targetSum - root->val) || hasPathSum(root->right, targetSum - root->val);//左右两条路，有一条满足要求就行
 		}
-
-
 
 		void test()
 		{
@@ -3827,7 +3846,7 @@ namespace Tree {
 			/*
 			   1
 			 2  5
-			3 4   6 
+			3 4   6
 			*/
 
 			TreeNode tree1(3);
@@ -3845,7 +3864,7 @@ namespace Tree {
 			//cout << "104. 二叉树的最大深度=" << maxDepth(&treeRoot) << endl;
 			//cout << "100. 相同的树=" << isSameTree(&treeRoot, &tree4) << endl;
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
-			cout << "112. 路径总和=" << hasPathSum(&treeRoot,6) << endl;
+			cout << "112. 路径总和=" << hasPathSum(&treeRoot, 6) << endl;
 		}
 	};
 }
