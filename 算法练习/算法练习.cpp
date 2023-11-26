@@ -3781,6 +3781,43 @@ namespace Tree {
 			}
 		}
 
+		/*
+		112. 路径总和
+		思路：
+			首先一次往左树走，左树没有，就走右树。右树也没有，返回上层结构
+		参考：
+			https://www.programmercarl.com/0112.%E8%B7%AF%E5%BE%84%E6%80%BB%E5%92%8C.html#%E6%80%9D%E8%B7%AF
+		*/
+
+
+
+
+		bool traversal(TreeNode* root, int count)
+		{
+			if (root == nullptr && count == 0) return true;
+			if (root == nullptr) return false;
+			count -= root->val;
+			if (root->left)
+			{
+				if (traversal(root->left, count - root->left->val)) return true;
+				count += root->val;
+
+			}
+			if (root->right)
+			{
+				if (traversal(root->right, count - root->right->val)) return true;
+				count += root->val;
+			}
+			return false;
+		}
+
+		bool hasPathSum(TreeNode* root, int targetSum) {
+			
+			return traversal(root,targetSum);
+		}
+
+
+
 		void test()
 		{
 			cout << "测试树结构" << endl;
@@ -3802,12 +3839,13 @@ namespace Tree {
 			TreeNode tree6(5, nullptr, &tree8);
 			TreeNode treeRoot(1, &tree4, &tree6);
 
-			flatten(&treeRoot);
-			preTraversalONE(&treeRoot);
+			//flatten(&treeRoot);
+			//preTraversalONE(&treeRoot);
 
 			//cout << "104. 二叉树的最大深度=" << maxDepth(&treeRoot) << endl;
 			//cout << "100. 相同的树=" << isSameTree(&treeRoot, &tree4) << endl;
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
+			cout << "112. 路径总和=" << hasPathSum(&treeRoot,6) << endl;
 		}
 	};
 }
