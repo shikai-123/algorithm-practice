@@ -4066,8 +4066,35 @@ namespace Tree {
 			return ret;
 		}
 
-
-
+		/*
+		110. 平衡二叉树
+		*/
+		bool isBalanced(TreeNode* root) {
+			if (root == nullptr) return true;
+			queue<TreeNode*> que;
+			que.push(root);
+			while (!que.empty())
+			{
+				vector<int> vec;
+				int size = que.size();
+				for (size_t i = 0; i < size; i++)
+				{
+					TreeNode* note = que.front();
+					que.pop();
+					if (note->left) que.push(note->left);
+					if (note->right) que.push(note->right);
+					//左右两个子节点，要不都有，要不都没有。否则就是不完全二叉树
+					if ((note->left == nullptr && note->right == nullptr)||(note->left != nullptr && note->right != nullptr))
+					{
+					}
+					else
+					{
+						return false;
+					}
+				}
+			}
+			return true;
+		}
 
 
 
