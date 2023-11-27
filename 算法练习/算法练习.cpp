@@ -3308,12 +3308,26 @@ namespace Tree {
 		TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 		TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 	};
+	//多叉树类
+	class Node {
+	public:
+		int val;
+		vector<Node*> children;
+
+		Node() {}
+
+		Node(int _val) {
+			val = _val;
+		}
+
+		Node(int _val, vector<Node*> _children) {
+			val = _val;
+			children = _children;
+		}
+	};
 
 	class Solution {
 	public:
-
-
-
 
 		//前序遍历-细节实现
 		void preorderTraversal(TreeNode* root, vector<int> &node)
@@ -3398,8 +3412,6 @@ namespace Tree {
 			cout << root->val << endl;
 		}
 
-
-
 		//层序遍历—从上往下—把遍历的元素，放到二维的vec中
 		vector<vector<int>> levelOrder(TreeNode* root) {
 			if (root == nullptr) return vector<vector<int>>();
@@ -3430,8 +3442,6 @@ namespace Tree {
 			}
 			return result;
 		}
-
-
 		//层序遍历—从下往上—把遍历的元素，放到二维的vec中
 		vector<vector<int>> levelOrderBottom(TreeNode* root) {
 			queue<TreeNode*> que;
@@ -3454,7 +3464,49 @@ namespace Tree {
 			return result;
 		}
 
+		//多叉树-前序
+		void porder(Node* root, vector<int>& ret)
+		{
+			if (root == nullptr) return;
+			ret.push_back(root->val);
+			for (int i = 0; i < root->children.size(); i++) {
+				porder(root->children[i], ret);
+			}
+			return;
+		}
+		vector<int> preorder(Node* root) {
+			vector<int> ret;
+			porder(root, ret);
+			return ret;
+		}
 
+		/*
+		核心：
+		多叉树的存储结构我不熟悉，其实就是按照中序构造，在构造函数设置这个点的值，然后用vec保存这个点的所有的子节点的指针
+		另外，多叉树有前序和后续遍历，没有中序遍历
+	思路：
+		和二叉树的遍历方式几乎一样。
+		前序就是先插入值，然后遍历它的所有的子节点。
+		后序就是反过来。
+	参考：
+		https://leetcode.cn/problems/n-ary-tree-preorder-traversal/solutions/426304/che-di-chi-tou-qian-zhong-hou-xu-di-gui-fa-di-gui-/
+		*/
+
+		//多叉树-后序
+		void postorder(Node* root, vector<int>& ret)
+		{
+			if (root == nullptr) return;
+			for (int i = 0; i < root->children.size(); i++) {
+				postorder(root->children[i], ret);
+			}
+			ret.push_back(root->val);
+			return;
+		}
+		vector<int> postorder(Node* root) {
+			vector<int> ret;
+			postorder(root, ret);
+			return ret;
+		}
 
 
 		/*
@@ -3856,6 +3908,31 @@ namespace Tree {
 			if (root->left == nullptr &&root->right == nullptr && targetSum == root->val) return true;//走到了叶子节点，并且targetSum和当前节点的值相同。
 
 			return hasPathSum(root->left, targetSum - root->val) || hasPathSum(root->right, targetSum - root->val);//左右两条路，有一条满足要求就行
+		}
+
+		/*
+		199. 二叉树的右视图
+		思路：
+			层序遍历，保存每层中的最后一个节点的值
+		*/
+		vector<int> rightSideView(TreeNode* root) {
+			if (root == nullptr) return vector<int>();
+			queue<TreeNode*>que;
+			que.push(root);
+			vector<int> ret;
+			while (!que.empty())
+			{
+				int queSize = que.size();
+				for (size_t i = 0; i < queSize; i++)
+				{
+					TreeNode* node = que.front();
+					que.pop();
+					if (i == queSize-1) ret.push_back(node->val);//只要这一层的最后一个
+					if (node->left)que.push(node->left);
+					if (node->right)que.push(node->right);
+				}
+			}
+			return ret;
 		}
 
 		void test()
