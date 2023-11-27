@@ -3400,7 +3400,7 @@ namespace Tree {
 
 
 
-		//层序遍历——把遍历的元素，放到二维的vec中
+		//层序遍历—从上往下—把遍历的元素，放到二维的vec中
 		vector<vector<int>> levelOrder(TreeNode* root) {
 			if (root == nullptr) return vector<vector<int>>();
 			vector<vector<int>> result;
@@ -3432,6 +3432,27 @@ namespace Tree {
 		}
 
 
+		//层序遍历—从下往上—把遍历的元素，放到二维的vec中
+		vector<vector<int>> levelOrderBottom(TreeNode* root) {
+			queue<TreeNode*> que;
+			if (root != NULL) que.push(root);
+			vector<vector<int>> result;
+			while (!que.empty()) {
+				int size = que.size();
+				vector<int> vec;
+				// 这里一定要使用固定大小size，不要使用que.size()，因为que.size是不断变化的
+				for (int i = 0; i < size; i++) {
+					TreeNode* node = que.front();
+					que.pop();
+					vec.push_back(node->val);//! 调整这个没用的。因为下面的代码不是进入遍历！
+					if (node->left) que.push(node->left);
+					if (node->right) que.push(node->right);
+				}
+				// result.push_back(vec);
+				result.insert(result.begin(), vec);//从上往下变成从下往上，唯一变化的就是这个。
+			}
+			return result;
+		}
 
 
 
