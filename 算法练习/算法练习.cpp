@@ -3927,7 +3927,7 @@ namespace Tree {
 				{
 					TreeNode* node = que.front();
 					que.pop();
-					if (i == queSize-1) ret.push_back(node->val);//只要这一层的最后一个
+					if (i == queSize - 1) ret.push_back(node->val);//只要这一层的最后一个
 					if (node->left)que.push(node->left);
 					if (node->right)que.push(node->right);
 				}
@@ -3954,8 +3954,60 @@ namespace Tree {
 					nums += node->val;
 					if (node->left)que.push(node->left);
 					if (node->right)que.push(node->right);
-				} 
-				ret.push_back(nums/ queSize);
+				}
+				ret.push_back(nums / queSize);
+			}
+			return ret;
+		}
+		/*
+		429. N 叉树的层序遍历
+		*/
+		vector<vector<int>> levelOrder(Node* root) {
+			if (root == nullptr) return vector<vector<int>>();
+			queue<Node*>que;
+			que.push(root);
+			vector<vector<int>> rets;
+			while (!que.empty())
+			{
+				int queSize = que.size();
+				double nums = 0.0;
+				vector<int > ret;
+				for (size_t i = 0; i < queSize; i++)
+				{
+					Node* node = que.front();
+					que.pop();
+					ret.push_back(node->val);
+					for (size_t i = 0; i < node->children.size(); i++)//
+					{
+						que.push(node->children[i]);
+					}
+				}
+				rets.push_back(ret);
+			}
+			return rets;
+		}
+
+		/*
+		515. 在每个树行中找最大值
+		*/
+		vector<int> largestValues(TreeNode* root) {
+			if (root == nullptr) return vector<int>();
+			queue<TreeNode*>que;
+			que.push(root);
+			vector<int> ret;
+			while (!que.empty())
+			{
+				int max = que.front()->val;//[0,-1] ！！这个地方要注意，不能赋值0；要不然一层都是-1，本来最小值是-1，这就会变成0
+				int queSize = que.size();
+				for (size_t i = 0; i < queSize; i++)
+				{
+					TreeNode* node = que.front();
+					que.pop();
+					max = max > node->val ? max : node->val;
+					if (node->left)que.push(node->left);
+					if (node->right)que.push(node->right);
+				}
+				ret.push_back(max);
 			}
 			return ret;
 		}
