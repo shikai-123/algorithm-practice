@@ -3552,7 +3552,7 @@ namespace Tree {
 		参考：
 			https://programmercarl.com/0102.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86.html#_104-%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E5%A4%A7%E6%B7%B1%E5%BA%A6
 		*/
-		int maxDepth(TreeNode* root) {
+		int maxDepth2(TreeNode* root) {
 			if (root == NULL) return 0;
 			int depth = 0;
 			queue<TreeNode*> que;
@@ -3569,6 +3569,34 @@ namespace Tree {
 			}
 			return depth;
 		}
+
+
+		/*
+		111. 二叉树的最小深度
+		*/
+		int minDepth(TreeNode* root) {
+			if (root == NULL) return 0;
+			int minDepth = 0;
+			queue<TreeNode*> que;
+			que.push(root);
+			while (!que.empty()) {
+				int size = que.size();
+				minDepth++; // 记录深度
+				for (int i = 0; i < size; i++) {
+					TreeNode* node = que.front();
+					que.pop();
+					if (node->left==nullptr&&node->right == nullptr)//遍历到叶子节点就退出。题目要求就是从根节点到最近叶子节点的最短路径上的节点数量。第一次出现叶子节点的时候，就是最短的时候
+					{
+						return minDepth;
+					}
+					if (node->left) que.push(node->left);
+					if (node->right) que.push(node->right);
+				}
+			}
+			return minDepth;
+		}
+
+
 
 		/*
 		100. 相同的树
@@ -4052,7 +4080,7 @@ namespace Tree {
 			/*
 			   1
 			 2  5
-			3 4   6
+			3 4 7 6
 			*/
 
 			TreeNode tree1(3);
@@ -4061,8 +4089,8 @@ namespace Tree {
 			TreeNode tree8(6);
 
 			TreeNode tree4(2, &tree1, &tree2);
-			TreeNode tree6(5, nullptr, &tree8);
-			TreeNode treeRoot(1, &tree4, &tree6);
+			TreeNode tree6(5, &tree7, &tree8);
+			TreeNode treeRoot(1,nullptr, &tree6);
 
 			//flatten(&treeRoot);
 			//preTraversalONE(&treeRoot);
@@ -4070,7 +4098,7 @@ namespace Tree {
 			//cout << "104. 二叉树的最大深度=" << maxDepth(&treeRoot) << endl;
 			//cout << "100. 相同的树=" << isSameTree(&treeRoot, &tree4) << endl;
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
-			cout << "112. 路径总和=" << hasPathSum(&treeRoot, 6) << endl;
+			cout << "112. 路径总和=" << minDepth(&treeRoot) << endl;
 		}
 	};
 }
