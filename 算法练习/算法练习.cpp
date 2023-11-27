@@ -3935,6 +3935,33 @@ namespace Tree {
 			return ret;
 		}
 
+		/*
+		637. 二叉树的层平均值
+		*/
+		vector<double> averageOfLevels(TreeNode* root) {
+			if (root == nullptr) return vector<double>();
+			queue<TreeNode*>que;
+			que.push(root);
+			vector<double> ret;
+			while (!que.empty())
+			{
+				int queSize = que.size();
+				double nums = 0.0;
+				for (size_t i = 0; i < queSize; i++)
+				{
+					TreeNode* node = que.front();
+					que.pop();
+					nums += node->val;
+					if (node->left)que.push(node->left);
+					if (node->right)que.push(node->right);
+				} 
+				ret.push_back(nums/ queSize);
+			}
+			return ret;
+		}
+
+
+
 		void test()
 		{
 			cout << "测试树结构" << endl;
