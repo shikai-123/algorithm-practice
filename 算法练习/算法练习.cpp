@@ -3544,6 +3544,31 @@ namespace Tree {
 		int maxDepth(TreeNode* root) {
 			return getdepth(root);
 		}
+		/*
+		104. 二叉树的最大深度
+
+		参考思路：
+			这种思路更简洁！更好理解，最重要的符合层序遍历的思路
+		参考：
+			https://programmercarl.com/0102.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86.html#_104-%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E5%A4%A7%E6%B7%B1%E5%BA%A6
+		*/
+		int maxDepth(TreeNode* root) {
+			if (root == NULL) return 0;
+			int depth = 0;
+			queue<TreeNode*> que;
+			que.push(root);
+			while (!que.empty()) {
+				int size = que.size();
+				depth++; // 记录深度
+				for (int i = 0; i < size; i++) {
+					TreeNode* node = que.front();
+					que.pop();
+					if (node->left) que.push(node->left);
+					if (node->right) que.push(node->right);
+				}
+			}
+			return depth;
+		}
 
 		/*
 		100. 相同的树
@@ -3791,7 +3816,8 @@ namespace Tree {
 		}
 
 		/*
-		填充每个节点的下一个右侧节点指针 II
+		117.填充每个节点的下一个右侧节点指针 II
+		和116的思路一样，代码也一样样
 		参考思路：
 			遍历每一层的时候，第一个是“链表”头指针，其他的就是从头指针往下接。
 		参考：
@@ -4011,6 +4037,9 @@ namespace Tree {
 			}
 			return ret;
 		}
+
+
+
 
 
 
