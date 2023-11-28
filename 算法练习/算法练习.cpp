@@ -4069,6 +4069,8 @@ namespace Tree {
 		/*
 		110. 平衡二叉树
 			一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 。
+		参考：
+			https://www.programmercarl.com/0110.%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91.html
 		*/
 		// 返回以该节点为根节点的二叉树的高度，如果不是平衡二叉树了则返回-1
 		int getHeight(TreeNode* node) {
@@ -4091,6 +4093,35 @@ namespace Tree {
 		}
 		bool isBalanced(TreeNode* root) {
 			return getHeight(root) == -1 ? false : true;
+		}
+
+		/*
+		257. 二叉树的所有路径
+		参考：
+			https://www.programmercarl.com/0257.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%89%80%E6%9C%89%E8%B7%AF%E5%BE%84.html
+		思路：
+			这种感觉不是用前序遍历最好了
+			再加上回溯，简直是完美。
+		*/
+		vector<string> TreePaths(TreeNode* root,vector<string>& ret, string& str)
+		{
+			if (root == nullptr) return vector<string>();
+			//中
+			str += to_string(root->val);
+			//左
+			if (TreePaths(root->left, ret,str) == vector<string>())
+				ret.push_back(str);
+			//右
+			TreePaths(root->right, ret, str);
+
+			
+		}
+		vector<string> binaryTreePaths(TreeNode* root) {
+			if (root == nullptr) return vector<string>();
+			vector<string> ret;
+			string str = "";
+			TreePaths(root,ret,str);
+			return ret;
 		}
 
 		void test()
