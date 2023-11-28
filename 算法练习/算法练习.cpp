@@ -3585,7 +3585,7 @@ namespace Tree {
 				for (int i = 0; i < size; i++) {
 					TreeNode* node = que.front();
 					que.pop();
-					if (node->left==nullptr&&node->right == nullptr)//遍历到叶子节点就退出。题目要求就是从根节点到最近叶子节点的最短路径上的节点数量。第一次出现叶子节点的时候，就是最短的时候
+					if (node->left == nullptr&&node->right == nullptr)//遍历到叶子节点就退出。题目要求就是从根节点到最近叶子节点的最短路径上的节点数量。第一次出现叶子节点的时候，就是最短的时候
 					{
 						return minDepth;
 					}
@@ -4068,35 +4068,30 @@ namespace Tree {
 
 		/*
 		110. 平衡二叉树
+			一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 。
 		*/
-		bool isBalanced(TreeNode* root) {
-			if (root == nullptr) return true;
-			queue<TreeNode*> que;
-			que.push(root);
-			while (!que.empty())
-			{
-				vector<int> vec;
-				int size = que.size();
-				for (size_t i = 0; i < size; i++)
-				{
-					TreeNode* note = que.front();
-					que.pop();
-					if (note->left) que.push(note->left);
-					if (note->right) que.push(note->right);
-					//左右两个子节点，要不都有，要不都没有。否则就是不完全二叉树
-					if ((note->left == nullptr && note->right == nullptr)||(note->left != nullptr && note->right != nullptr))
-					{
-					}
-					else
-					{
-						return false;
-					}
-				}
+		// 返回以该节点为根节点的二叉树的高度，如果不是平衡二叉树了则返回-1
+		int getHeight(TreeNode* node) {
+			if (node == NULL) {//如果这个节点都不存在，这个node高度就是0.为什么是0呢？根据题目来看，只有一个点的时候，node高度是1
+				return 0;
 			}
-			return true;
+			int leftHeight = getHeight(node->left); // （左） 当前节点为根节点的左节点的高度
+			if (leftHeight == -1) return -1;//如果发现这个子树不平衡了，啥也不用做，直接返回吧。
+			int rightHeight = getHeight(node->right); // （右）当前节点为根节点的右节点的高度
+			if (rightHeight == -1) return -1;//如果发现这个子树不平衡了，啥也不用做，直接返回吧。
+
+			int result;
+			if (abs(leftHeight - rightHeight) > 1) {  // （中） 高度差大于1就说明树不平衡
+				result = -1;
+			}
+			else {
+				result = 1 + max(leftHeight, rightHeight); // +1后就是当前节点为根节点的树的高度。！！千万别忘了+1
+			}
+			return result;//最后返回node为根节点的树的高度
 		}
-
-
+		bool isBalanced(TreeNode* root) {
+			return getHeight(root) == -1 ? false : true;
+		}
 
 		void test()
 		{
@@ -4105,19 +4100,16 @@ namespace Tree {
 			vector<int> nums1{ 2,1 };
 
 			/*
-			   1
-			 2  5
-			3 4 7 6
+			   0
+			 1   3
+			2     4
 			*/
 
-			TreeNode tree1(3);
-			TreeNode tree2(4);
-			TreeNode tree7(7);
-			TreeNode tree8(6);
-
-			TreeNode tree4(2, &tree1, &tree2);
-			TreeNode tree6(5, &tree7, &tree8);
-			TreeNode treeRoot(1,nullptr, &tree6);
+			TreeNode tree2(2);
+			TreeNode tree4(4);
+			TreeNode tree1(1, &tree2, nullptr);
+			TreeNode tree3(3, nullptr, &tree4);
+			TreeNode treeRoot(0, &tree1, &tree3);
 
 			//flatten(&treeRoot);
 			//preTraversalONE(&treeRoot);
@@ -4125,7 +4117,7 @@ namespace Tree {
 			//cout << "104. 二叉树的最大深度=" << maxDepth(&treeRoot) << endl;
 			//cout << "100. 相同的树=" << isSameTree(&treeRoot, &tree4) << endl;
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
-			cout << "112. 路径总和=" << minDepth(&treeRoot) << endl;
+			cout << " 平衡二叉树=" << isBalanced(&treeRoot) << endl;
 		}
 	};
 }
