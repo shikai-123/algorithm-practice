@@ -4099,29 +4099,45 @@ namespace Tree {
 		257. 二叉树的所有路径
 		参考：
 			https://www.programmercarl.com/0257.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%89%80%E6%9C%89%E8%B7%AF%E5%BE%84.html
+			代码中有更简洁的方法，但是还是这个更好理解，本质上都是一种思路。
 		思路：
-			这种感觉不是用前序遍历最好了
+			从根节点往下走，直到叶子节点。就是很明显的前序遍历。另外到了叶子节点就停止了，说明递归结束条件就是到了叶子节点。
+			这种感觉用前序遍历最好了
 			再加上回溯，简直是完美。
 		*/
-		vector<string> TreePaths(TreeNode* root,vector<string>& ret, string& str)
-		{
-			if (root == nullptr) return vector<string>();
-			//中
-			str += to_string(root->val);
-			//左
-			if (TreePaths(root->left, ret,str) == vector<string>())
-				ret.push_back(str);
-			//右
-			TreePaths(root->right, ret, str);
-
-			
+		void traversal(TreeNode* cur, vector<int>& path, vector<string>& result) {
+			path.push_back(cur->val);//添加新的路径点
+			if (cur->left == nullptr && cur->right == nullptr)//到了叶子节点，就要把整个路径放到result中。
+			{
+				string sPath = "";
+				for (size_t i = 0; i < path.size() - 1; i++)//这里-1是为了只在path中的每个字符中间加上->，只是这个原因而已。
+				{
+					sPath += to_string(path[i]);
+					sPath += "->";
+				}
+				sPath += to_string(sPath[path.size() - 1]);//把path最后一个字符也加上
+				result.push_back(sPath);//!!别忘了，最后把处理好的路径，放到result中
+			}
+			if (cur->left)//加上if是是因为：左节点存在的时候才要往左边遍历。听起来很无聊哈。
+			{
+				traversal(cur->left, path, result);//如果左节点存在，就遍历。
+				path.pop_back();//！！！回溯！！！——当子节点不存在了，也就是到了叶子节点的时候，递归才会退出，这个时候就要往右节点看看。所以要把刚才的左节点删掉。
+			}
+			if (cur->right)//同上
+			{
+				traversal(cur->right, path, result);//同上
+				path.pop_back();//！！！回溯！！！——到了叶子节点的时候，并且是右边的节点。这个时候，就考虑结束了递归了，然后删除最后的路径字符。
+			}
+			return;
 		}
+
+	public:
 		vector<string> binaryTreePaths(TreeNode* root) {
-			if (root == nullptr) return vector<string>();
-			vector<string> ret;
-			string str = "";
-			TreePaths(root,ret,str);
-			return ret;
+			vector<string> result;
+			vector<int> path;
+			if (root == NULL) return result;
+			traversal(root, path, result);
+			return result;
 		}
 
 		void test()
@@ -4148,7 +4164,10 @@ namespace Tree {
 			//cout << "104. 二叉树的最大深度=" << maxDepth(&treeRoot) << endl;
 			//cout << "100. 相同的树=" << isSameTree(&treeRoot, &tree4) << endl;
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
-			cout << " 平衡二叉树=" << isBalanced(&treeRoot) << endl;
+			//cout << " 平衡二叉树=" << isBalanced(&treeRoot) << endl;
+			vector<string> srtVec = binaryTreePaths(&treeRoot);
+			for (size_t i = 0; i < srtVec.size(); i++)
+				std::cout << srtVec[i] << endl;
 		}
 	};
 }
