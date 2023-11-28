@@ -4134,7 +4134,7 @@ namespace Tree {
 	public:
 		vector<string> binaryTreePaths(TreeNode* root) {
 			vector<string> result;
-			vector<int> path;
+			vector<int> path;//path一定要vec，如果要用string的话，如果添加了一个3位数字，在回溯的时候，要回溯3次，关键你还得记录他的位数。用vec的话，pop一次就行了
 			if (root == NULL) return result;
 			traversal(root, path, result);
 			return result;
