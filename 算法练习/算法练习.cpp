@@ -3529,9 +3529,14 @@ namespace Tree {
 		104. 二叉树的最大深度
 
 		参考思路：
-
+			！这个要说明一下思路，虽然不是最简单的思路，但是在我学习的路上，这个体系中，我是最容易想到这个办法的。
+			看到深度的时候，肯定会想到前序遍历，当然前序遍历肯定也是可以的，只是我在这里没有写。
+			为什么这里写了后序遍历呢？
+			代码随想给的解释是，根节点的深度（前序）和根结点的高度（后序）是一样的，所以用后序也是一样的，但是没说为什么不用前序。当然前序的代码稍微复杂一下
+			其实核心还是思路的问题，我从根节点往上走的时候，也就是后序的方法是最直白的，再代码上也是最简洁的。
 		参考：
 			https://leetcode.cn/problems/maximum-depth-of-binary-tree/solutions/1797307/by-carlsun-2-ojzh/?envType=study-plan-v2&envId=top-interview-150
+			https://programmercarl.com/0104.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E5%A4%A7%E6%B7%B1%E5%BA%A6.html
 		*/
 		int getdepth(TreeNode* node) {
 			if (node == NULL) return 0;
@@ -4013,6 +4018,7 @@ namespace Tree {
 			}
 			return ret;
 		}
+		
 		/*
 		429. N 叉树的层序遍历
 		*/
@@ -4130,8 +4136,6 @@ namespace Tree {
 			}
 			return;
 		}
-
-	public:
 		vector<string> binaryTreePaths(TreeNode* root) {
 			vector<string> result;
 			vector<int> path;//path一定要vec，如果要用string的话，如果添加了一个3位数字，在回溯的时候，要回溯3次，关键你还得记录他的位数。用vec的话，pop一次就行了
@@ -4139,6 +4143,10 @@ namespace Tree {
 			traversal(root, path, result);
 			return result;
 		}
+
+
+
+
 
 		void test()
 		{
