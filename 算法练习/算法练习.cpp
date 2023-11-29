@@ -4232,7 +4232,7 @@ namespace Tree {
 		int sumOfLeftLeaves(TreeNode* root) {
 			if (root == nullptr) return 0;
 			int Lret = 0;
-			if (root->left != nullptr  &&root->left->left == nullptr  &&root->left->right == nullptr)//！！核心在这，判断左子节点的办法
+			if (root->left != nullptr  &&root->left->left == nullptr  &&root->left->right == nullptr)//！！核心在这，判断左叶子节点的办法
 				Lret+= root->left->val;
 
 			Lret += sumOfLeftLeaves(root->left);
@@ -4240,6 +4240,33 @@ namespace Tree {
 
 			return Lret;
 		}
+
+		/*
+		513. 找树左下角的值
+		思路：
+			1、层序遍历，但是只有这个节点有左节点才能可以放到队列中——这种方式只能找到最左边的节点，一旦有节点的某个左节点符合要求，就不行了。
+			2、或者是前序遍历，记录当遍历到左叶子节点的时候，然后做个判断，值比之前大就记录这个值，否则不记录。——这个也错了。这是算出左叶子节点中最大的值。
+
+		*/
+
+
+		int findBottomLeftValue(TreeNode* root) {
+			int deep = 0;
+			int olddeep = 0;
+			if (root == nullptr) return 0;//假设二叉树中至少有一个节点。
+			if (root->left != nullptr && root->left->left == nullptr &&root->left->right == nullptr)
+			{
+				olddeep = ++deep;
+				return ++deep;
+			}
+
+			if (root->left) 
+				deep += findBottomLeftValue(root->left);
+			if (root->right) 
+				deep += findBottomLeftValue(root->right);
+			return deep;
+		}
+
 
 		void test()
 		{
@@ -4254,9 +4281,9 @@ namespace Tree {
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
 
 
-			vector<string> nodes = { "3","9","20","null","null","15","7" };
+			vector<string> nodes = { "1","2","3","4","null","5","6","null","null","7 " };
 			treeRoot = createBinaryTree(nodes);
-			cout << " 左叶子之和=" << sumOfLeftLeaves(treeRoot) << endl;
+			cout  << findBottomLeftValue(treeRoot) << endl;
 			/*vector<string> srtVec = binaryTreePaths(&treeRoot);
 			for (size_t i = 0; i < srtVec.size(); i++)
 				std::cout << srtVec[i] << endl;*/
