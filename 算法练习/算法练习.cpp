@@ -27,8 +27,6 @@ struct ListNode {
 
 
 
-
-
 class RandomizedSet {
 public:
 	RandomizedSet() {
@@ -3308,6 +3306,59 @@ namespace Tree {
 		TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 		TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 	};
+
+	TreeNode* createBinaryTree(vector<string> nodes) {
+		int len = nodes.size();
+
+		if (len == 0) {
+			return NULL;
+		}
+		//LeetCode例题里面往往省略最后一个null
+		if (len % 2 == 0) {
+			nodes.push_back("null");
+		}
+
+		if (nodes[0] == "null") {
+			return nullptr;
+		}
+
+		TreeNode* root;
+		//建立结点队列并将根节点入队
+		queue<TreeNode*> nodesQue;
+		root = new TreeNode(stoi(nodes[0]));
+		nodesQue.push(root);
+
+		//loc遍历数组，每次取两个结点
+		for (int loc = 1; loc < len; loc = loc + 2) {
+			//获取结点并出队
+			TreeNode* node = nodesQue.front();
+			nodesQue.pop();
+
+			//获取队头结点的左右结点
+			string left = nodes[loc];
+			string right = nodes[loc + 1];
+
+			//赋予左右结点
+			if (left == "null") {
+				node->left = nullptr;
+			}
+			else {
+				node->left = new TreeNode(stoi(left));
+				nodesQue.push(node->left);
+			}
+
+			if (right == "null") {
+				node->right = nullptr;
+			}
+			else {
+				node->right = new TreeNode(stoi(right));
+				nodesQue.push(node->right);
+			}
+		}
+		return root;
+	}
+
+
 	//多叉树类
 	class Node {
 	public:
@@ -4144,27 +4195,56 @@ namespace Tree {
 			return result;
 		}
 
+		/*
+		404. 左叶子之和
+			虽然代码写的不简洁，但是慢慢找到感觉了。哈哈。
+			思路应该是一样的，时间100%
+		*/
+		int sumOfLeft(TreeNode* root, int & ret,int flag)
+		{
+			if (root->left == nullptr &&root->right == nullptr&& flag == 1) return ret += root->val;
+			if (root->left)
+			{
+				 sumOfLeft(root->left,ret,1);
+			}
+			if (root->right)
+			{
+				sumOfLeft(root->right,ret,2);
+			}
+			return ret;
+		}
+		int sumOfLeftLeaves1(TreeNode* root) {
+			if (root == nullptr) return 0;
+			if (root->left == nullptr &&root->right == nullptr) return 0;
+			int ret = 0;
+			sumOfLeft(root, ret,0);
+			
+			return ret;
+		}
 
+		/*
+		404. 左叶子之和
+		这个题目的要学习的地方
+		平时我们解二叉树的题目时，已经习惯了通过节点的左右孩子判断本节点的属性，而本题我们要通过节点的父节点判断本节点的属性
+		参考：https://www.programmercarl.com/0404.%E5%B7%A6%E5%8F%B6%E5%AD%90%E4%B9%8B%E5%92%8C.html#%E6%80%9D%E8%B7%AF
+		我这个写法和他的思路基本上一致，但是顺序不一样，
+		*/
+		int sumOfLeftLeaves(TreeNode* root) {
+			if (root == nullptr) return 0;
+			int Lret = 0;
+			if (root->left != nullptr  &&root->left->left == nullptr  &&root->left->right == nullptr)//！！核心在这，判断左子节点的办法
+				Lret+= root->left->val;
 
+			Lret += sumOfLeftLeaves(root->left);
+			Lret += sumOfLeftLeaves(root->right);
 
+			return Lret;
+		}
 
 		void test()
 		{
 			cout << "测试树结构" << endl;
-			vector<int> nums0{ 2,1 };
-			vector<int> nums1{ 2,1 };
-
-			/*
-			   0
-			 1   3
-			2     4
-			*/
-
-			TreeNode tree2(2);
-			TreeNode tree4(4);
-			TreeNode tree1(1, &tree2, nullptr);
-			TreeNode tree3(3, nullptr, &tree4);
-			TreeNode treeRoot(0, &tree1, &tree3);
+			TreeNode *treeRoot = new TreeNode;
 
 			//flatten(&treeRoot);
 			//preTraversalONE(&treeRoot);
@@ -4172,10 +4252,14 @@ namespace Tree {
 			//cout << "104. 二叉树的最大深度=" << maxDepth(&treeRoot) << endl;
 			//cout << "100. 相同的树=" << isSameTree(&treeRoot, &tree4) << endl;
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
-			//cout << " 平衡二叉树=" << isBalanced(&treeRoot) << endl;
-			vector<string> srtVec = binaryTreePaths(&treeRoot);
+
+
+			vector<string> nodes = { "3","9","20","null","null","15","7" };
+			treeRoot = createBinaryTree(nodes);
+			cout << " 左叶子之和=" << sumOfLeftLeaves(treeRoot) << endl;
+			/*vector<string> srtVec = binaryTreePaths(&treeRoot);
 			for (size_t i = 0; i < srtVec.size(); i++)
-				std::cout << srtVec[i] << endl;
+				std::cout << srtVec[i] << endl;*/
 		}
 	};
 }
