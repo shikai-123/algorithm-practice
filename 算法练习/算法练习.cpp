@@ -4069,7 +4069,7 @@ namespace Tree {
 			}
 			return ret;
 		}
-		
+
 		/*
 		429. N 叉树的层序遍历
 		*/
@@ -4200,16 +4200,16 @@ namespace Tree {
 			虽然代码写的不简洁，但是慢慢找到感觉了。哈哈。
 			思路应该是一样的，时间100%
 		*/
-		int sumOfLeft(TreeNode* root, int & ret,int flag)
+		int sumOfLeft(TreeNode* root, int & ret, int flag)
 		{
 			if (root->left == nullptr &&root->right == nullptr&& flag == 1) return ret += root->val;
 			if (root->left)
 			{
-				 sumOfLeft(root->left,ret,1);
+				sumOfLeft(root->left, ret, 1);
 			}
 			if (root->right)
 			{
-				sumOfLeft(root->right,ret,2);
+				sumOfLeft(root->right, ret, 2);
 			}
 			return ret;
 		}
@@ -4217,8 +4217,8 @@ namespace Tree {
 			if (root == nullptr) return 0;
 			if (root->left == nullptr &&root->right == nullptr) return 0;
 			int ret = 0;
-			sumOfLeft(root, ret,0);
-			
+			sumOfLeft(root, ret, 0);
+
 			return ret;
 		}
 
@@ -4233,7 +4233,7 @@ namespace Tree {
 			if (root == nullptr) return 0;
 			int Lret = 0;
 			if (root->left != nullptr  &&root->left->left == nullptr  &&root->left->right == nullptr)//！！核心在这，判断左叶子节点的办法
-				Lret+= root->left->val;
+				Lret += root->left->val;
 
 			Lret += sumOfLeftLeaves(root->left);
 			Lret += sumOfLeftLeaves(root->right);
@@ -4246,43 +4246,58 @@ namespace Tree {
 		思路：
 			1、层序遍历，但是只有这个节点有左节点才能可以放到队列中——这种方式只能找到最左边的节点，一旦有节点的某个左节点符合要求，就不行了。
 			2、或者是前序遍历，记录当遍历到左叶子节点的时候，然后做个判断，值比之前大就记录这个值，否则不记录。——这个也错了。这是算出左叶子节点中最大的值。
-			3、（正确）什么序遍历都可以，记录深度，然后每次深度突破新值的时候，就要记录一次新的resul的值。
-		
-		参考：
-			https://www.programmercarl.com/0513.%E6%89%BE%E6%A0%91%E5%B7%A6%E4%B8%8B%E8%A7%92%E7%9A%84%E5%80%BC.html#%E6%80%9D%E8%B7%AF
-		总结:
-			总结，前期做题还是不自信，有些法子没有信心尝试，这个题目要是大胆尝试，肯定没有问题。
-			1、有些变量放在返回值和形参都不好处理的时候，考虑放到函数外，做全局变量的时候试试
-			2、
+
 		*/
-		int maxDeep = INT_MIN;//！！！这个地方一定要是int最小的，为了满足if (deep>maxDeep)。这样第一判断的时候，无论是什么样的数据都可保存。是符合逻辑的
-		int result = 0;
-		void LeftValue(TreeNode* root,int deep) {
-			if (root->left == nullptr &&root->right == nullptr)//到了叶子节点，记录他的深度，以及它的值
-			{
-				//!!!这是最核心的逻辑。每一层深度增加一次，但是只有这一层中最左边的点才能进去这个if，这一层后面的点都不行
-				if (deep>maxDeep)
-				{
-					maxDeep = deep;
-					result = root->val;
-				}
-				return;
-			}
-			if (root->left) {
-				deep += 1;
-				LeftValue(root->left, deep);
-				deep -= 1;
-			}
-			if (root->right) {
-				deep += 1;
-				LeftValue(root->right, deep);
-				deep -= 1;
-			}
-			return;
-		}
 		int findBottomLeftValue(TreeNode* root) {
-			LeftValue(root,0);
-			return result;
+			int deep = 0;
+			int olddeep = 0;
+			if (root == nullptr) return 0;//假设二叉树中至少有一个节点。
+			if (root->left != nullptr && root->left->left == nullptr &&root->left->right == nullptr)
+			{
+				olddeep = ++deep;
+				return ++deep;
+			}
+
+			if (root->left)
+				deep += findBottomLeftValue(root->left);
+			if (root->right)
+				deep += findBottomLeftValue(root->right);
+			return deep;
+		}
+
+		/*
+		654. 最大二叉树
+		这两个题目和这个多看看
+			106.从中序与后序遍历序列构造二叉树
+			105.从前序与中序遍历序列构造二叉树
+		参考：
+		https://leetcode.cn/problems/maximum-binary-tree/description/
+		*/
+		TreeNode*maxTre(vector<int>& nums, int left, int right)
+		{
+			//左右下标遇到一起的时候，说明数组中已经没有节点了，要返回空
+			if (left == right) return nullptr;
+			//如果有节点，要找到最大的那个节点
+			int maxValue = 0;
+			int maxValueIndex = left;
+			//注意：每次进入递归i都是用left赋值.因为我们不改变数组中的值，只是改变数组的序号，所以才要这样
+			for (size_t i = left; i < right; i++)
+			{
+				if (nums[i] > maxValue)
+				{
+					maxValue = nums[i];
+					maxValueIndex = i;
+				}
+			}
+			TreeNode* root = new TreeNode(nums[maxValueIndex]);
+
+			//找到最大的点后，就开始分左右部分开始处理
+			root->left = maxTre(nums, left, maxValueIndex);
+			root->right = maxTre(nums, maxValueIndex + 1, right);
+			return root;
+		}
+		TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
+			return maxTre(nums, 0, nums.size());
 		}
 
 
@@ -4299,9 +4314,9 @@ namespace Tree {
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
 
 
-			vector<string> nodes = { "1","2","3","4","null","5","6","null","null" };
+			vector<string> nodes = { "1","2","3","4","null","5","6","null","null","7 " };
 			treeRoot = createBinaryTree(nodes);
-			cout  << findBottomLeftValue(treeRoot) << endl;
+			cout << findBottomLeftValue(treeRoot) << endl;
 			/*vector<string> srtVec = binaryTreePaths(&treeRoot);
 			for (size_t i = 0; i < srtVec.size(); i++)
 				std::cout << srtVec[i] << endl;*/
