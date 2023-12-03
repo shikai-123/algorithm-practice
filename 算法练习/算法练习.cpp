@@ -4300,6 +4300,14 @@ namespace Tree {
 			return maxTre(nums, 0, nums.size());
 		}
 
+		/*
+		617. 合并二叉树
+
+		*/
+		TreeNode* mergeTrees(TreeNode* root1, TreeNode* root2) {
+			if (root1 == nullptr && root2 == nullptr) return nullptr;
+		}
+
 
 		void test()
 		{
