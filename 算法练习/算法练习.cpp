@@ -4302,10 +4302,20 @@ namespace Tree {
 
 		/*
 		617. 合并二叉树
-
+		思路：
+			都合并到root1树上；具体看思路
+		参考：
+			https://www.programmercarl.com/0617.%E5%90%88%E5%B9%B6%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E6%80%9D%E8%B7%AF
 		*/
 		TreeNode* mergeTrees(TreeNode* root1, TreeNode* root2) {
-			if (root1 == nullptr && root2 == nullptr) return nullptr;
+			if (root1 == nullptr)return root2;// 如果t1为空，合并之后就应该是t2
+			if (root2 == nullptr)return root1;//同理
+			root1->val = root1->val + root2->val;
+
+			root1->left = mergeTrees(root1->left, root2->left);
+			root1->right = mergeTrees(root1->right, root2->right);
+
+			return root1;
 		}
 
 
