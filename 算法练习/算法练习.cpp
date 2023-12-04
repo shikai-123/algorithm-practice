@@ -4318,6 +4318,27 @@ namespace Tree {
 			return root1;
 		}
 
+		/*
+		700. 二叉搜索树中的搜索
+		思路：
+			注意：他是二叉搜索树！
+		要学习的点：
+			3、结束条件的判断的写法，要和你递归函数的入参要对应。要不然出现空指针访问的问题。
+			  3.1、入参是子节点指针，结束条件的判断，一定要是对root的判断。 searchBST(root->left, val); 《-----》  if (root == NULL || root->val == val) return root;
+				如果对root->left，就会出现nullptr->left，自然就会报错。
+			  3.2、入参是root节点非子节点，结束条件的判断，才可以是对root->left等判断。
+			  3.3、具体什么时候采取什么样的判断，要根据入参来。而什么样的入参，要根据题目的思路来。多体会吧。
+			  3.4、  700. 二叉搜索树中的搜索 可以参考这个题目
+		*/
+		TreeNode* searchBST(TreeNode* root, int val) {
+			if (root == nullptr)return nullptr;
+			if (root->val == val)return root;
+			if (root->val > val) return searchBST(root->left, val);//!!两个if只会进一个，这是由二叉搜索树来决定的。
+			if (root->val < val) return searchBST(root->right, val);//另外为了保证返回值不被干扰，直接在这返回
+
+			return nullptr;
+		}
+
 
 		void test()
 		{
@@ -4332,9 +4353,9 @@ namespace Tree {
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
 
 
-			vector<string> nodes = { "1","2","3","4","null","5","6","null","null","7 " };
-			treeRoot = createBinaryTree(nodes);
-			cout << findBottomLeftValue(treeRoot) << endl;
+			vector<string> nodes = { "40","20","60","10","30","50","70" };
+			treeRoot = createBinaryTree(nodes);//构建树
+			cout << searchBST(treeRoot, 25) << endl;
 			/*vector<string> srtVec = binaryTreePaths(&treeRoot);
 			for (size_t i = 0; i < srtVec.size(); i++)
 				std::cout << srtVec[i] << endl;*/
