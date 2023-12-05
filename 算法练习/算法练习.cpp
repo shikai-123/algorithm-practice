@@ -3380,6 +3380,8 @@ namespace Tree {
 	class Solution {
 	public:
 
+		//什么序的意思是指在什么位置对val访问。
+
 		//前序遍历-细节实现
 		void preorderTraversal(TreeNode* root, vector<int> &node)
 		{
@@ -4342,19 +4344,24 @@ namespace Tree {
 		/*
 		98. 验证二叉搜索树
 		思路：
-
 		参考：
 			https://www.programmercarl.com/0098.%E9%AA%8C%E8%AF%81%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+
+		要学习的点：
+			中序遍历正确的搜索树，它的顺序是从小到大的。
 		*/
+
+		long long isValidBST_MaxValue = LONG_MIN; // 因为后台测试数据中有int最小值
 		bool isValidBST(TreeNode* root) {
+			if (root == nullptr)return true;//都遍历到底了，还没问题，说明这个搜索树肯定好
+			bool l = isValidBST(root->left);
+			if (root->val > isValidBST_MaxValue)isValidBST_MaxValue = root->val;
+			else
+				return false;
 
-			if (root == nullptr)return false;
-			if (true)
+			bool r = isValidBST(root->right);
 
-				if (root->left >= root->right) return false;
-
-
-
+			return l && r;
 		}
 
 		void test()
@@ -4370,9 +4377,9 @@ namespace Tree {
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
 
 
-			vector<string> nodes = { "40","20","60","10","30","50","70" };
+			vector<string> nodes = { "5","4","6","null","null","3","7 " };
 			treeRoot = createBinaryTree(nodes);//构建树
-			cout << searchBST(treeRoot, 25) << endl;
+			cout << isValidBST(treeRoot) << endl;
 			/*vector<string> srtVec = binaryTreePaths(&treeRoot);
 			for (size_t i = 0; i < srtVec.size(); i++)
 				std::cout << srtVec[i] << endl;*/
