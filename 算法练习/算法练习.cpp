@@ -4350,7 +4350,6 @@ namespace Tree {
 		要学习的点：
 			中序遍历正确的搜索树，它的顺序是从小到大的。
 		*/
-
 		long long isValidBST_MaxValue = LONG_MIN; // 因为后台测试数据中有int最小值
 		bool isValidBST(TreeNode* root) {
 			if (root == nullptr)return true;//都遍历到底了，还没问题，说明这个搜索树肯定好
@@ -4363,6 +4362,29 @@ namespace Tree {
 
 			return l && r;
 		}
+
+		/*
+		530. 二叉搜索树的最小绝对差
+		自己思路：
+			采用中序遍历，其实就是求相邻两个节点的最小的差值
+		参考：
+			https://www.programmercarl.com/0530.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E7%9A%84%E6%9C%80%E5%B0%8F%E7%BB%9D%E5%AF%B9%E5%B7%AE.html#%E6%80%9D%E8%B7%AF
+
+		其中的用指针记录前一个节点的方式，手动敲一下
+		*/
+		int Difference_MinValue = INT_MAX;
+		int Difference_LastValue = INT_MAX;//这个位置只能是这个，主要是应对一个点的处理。如果是0的话，如果遇到了0-0那么差值肯定是0了，再也不会变了。如果是INT_MIN的话，1-INT_MIN就会超过int的范围。只有max，任何-max都不会超范围，只是第一个点的时候差值会较大，但是第二个点的时候，就恢复了。
+		int getMinimumDifference(TreeNode* root) {
+			if (root == nullptr)return 0;
+			int L = getMinimumDifference(root->left);
+			if (abs(root->val - Difference_LastValue) < Difference_MinValue)Difference_MinValue = abs(root->val - Difference_LastValue);
+			Difference_LastValue = root->val;
+			getMinimumDifference(root->right);
+
+			return Difference_MinValue;
+		}
+
+
 
 		void test()
 		{
@@ -4377,9 +4399,9 @@ namespace Tree {
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
 
 
-			vector<string> nodes = { "5","4","6","null","null","3","7 " };
+			vector<string> nodes = { "4","2","6","1","3" };
 			treeRoot = createBinaryTree(nodes);//构建树
-			cout << isValidBST(treeRoot) << endl;
+			cout << getMinimumDifference(treeRoot) << endl;
 			/*vector<string> srtVec = binaryTreePaths(&treeRoot);
 			for (size_t i = 0; i < srtVec.size(); i++)
 				std::cout << srtVec[i] << endl;*/
