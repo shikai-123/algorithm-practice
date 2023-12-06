@@ -4430,11 +4430,49 @@ namespace Tree {
 			midSearch(root->right);
 			return;
 		}
-
 		vector<int> findMode(TreeNode* root) {
 			midSearch(root);
 			return findMode_vec;
 		}
+
+
+		/*
+		236. 二叉树的最近公共祖先
+			代码简单，思路复杂
+		核心思路：
+			从下往上找。用后序遍历。
+			找到了p和q就往上父节点返回，直到他俩返回的父节点是一样的。
+		要学习的是：
+			分析的代码的时候，方便理解或者是写，就从叶子结点往上走，好理解
+			TreeNode* left = lowestCommonAncestor(root->left, p, q);
+			TreeNode* right = lowestCommonAncestor(root->right, p, q);
+			这两行代码，如果要一层一层递归进去，理解很不好理解。
+			可以简化理解，这个思路在任何递归的时候，都比较好用。
+			 lowestCommonAncestor(root->left, p, q);  就是当前root的左子树的结果
+			 lowestCommonAncestor(root->right, p, q); 就是当前root的右子树的结果
+			 不管它内部是怎么递归的，就知道这个结果就行。
+
+		参考：
+			https://www.programmercarl.com/0235.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html#%E6%80%9D%E8%B7%AF
+		*/
+		TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+			if (root == nullptr || root == p || root == q) return root;
+			TreeNode*childLeft = lowestCommonAncestor(root->left, p, q);//返回右子树的结果
+			TreeNode*childRight = lowestCommonAncestor(root->right, p, q);
+
+			if (childLeft&&childRight)return root;//它的左右子树找到了pq，那么就返回他的指针，也就是root。最后最后的返回一定是在这，要返回它俩的公共的祖先。
+			else if (childLeft == nullptr&&childRight)return childRight;//右子树有了p或者q，或者有了p和q。就返回右子树的指针。
+			else if (childLeft &&childRight == nullptr)return childLeft;//同理
+			else return nullptr;
+		}
+
+
+
+
+
+
+
+
 
 		void test()
 		{
