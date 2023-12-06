@@ -4384,7 +4384,57 @@ namespace Tree {
 			return Difference_MinValue;
 		}
 
+		/**
+		501. 二叉搜索树中的众数
+		自己的思路：
+			1、用map记录每种key出现的次数，然后放到vec中去排序（这种适用任何二叉树）
+			2、（这种适用搜索二叉树）中序遍历，先记录这个值，然后记录元素出现的次数。在进来的时候，如果是相同的值，这个次数++。如果不相同从新记录次数。
+		参考：
+			https://www.programmercarl.com/0501.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E4%B8%AD%E7%9A%84%E4%BC%97%E6%95%B0.html#%E6%80%9D%E8%B7%AF
+		收获：
+			当一个变量代表的含义在if的含义不明确的，虽然有效果，但是思路不好理解，就别用。
+			比如：判断第一个节点的时候，最明显的就是前值指针为空的时候，他就是第一个节点。
+			还有判断前值的val的时候，如果用*(--findMode_vec.end())很明显一次不明确。肯定会造成bug，只能满足某些情况。不如findMode_pre->val
+		*/
+		vector<int> findMode_vec;
+		int findMode_allCount = 0;//当前中总的次数
+		int findMode_signalCount = 0;//单个元素出现的次数
+		TreeNode* findMode_pre = NULL;
+		void midSearch(TreeNode* root)
+		{
+			if (root == nullptr) return;
+			midSearch(root->left);
+			if (findMode_allCount == 0) {//第一个节点
+				findMode_signalCount = 1;
+			}
+			else if (root->val == findMode_pre->val)//如果当前的值和vec中的最后一个值相等，说明又出现了同一个数，次数++
+			{
+				findMode_signalCount++;
+			}
+			else//如果次数已经不是0了，并且值和前面的不一样，说明出现了新的值。
+			{
+				findMode_signalCount = 1;//单个次数为1
+			}
+			findMode_pre = root;
 
+			if (findMode_signalCount == findMode_allCount)
+			{
+				findMode_vec.push_back(root->val);
+			}
+			if (findMode_signalCount > findMode_allCount)
+			{
+				findMode_allCount = findMode_signalCount;
+				findMode_vec.clear();
+				findMode_vec.push_back(root->val);
+			}
+			midSearch(root->right);
+			return;
+		}
+
+		vector<int> findMode(TreeNode* root) {
+			midSearch(root);
+			return findMode_vec;
+		}
 
 		void test()
 		{
@@ -4399,12 +4449,12 @@ namespace Tree {
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
 
 
-			vector<string> nodes = { "4","2","6","1","3" };
+			vector<string> nodes = { "1","0","1","0","0","1","1","0" };
 			treeRoot = createBinaryTree(nodes);//构建树
-			cout << getMinimumDifference(treeRoot) << endl;
-			/*vector<string> srtVec = binaryTreePaths(&treeRoot);
+			//cout << findMode(treeRoot) << endl;
+			vector<int> srtVec = findMode(treeRoot);
 			for (size_t i = 0; i < srtVec.size(); i++)
-				std::cout << srtVec[i] << endl;*/
+				std::cout << srtVec[i] << endl;
 		}
 	};
 }
