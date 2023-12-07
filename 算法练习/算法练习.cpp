@@ -4455,10 +4455,10 @@ namespace Tree {
 		参考：
 			https://www.programmercarl.com/0235.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html#%E6%80%9D%E8%B7%AF
 		*/
-		TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+		TreeNode* lowestCommonAncestor1(TreeNode* root, TreeNode* p, TreeNode* q) {
 			if (root == nullptr || root == p || root == q) return root;
-			TreeNode*childLeft = lowestCommonAncestor(root->left, p, q);//返回右子树的结果
-			TreeNode*childRight = lowestCommonAncestor(root->right, p, q);
+			TreeNode*childLeft = lowestCommonAncestor1(root->left, p, q);//返回右子树的结果
+			TreeNode*childRight = lowestCommonAncestor1(root->right, p, q);
 
 			if (childLeft&&childRight)return root;//它的左右子树找到了pq，那么就返回他的指针，也就是root。最后最后的返回一定是在这，要返回它俩的公共的祖先。
 			else if (childLeft == nullptr&&childRight)return childRight;//右子树有了p或者q，或者有了p和q。就返回右子树的指针。
@@ -4466,7 +4466,51 @@ namespace Tree {
 			else return nullptr;
 		}
 
+		/*
+		235. 二叉搜索树的最近公共祖先
+		236. 二叉树的最近公共祖先
+		这两个题是一个思路，但是搜索树有自己的性质，可以根据这个性质。
+		为了方便，还是学习236这种思路，通用。
+		两道题的核心思想就是：
+			如何判断一个节点的子树里有p，子树里有q
+		参考：
+			https://www.programmercarl.com/0235.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html
+		*/
+		TreeNode* lowestCommonAncestor11(TreeNode* root, TreeNode* p, TreeNode* q) {
+			//不用判断节点为空的情况，题目中明确说了，确定存在这个点。
+			if (root->val > p->val&&root->val > q->val)//如果在【pq】的右侧，那么就往左走。
+			{
+				TreeNode* left = lowestCommonAncestor11(root->left, p, q);
+				if (left != NULL) {
+					return left;
+				}
+			}
+			else if (root->val < p->val&&root->val < q->val)//如果在【pq】的左侧，那么就往右走。
+			{
+				TreeNode* right = lowestCommonAncestor11(root->right, p, q);
+				if (right != NULL) {
+					return right;
+				}
+			}
+			return root;
+		}
 
+		TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+			while (root)
+			{
+				if (root->val > p->val&&root->val > q->val)//如果在【pq】的右侧，那么就往左走。
+				{
+					root = root->left;
+				}
+				else if (root->val < p->val&&root->val < q->val)//如果在【pq】的左侧，那么就往右走。
+				{
+					root = root->right;
+				}
+				else
+					return root;
+			}
+			return root;
+		}
 
 
 
@@ -4478,6 +4522,8 @@ namespace Tree {
 		{
 			cout << "测试树结构" << endl;
 			TreeNode *treeRoot = new TreeNode;
+			TreeNode *p = new TreeNode(3);
+			TreeNode *q = new TreeNode(5);
 
 			//flatten(&treeRoot);
 			//preTraversalONE(&treeRoot);
@@ -4487,12 +4533,13 @@ namespace Tree {
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
 
 
-			vector<string> nodes = { "1","0","1","0","0","1","1","0" };
+			vector<string> nodes = { "6","2","8","0","4","7","9","null","null","3","5" };
 			treeRoot = createBinaryTree(nodes);//构建树
-			//cout << findMode(treeRoot) << endl;
-			vector<int> srtVec = findMode(treeRoot);
+			cout << lowestCommonAncestor(treeRoot, p, q) << endl;
+			/*vector<int> srtVec = lowestCommonAncestor(treeRoot);
 			for (size_t i = 0; i < srtVec.size(); i++)
 				std::cout << srtVec[i] << endl;
+				*/
 		}
 	};
 }
