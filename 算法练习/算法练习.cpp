@@ -4494,7 +4494,6 @@ namespace Tree {
 			}
 			return root;
 		}
-
 		TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
 			while (root)
 			{
@@ -4513,7 +4512,25 @@ namespace Tree {
 		}
 
 
-
+		/*
+		701.二叉搜索树中的插入操作
+		核心思路：
+			迭代遍历搜索树，直到空，就插入，就这么简单。
+		参考：
+			https://www.programmercarl.com/0701.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E4%B8%AD%E7%9A%84%E6%8F%92%E5%85%A5%E6%93%8D%E4%BD%9C.html#%E6%80%9D%E8%B7%AF
+		*/
+		TreeNode* insertIntoBST(TreeNode* root, int val) {
+			if (root == nullptr)
+			{
+				root = new TreeNode(val);
+				return root;
+			}
+			//如果要插入的值大于当前节点的值,那就插在右边
+			if (val > root->val) root->right = insertIntoBST(root->right, val);//之前收
+			//如果要插入的值小于当前节点的值,那就插在左边
+			if (val < root->val)  root->left = insertIntoBST(root->left, val);
+			return root;
+		}
 
 
 
