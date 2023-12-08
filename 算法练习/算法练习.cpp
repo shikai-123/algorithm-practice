@@ -4525,6 +4525,15 @@ namespace Tree {
 				root = new TreeNode(val);
 				return root;
 			}
+			/*
+			对于很多二叉搜索树而言，
+			root->left = trimBST(root->left, low, high);
+			要不都是左，要不都是右。
+			为什么这样呢？
+			返回值root->left代表二叉树的左节点要接的东西，
+			参数root->left代表root->left要接的东西，肯地是从root->left开始往下找。
+			无论往下找的时候是往左还是往右，总之都是在一开始的left下面。
+			*/
 			//如果要插入的值大于当前节点的值,那就插在右边
 			if (val > root->val) root->right = insertIntoBST(root->right, val);//之前收
 			//如果要插入的值小于当前节点的值,那就插在左边
@@ -4576,11 +4585,52 @@ namespace Tree {
 					return root;
 				}
 			}
+			/*
+			对于很多二叉搜索树而言，
+			root->left = trimBST(root->left, low, high);
+			要不都是左，要不都是右。
+			为什么这样呢？
+			返回值root->left代表二叉树的左节点要接的东西，
+			参数root->left代表root->left要接的东西，肯地是从root->left开始往下找。
+			无论往下找的时候是往左还是往右，总之都是在一开始的left下面。
+			*/
 			if (key > root->val)  root->right = deleteNode(root->right, key);//返回的核心，就是让遍历到要删的点，让他的父节点接上他的子节点。
 			if (key < root->val)  root->left = deleteNode(root->left, key);
 			return root;
 		}
 
+		/*
+		669. 修剪二叉搜索树
+		思路：
+			返回的核心，就是让遍历到要删的点，让他的父节点接上他的子节点。
+		*/
+		TreeNode* trimBST(TreeNode* root, int low, int high) {
+			if (root == nullptr) return nullptr;
+			//该点位于范围的左侧，要考虑这个点的右子树是不是有符合规则的。
+			if (root->val < low)
+			{
+				TreeNode* right = trimBST(root->right, low, high);
+				return right;
+			}
+			//该点位于范围的右侧，要考虑这个点的左子树是不是有符合规则的。
+			if (root->val > high)
+			{
+				TreeNode* left = trimBST(root->left, low, high);
+				return left;
+			}
+			/*
+			对于很多二叉搜索树而言，
+			root->left = trimBST(root->left, low, high);
+			要不都是左，要不都是右。
+			为什么这样呢？
+			返回值root->left代表二叉树的左节点要接的东西，
+			参数root->left代表root->left要接的东西，肯地是从root->left开始往下找。
+			无论往下找的时候是往左还是往右，总之都是在一开始的left下面。
+			*/
+			root->left = trimBST(root->left, low, high);
+			root->right = trimBST(root->right, low, high);
+			return root;
+		}
 
 		void test()
 		{
