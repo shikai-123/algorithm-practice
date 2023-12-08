@@ -4532,7 +4532,54 @@ namespace Tree {
 			return root;
 		}
 
+		/*
+		450. 删除二叉搜索树中的节点
+		思路：
+			返回的核心，就是让遍历到要删的点，让他的父节点接上他的子节点。
+		*/
+		TreeNode* deleteNode(TreeNode* root, int key) {
+			if (root == nullptr) return nullptr;
+			if (root->val == key)
+			{
+				//删除是根节点——那就让对应的节点接上null
+				if (root->left == nullptr&& root->right == nullptr) return nullptr;
 
+				//删除是非根节点-左为空，右不为空,返回他的右节点
+				if (root->left == nullptr&&root->right)
+				{
+					TreeNode* temp = root->right;
+					delete root;
+					return temp;
+				}
+
+				//删除是非根节点-左不为空，右为空,返回他的左节点
+				if (root->left &&root->right == nullptr)
+				{
+					TreeNode* temp = root->left;
+					delete root;
+					return temp;
+				}
+
+				//删除是非根节点-左右不为空。让他的左节点接到右节点的最小的节点下面
+				//二叉搜索树中，右节点都比左节点大。所以接在右节点的最小的下面。
+				//寻找方法，就是从这个点开始一直往左遍历。直到遍历到了最左边的根节点
+				if (root->left &&root->right)
+				{
+					//TreeNode* temp = root;
+					//delete temp;//!!这里删除会奔溃。可能是temp删除后root就不能访问了，但是上面却可以，我也不知道力扣的编译器抽什么风
+					TreeNode* cur = root->right;
+					while (cur->left) cur = cur->left;
+					cur->left = root->left;
+					TreeNode* temp = root;
+					root = root->right;     // 返回旧root的右孩子作为新root
+					delete temp;            // !!总而言之，用完再删除，肯定没问题。
+					return root;
+				}
+			}
+			if (key > root->val)  root->right = deleteNode(root->right, key);//返回的核心，就是让遍历到要删的点，让他的父节点接上他的子节点。
+			if (key < root->val)  root->left = deleteNode(root->left, key);
+			return root;
+		}
 
 
 		void test()
@@ -4550,9 +4597,9 @@ namespace Tree {
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
 
 
-			vector<string> nodes = { "6","2","8","0","4","7","9","null","null","3","5" };
+			vector<string> nodes = { "5","3","6","2","4","null","7 " };
 			treeRoot = createBinaryTree(nodes);//构建树
-			cout << lowestCommonAncestor(treeRoot, p, q) << endl;
+			cout << deleteNode(treeRoot, 3) << endl;
 			/*vector<int> srtVec = lowestCommonAncestor(treeRoot);
 			for (size_t i = 0; i < srtVec.size(); i++)
 				std::cout << srtVec[i] << endl;
