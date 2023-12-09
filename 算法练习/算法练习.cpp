@@ -4632,6 +4632,43 @@ namespace Tree {
 			return root;
 		}
 
+
+		/*
+		108. 将有序数组转换为二叉搜索树
+		参考：
+		https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/description/
+		
+		构造二叉树，自然少不了区间的分割，那么什么时候用左闭右闭呢，什么时候一开一闭呢？
+		其实本质就是其实都想用左闭右闭，！只是看你怎么选了！这个想法我还没验证，!用闭区间去做这个题目。我刚才没做出来。
+		比如构造二叉树这个题目，https://programmercarl.com/0106.%E4%BB%8E%E4%B8%AD%E5%BA%8F%E4%B8%8E%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86%E5%BA%8F%E5%88%97%E6%9E%84%E9%80%A0%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E6%80%9D%E8%B7%AF
+		再切中序数组的时候，比如9 3 15 20 7 知道3是根节点了，且数组下标为1；
+		要切的话只能是[01) 然后是[1+1,5) 只有这种区间，才能用到下标1，并且不会把对应的元素切进去
+
+		！！以上的分析我觉得不对，而是这个题目的设计，让01就成为了左闭右开的区间，就是不要最右边的那个元素。这是闭开只是为了方便理解题目罢了，不是核心。
+		所以上面的题目要做出来的话，就得大概。不光光是要改坐标相加的地方。
+		目前来看，最好的方法还是记忆，不同的题型，用不同的方法。
+
+		二叉搜索树的构造就不用了。
+		比如-10 -3 0 5 9 中间的0就是分割点，
+		我要的是-10 -3 之所以“可以说”是闭区间，是因为我的代码中，不需要向上面的题目中，把分割点的下标再传进去。
+		所以，闭开只是为了方便理解题目罢了，不是核心。最终还是记忆，不同的题型，用不同的方法。
+		*/
+		TreeNode* sortedArrayToBST1(vector<int>& nums,int left,int right)
+		{
+			if (left > right) return  nullptr;
+			int mid = left + (right - left) / 2;
+			TreeNode* root = new TreeNode(nums[mid]);
+
+			root->left = sortedArrayToBST1(nums, left, mid - 1);
+			root->right = sortedArrayToBST1(nums, mid+1, right);
+			return root;
+
+		}
+		TreeNode* sortedArrayToBST(vector<int>& nums) {
+			return sortedArrayToBST1(nums, 0, nums.size() - 1);
+		}
+
+
 		void test()
 		{
 			cout << "测试树结构" << endl;
