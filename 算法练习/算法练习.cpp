@@ -4656,7 +4656,7 @@ namespace Tree {
 		TreeNode* sortedArrayToBST1(vector<int>& nums,int left,int right)
 		{
 			if (left > right) return  nullptr;
-			int mid = left + (right - left) / 2;
+			int mid = left + (right - left) / 2;//注意此处，（(right + left) / 2;）可能会出现int越界
 			TreeNode* root = new TreeNode(nums[mid]);
 
 			root->left = sortedArrayToBST1(nums, left, mid - 1);
@@ -4668,6 +4668,32 @@ namespace Tree {
 			return sortedArrayToBST1(nums, 0, nums.size() - 1);
 		}
 
+
+		/*
+		538. 把二叉搜索树转换为累加树
+		参考：
+			https://www.programmercarl.com/0538.%E6%8A%8A%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E8%BD%AC%E6%8D%A2%E4%B8%BA%E7%B4%AF%E5%8A%A0%E6%A0%91.html#%E6%80%9D%E8%B7%AF
+		思路：
+			二叉搜索树的题目，可以把他和数组联系起来，其他的二叉树不行，但是二叉搜索树肯定是没有问题的。
+			另外这个题目用到了，双指针的思路。虽然不是双指针。
+			其实就是反向中序遍历的方式(右中左)，然后不断的累加值。
+			有个前置保存之前的累加值，然后按照上面的方式不断的累加，知道结束。
+			就像数组倒序累加一样。
+
+		*/
+		int convertBST_pre = 0;//为什么是0呢，因为第一个节点的时候，他的累加值就是他本身
+		TreeNode* convertBST(TreeNode* root) {
+			if (root == nullptr) return nullptr;
+			convertBST(root->right);
+			root->val += convertBST_pre;
+			convertBST_pre = root->val;
+			convertBST(root->left);
+			return root;
+		}
+
+		int sumNumbers(TreeNode* root) {
+
+		}
 
 		void test()
 		{
