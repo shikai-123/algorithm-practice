@@ -4691,7 +4691,13 @@ namespace Tree {
 			return root;
 		}
 
+		/*
+		129. 求根节点到叶节点数字之和
+		很明显是回溯的思想，学完回溯，二刷的时候再再来把
+		*/
 		int sumNumbers(TreeNode* root) {
+			if (root->left == nullptr && root->right == nullptr) return root->val;
+			sumNumbers(root->left);
 
 		}
 
