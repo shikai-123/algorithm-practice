@@ -4778,8 +4778,29 @@ namespace BackTracking {
 				return;
 			}
 
-			//2.3、确定单层搜索的过程——就是for和递归搭配。
+			/*
+			//2.3、确定单层搜索的过程——就是for和递归搭配。——递归的深度是由k控制的，宽度由n控制，剪枝后n会变小。
 			for (int i = statrIndex; i <= n; i++)//选择：本层集合中元素（树中节点孩子的数量就是集合的大小
+			{
+				combine_signal.push_back(i);//递归，纵向遍历，增加单组元素数量，
+				combine_backtrak(n, k, i + 1);
+				combine_signal.pop_back();
+				//增加的数量到了2，就返回，然后删除最后的元素， 从12到了1
+				//然后下次for，进入所谓的横向递归，
+
+				//!这里面面走的是12 13 14
+			}
+			*/
+			//2.3、确定单层搜索的过程——就是for和递归搭配。
+			/*
+			参考：
+				https://www.programmercarl.com/0077.%E7%BB%84%E5%90%88%E4%BC%98%E5%8C%96.html#%E5%89%AA%E6%9E%9D%E4%BC%98%E5%8C%96
+			回溯算法，基本上在这for循环这里做“剪枝”
+			1、已经选择的元素个数：combine_signal.size();
+			2、还需要的元素个数为: k - combine_signal.size();
+			3、 n - (k - path.size()) + 1
+			*/
+			for (int i = statrIndex; i <= n - (k - combine_signal.size()) + 1; i++)//本层集合中元素（树中节点孩子的数量就是集合的大小)
 			{
 				combine_signal.push_back(i);//递归，纵向遍历，增加单组元素数量，
 				combine_backtrak(n, k, i + 1);
@@ -4791,12 +4812,57 @@ namespace BackTracking {
 			}
 			return;//12 13 14走完了之后，开始走这，然后开始23 24 4
 		}
-
 		vector<vector<int>> combine(int n, int k) {
 			combine_backtrak(n, k, 1);
 			return combine_ret;
 		}
 
+
+
+		/*
+		216. 组合总和 III
+		参考;
+			https://leetcode.cn/problems/combination-sum-iii/description/
+		思路：
+			这个题目有两个剪枝，分别是for上面的横向遍历的剪枝和递归上面的纵向遍历的剪枝
+		*/
+		vector<int> combinationSum3_signal;
+		vector<vector<int>> combinationSum3_ret;
+		//2.1、确定返回值和参数
+		void combinationSum3_backtrak(int k, int targetSum, int sum, int statrIndex)
+		{
+			//横向遍历的剪枝
+			if (sum > targetSum)
+			{
+				return;
+			}
+
+			//2.2、确定回溯函数结束条件
+			if (combinationSum3_signal.size() == k)
+			{
+				if (targetSum == sum)
+				{
+					combinationSum3_ret.push_back(combinationSum3_signal);
+				}
+				return;
+			}
+
+			//2.3、确定单层搜索的过程——就是for和递归搭配。
+			for (int i = statrIndex; i <= 9 - (k - combinationSum3_signal.size()) + 1; i++)
+			{
+				combinationSum3_signal.push_back(i);
+				sum += i;
+				combinationSum3_backtrak(k, targetSum, sum, i + 1);
+				combinationSum3_signal.pop_back();
+				sum -= i;
+
+			}
+			return;
+		}
+		vector<vector<int>> combinationSum3(int k, int n) {
+			combinationSum3_backtrak(k, n, 0, 1);
+			return combinationSum3_ret;
+		}
 
 
 
