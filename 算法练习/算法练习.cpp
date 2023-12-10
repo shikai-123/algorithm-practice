@@ -4836,7 +4836,6 @@ namespace BackTracking {
 			{
 				return;
 			}
-
 			//2.2、确定回溯函数结束条件
 			if (combinationSum3_signal.size() == k)
 			{
@@ -4864,7 +4863,57 @@ namespace BackTracking {
 			return combinationSum3_ret;
 		}
 
+		/*
+		17. 电话号码的字母组合
+		参考：
+			https://www.programmercarl.com/0017.%E7%94%B5%E8%AF%9D%E5%8F%B7%E7%A0%81%E7%9A%84%E5%AD%97%E6%AF%8D%E7%BB%84%E5%90%88.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			这个题目和上面2个题目最大的区别就是有两个集合
+			剪枝：
+				一个集合的时候，可以做剪枝，因为后面有的结果太短了。
+				多个集合的时候，不需要剪枝，因为不存在结果过短的情况
+			for遍历开始的坐标：
+				一个集合的时候，从上次的位置后面开始，
+				多个集合的时候，从头开始，因为是不同的集合，从头开始也不会重复
 
+		*/
+
+		string letterCombinations_signal;
+		vector<string> letterCombinations_ret;
+
+		string iponeStr[10] = { "","",
+			"abc", // 2
+			"def", // 3
+			"ghi", // 4
+			"jkl", // 5
+			"mno", // 6
+			"pqrs", // 7
+			"tuv", // 8
+			"wxyz", // 9
+		};
+		// digits：按下的按键的字符串 index要出来按键字符串中的对应字符串的下标
+		void letterCombinations_backtrack(string digits, int index)
+		{
+			if (letterCombinations_signal.size() == digits.size())
+			{
+				letterCombinations_ret.push_back(letterCombinations_signal);
+				return;
+			}
+			string tmpStr = iponeStr[digits[index] - '0'];//拿到对应数字的对应字母
+			for (size_t i = 0; i < tmpStr.size(); i++)
+			{
+				letterCombinations_signal.push_back(tmpStr[i]);
+				letterCombinations_backtrack(digits, index + 1);//!!i+1不对，这样每次递归就只能是1了，起不到digits往后轮的作用
+				letterCombinations_signal.pop_back();
+			}
+			return;
+		}
+
+		vector<string> letterCombinations(string digits) {
+			if (digits.empty())return vector<string>();
+			letterCombinations_backtrack(digits, 0);
+			return letterCombinations_ret;
+		}
 
 
 
