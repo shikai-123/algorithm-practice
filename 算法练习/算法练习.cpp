@@ -3655,7 +3655,6 @@ namespace Tree {
 		}
 
 
-
 		/*
 		100. 相同的树
 
@@ -4637,7 +4636,7 @@ namespace Tree {
 		108. 将有序数组转换为二叉搜索树
 		参考：
 		https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/description/
-		
+
 		构造二叉树，自然少不了区间的分割，那么什么时候用左闭右闭呢，什么时候一开一闭呢？
 		其实本质就是其实都想用左闭右闭，！只是看你怎么选了！这个想法我还没验证，!用闭区间去做这个题目。我刚才没做出来。
 		比如构造二叉树这个题目，https://programmercarl.com/0106.%E4%BB%8E%E4%B8%AD%E5%BA%8F%E4%B8%8E%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86%E5%BA%8F%E5%88%97%E6%9E%84%E9%80%A0%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E6%80%9D%E8%B7%AF
@@ -4653,14 +4652,14 @@ namespace Tree {
 		我要的是-10 -3 之所以“可以说”是闭区间，是因为我的代码中，不需要向上面的题目中，把分割点的下标再传进去。
 		所以，闭开只是为了方便理解题目罢了，不是核心。最终还是记忆，不同的题型，用不同的方法。
 		*/
-		TreeNode* sortedArrayToBST1(vector<int>& nums,int left,int right)
+		TreeNode* sortedArrayToBST1(vector<int>& nums, int left, int right)
 		{
 			if (left > right) return  nullptr;
 			int mid = left + (right - left) / 2;//注意此处，（(right + left) / 2;）可能会出现int越界
 			TreeNode* root = new TreeNode(nums[mid]);
 
 			root->left = sortedArrayToBST1(nums, left, mid - 1);
-			root->right = sortedArrayToBST1(nums, mid+1, right);
+			root->right = sortedArrayToBST1(nums, mid + 1, right);
 			return root;
 
 		}
@@ -4727,6 +4726,77 @@ namespace Tree {
 	};
 }
 
+//回溯
+namespace BackTracking {
+	class Solution {
+	public:
+
+
+
+		/*
+		77. 组合
+		参考：
+			https://www.programmercarl.com/0077.%E7%BB%84%E5%90%88.html#%E6%80%9D%E8%B7%AF
+		核心：
+			1、如果要用回溯算法的话，很多题目可以抽象成n叉树，用树形结构的思想去解决这些事情。
+			2、回溯三部曲
+				2.1、确定返回值和参数
+					一般而言，递归是不需要返回值的。
+					至于参数，到底使用全局变量还是局部变量，具体情况，灵活改变把
+				2.2、确定回溯函数结束条件
+					也就是到了所谓的“叶子节点”，
+					就是拿到了想要的结果，然后要从结果中拿掉一些东西的时候。
+				2.3、单层搜索的过程
+					就是for和递归搭配。
+					for负责横向遍历，递归负责纵向遍历。
+		*/
+		vector<int>combine_signal;//单个的结果
+		vector<vector<int>> combine_ret;//总的结果
+
+		//2.1、确定返回值和参数
+		void combine_backtrak(int n, int k, int statrIndex)
+		{
+			//2.2、确定回溯函数结束条件
+			if (combine_signal.size() == k)
+			{
+				combine_ret.push_back(combine_signal);
+				return;
+			}
+
+			//2.3、确定单层搜索的过程——就是for和递归搭配。
+			for (int i = statrIndex; i <= n; i++)
+			{
+				combine_signal.push_back(i);//递归，纵向遍历，增加单组元素数量，
+				combine_backtrak(n, k, i + 1);
+				combine_signal.pop_back();
+				//增加的数量到了2，就返回，然后删除最后的元素， 从12到了1
+				//然后下次for，进入所谓的横向递归，
+
+				//!这里面面走的是12 13 14
+			}
+			return;//12 13 14走完了之后，开始走这，然后开始23 24 4
+		}
+
+		vector<vector<int>> combine(int n, int k) {
+			combine_backtrak(n, k, 1);
+			return combine_ret;
+		}
+
+
+
+		void test()
+		{
+		}
+	};
+
+
+
+
+
+}
+
+
+
 
 int main()
 {
@@ -4739,7 +4809,7 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 
-	Tree::Solution tree;
+	BackTracking::Solution tree;
 	tree.test();
 
 
