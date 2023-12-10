@@ -4732,6 +4732,21 @@ namespace BackTracking {
 	public:
 
 
+		/*
+		void backtracking(参数) {
+			if (终止条件) {
+				存放结果;
+				return;
+			}
+
+			for (选择：本层集合中元素（树中节点孩子的数量就是集合的大小）) {
+				处理节点;
+				backtracking(路径，选择列表); // 递归
+				回溯，撤销处理结果
+			}
+		}
+		*/
+
 
 		/*
 		77. 组合
@@ -4764,7 +4779,7 @@ namespace BackTracking {
 			}
 
 			//2.3、确定单层搜索的过程——就是for和递归搭配。
-			for (int i = statrIndex; i <= n; i++)
+			for (int i = statrIndex; i <= n; i++)//选择：本层集合中元素（树中节点孩子的数量就是集合的大小
 			{
 				combine_signal.push_back(i);//递归，纵向遍历，增加单组元素数量，
 				combine_backtrak(n, k, i + 1);
@@ -4781,6 +4796,10 @@ namespace BackTracking {
 			combine_backtrak(n, k, 1);
 			return combine_ret;
 		}
+
+
+
+
 
 
 
