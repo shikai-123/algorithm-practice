@@ -4915,8 +4915,43 @@ namespace BackTracking {
 			return letterCombinations_ret;
 		}
 
+		/*
+		39. 组合总和
+		参考：
+			https://www.programmercarl.com/0039.%E7%BB%84%E5%90%88%E6%80%BB%E5%92%8C.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+			这个题目剪枝和不剪枝只是少了一些函数的递归而已。
+			不剪枝的思路，更好理解
+		*/
+		vector<vector<int>>combinationSum_ret;
+		vector<int>combinationSum_signal;
 
+		//2.1、确定返回值和参数
+		void combinationSum_back_track(const vector<int>& candidates, int sum, int target, int startIndex)
+		{
+			//2.2、确定回溯函数结束条件
+			//if (sum > target)return; 这个剪枝之后，这个条件就用不到了，因为不会走到这一步
+			if (sum == target)
+			{
+				combinationSum_ret.push_back(combinationSum_signal);
+				return;
+			}
 
+			//2.3、确定单层搜索的过程——就是for和递归搭配; sum < target剪枝操作
+			for (size_t i = startIndex; i < candidates.size() && sum < target; i++)
+			{
+				combinationSum_signal.push_back(candidates[i]);
+				sum += candidates[i];
+				combinationSum_back_track(candidates, sum, target, i);//!!因为元素是可以重复的组合，所以从i开始 比如123 有11组合
+				sum -= candidates[i];
+				combinationSum_signal.pop_back();
+			}
+
+		}
+		vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+			sort(candidates.begin(), candidates.end());//排序的目的是为了剪枝，顺序是从小到大，前面数据的和已经超过目标值，后面的自然就不用算了。
+			combinationSum_back_track(candidates, 0, target, 0);
+			return combinationSum_ret;
+		}
 
 		void test()
 		{
