@@ -4953,6 +4953,51 @@ namespace BackTracking {
 			return combinationSum_ret;
 		}
 
+
+		/*
+		40. 组合总和 II
+		参考：
+		https://www.programmercarl.com/0040.%E7%BB%84%E5%90%88%E6%80%BB%E5%92%8CII.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路有些复杂，就没有写
+		*/
+		vector<vector<int>>combinationSum2_ret;
+		vector<int>combinationSum2_signal;
+		//2.1、确定返回值和参数;bool used[]记录candidates中的数据，有没有用过，used[0]=1 低0位数据用过
+		void combinationSum2_backtrack(vector<int>& candidates, int target, int sum, vector<bool>& used, int startIndex)
+		{
+			//2.2、确定回溯函数结束条件
+			if (sum > target)return;
+			if (sum == target)
+			{
+				combinationSum2_ret.push_back(combinationSum2_signal);
+				return;
+			}
+			//2.3、确定单层搜索的过程——就是for和递归搭配; && sum + candidates[i] <= target剪枝操作
+			for (size_t i = startIndex; i < candidates.size() && sum + candidates[i] <= target; i++)
+			{
+				//!看图多领会这个条件的判断。 
+				//i>0保证从第二个元素开始比较，
+				// candidates[i] ==candidates[i - 1] && used[i - 1] = 1说明有挨边的元素有相等的，那后面的元素的横向遍历的组合，就会和之前的重复，比如112  (前)12 有了之后，(后)12就是重复的。但是纵向遍历112 这两个1就不重复。 (前)12和(后)12 唯一的区别就是used[i-1]=1 used[i-1]=0 
+				if (i > 0 && candidates[i] == candidates[i - 1] && used[i - 1] == 0)continue;
+				combinationSum2_signal.push_back(candidates[i]);
+				used[i] = 1;
+				sum += candidates[i];
+				combinationSum2_backtrack(candidates, target, sum, used, i + 1);
+				used[i] = 0;// ！！ 别忘了这个回溯
+				sum -= candidates[i];
+				combinationSum2_signal.pop_back();
+			}
+			return;
+		}
+		vector<vector<int>>combinationSum2(vector<int>& candidates, int target) {
+			vector<bool> used(candidates.size(), false);
+			// 首先把给candidates排序，让其相同的元素都挨在一起。!!别忘了这个
+			sort(candidates.begin(), candidates.end());
+			combinationSum2_backtrack(candidates, target, 0, used, 0);
+			return combinationSum2_ret;
+
+		}
+
 		void test()
 		{
 		}
