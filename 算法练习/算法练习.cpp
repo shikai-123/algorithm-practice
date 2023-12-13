@@ -4763,7 +4763,7 @@ namespace BackTracking {
 					就是拿到了想要的结果，然后要从结果中拿掉一些东西的时候。
 				2.3、单层搜索的过程
 					就是for和递归搭配。
-					for负责横向遍历，递归负责纵向遍历。
+					！！for负责横向遍历，递归负责纵向遍历。
 		*/
 		vector<int>combine_signal;//单个的结果
 		vector<vector<int>> combine_ret;//总的结果
@@ -4998,8 +4998,96 @@ namespace BackTracking {
 
 		}
 
+
+		/*
+		131. 分割回文串
+		参考：
+			https://www.programmercarl.com/0131.%E5%88%86%E5%89%B2%E5%9B%9E%E6%96%87%E4%B8%B2.html#%E6%80%9D%E8%B7%AF
+		！！这个题的最要注意的地方就是：
+		递归函数的下次开始的地方 不在是固定的startIndex + 1
+		而是真正对应结束位置的i，然后+1 才是新位置。
+		具体看下边的注释
+		*/
+		vector<vector<string>> partition_ret;
+		vector<string > partition_singal;
+		//2.1、确定返回值和参数
+		void partitionTracking(const string & s, int startIndex)
+		{
+			//2.2、确定回溯函数结束条件
+			if (startIndex == s.size())
+			{
+				partition_ret.push_back(partition_singal);
+				return;
+			}
+
+			//2.3、确定单层搜索的过程——！！for负责横向遍历，递归负责纵向遍历。
+			for (size_t i = startIndex; i < s.size(); i++)
+			{
+				//判断是不是回文串
+				/*
+				!!!isPalindrome(s, startIndex, i - startIndex + 1) 这是错的！
+				i - startIndex + 1 改成i
+				一下思路，看链接的图去理解最好了。
+				对于aab而言，纵向的单个a a b都取完了。
+				然后开始取ab，这个时候，递归回到第二层（看图）
+				for的横向遍历， ab截取a是一个i，截取"ab"是第二个i 所这个时候判断回文的范围应该是startindex 到 i
+				*/
+				if (isPalindrome(s, startIndex, i))
+				{
+					string cutSrt = s.substr(startIndex, i - startIndex + 1);
+					partition_singal.push_back(cutSrt);
+				}
+				else
+					continue;
+
+				/*
+				?!为什么说递归从i+1开始 而不是寻常的startIndex + 1开始
+				可以从另外一个角度理解这个事
+				startIndex在一个for中是不变的，而i时发生变化的。
+				！！i代表的是待处理的字串的结束位置，如果回文字符串aa这种多个的，i和startIndex就不会相等，就会出问题
+				*/
+				partitionTracking(s, i + 1);
+
+				partition_singal.pop_back();
+			}
+			return;
+		}
+
+		bool isPalindrome(const string & s, int begin, int end)
+		{
+			for (; begin < end; begin++, end--)//<=或者<都行。比如101 
+			{
+				if (s[begin] == s[end])
+					continue;
+				else
+					return false;
+			}
+			return true;
+		}
+
+		vector<vector<string>> partition(string s) {
+			partitionTracking(s, 0);
+			return partition_ret;
+		}
+
+
 		void test()
 		{
+			//2.1、确定返回值和参数
+			//2.2、确定回溯函数结束条件
+			//2.3、确定单层搜索的过程——！！for负责横向遍历，递归负责纵向遍历。
+
+			string s = "aab";
+			partition(s);
+
+			for (auto i : partition_ret)
+			{
+				for (auto l : i)
+				{
+					cout << l << " ";
+				}
+				cout << endl;
+			}
 		}
 	};
 
