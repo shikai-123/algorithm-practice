@@ -5032,23 +5032,23 @@ namespace BackTracking {
 				然后开始取ab，这个时候，递归回到第二层（看图）
 				for的横向遍历， ab截取a是一个i，截取"ab"是第二个i 所这个时候判断回文的范围应该是startindex 到 i
 				*/
+				//!!只有当前的有效才可以往下走，要不然没有意义
 				if (isPalindrome(s, startIndex, i))
 				{
 					string cutSrt = s.substr(startIndex, i - startIndex + 1);
 					partition_singal.push_back(cutSrt);
+					/*
+					?!为什么说递归从i+1开始 而不是寻常的startIndex + 1开始
+					可以从另外一个角度理解这个事
+					startIndex在一个for中是不变的，而i时发生变化的。
+					！！i代表的是待处理的字串的结束位置，如果回文字符串aa这种多个的，i和startIndex就不会相等，就会出问题
+					*/
+					partitionTracking(s, i + 1);
+
+					partition_singal.pop_back();
 				}
 				else
-					continue;
-
-				/*
-				?!为什么说递归从i+1开始 而不是寻常的startIndex + 1开始
-				可以从另外一个角度理解这个事
-				startIndex在一个for中是不变的，而i时发生变化的。
-				！！i代表的是待处理的字串的结束位置，如果回文字符串aa这种多个的，i和startIndex就不会相等，就会出问题
-				*/
-				partitionTracking(s, i + 1);
-
-				partition_singal.pop_back();
+					continue;//这个
 			}
 			return;
 		}
@@ -5070,6 +5070,74 @@ namespace BackTracking {
 			return partition_ret;
 		}
 
+		/*
+		93. 复原 IP 地址
+		参考：
+			https://www.programmercarl.com/0093.%E5%A4%8D%E5%8E%9FIP%E5%9C%B0%E5%9D%80.html
+		注意：
+			1、递归不满足的时候，要看看用continue还是break
+			2、s = "10.10.23. 这种情况，别忘了
+		*/
+		vector<string> restoreIpAddresses_ret;
+		//2.1、确定返回值和参数
+		void restoreIpAddressesTrack(string& s, int startIndex, int pointNum)
+		{
+			//2.2、确定回溯函数结束条件
+			if (pointNum == 3)
+			{
+				// 判断第四段子字符串是否合法，如果合法就放进result中
+				if (isValid(s, startIndex, s.size() - 1)) {
+					restoreIpAddresses_ret.push_back(s);
+				}
+				return;
+			}
+
+			//2.3、确定单层搜索的过程——！！for负责横向遍历，递归负责纵向遍历。
+			for (size_t i = startIndex; i < s.size(); i++)
+			{
+				if (isValid(s, startIndex, i))//当前ip合法，才有往下走的必要
+				{
+					s.insert(s.begin() + 1 + i, '.');//+1的原因是因为 要把.插入到i的后面
+					pointNum += 1;
+					restoreIpAddressesTrack(s, i + 2, pointNum);// 插入逗点之后下一个子串的起始位置为i+2
+					pointNum -= 1;
+					s.erase(s.begin() + 1 + i);
+				}
+				else
+					break;
+			}
+		}
+		bool isValid(const string& s, int start, int end)
+		{
+			//“”101023  s = "10.10.23."当组合成这个情况的时候，start=9 end=8
+			//因为当pointNum==3的时候，会有这种情况，新的开始开始位置就是结束位置+1，很明显就超了，这种就要返回false
+			if (start > end) {//!!还真有这个情况
+				return false;
+			}
+			if (s[start] == '0' && start != end) { // 0开头的数字不合法
+				return false;
+			}
+			int num = 0;
+			//!!用atoi简化！！！
+			for (int i = start; i <= end; i++) {
+				if (s[i] > '9' || s[i] < '0') { // 遇到非数字字符不合法
+					return false;
+				}
+				num = num * 10 + (s[i] - '0');
+				if (num > 255) { // 如果大于255了不合法
+					return false;
+				}
+			}
+			return true;
+		}
+
+		vector<string> restoreIpAddresses(string s) {
+
+			if (s.size() < 4)return vector<string>();
+			restoreIpAddressesTrack(s, 0, 0);
+			return restoreIpAddresses_ret;
+		}
+
 
 		void test()
 		{
@@ -5077,10 +5145,10 @@ namespace BackTracking {
 			//2.2、确定回溯函数结束条件
 			//2.3、确定单层搜索的过程——！！for负责横向遍历，递归负责纵向遍历。
 
-			string s = "aab";
-			partition(s);
+			string s = "101023";
+			restoreIpAddresses(s);
 
-			for (auto i : partition_ret)
+			for (auto i : restoreIpAddresses_ret)
 			{
 				for (auto l : i)
 				{
