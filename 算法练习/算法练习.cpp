@@ -5139,6 +5139,37 @@ namespace BackTracking {
 		}
 
 
+		/*
+		78. 子集
+		参考：
+			https://www.programmercarl.com/0078.%E5%AD%90%E9%9B%86.html
+		*/
+		vector<vector<int>> subsets_ret;
+		vector<int>subsets_signal;
+		//2.1、确定返回值和参数
+		void subsetsTracking(const vector<int>& nums, int startIndex)
+		{
+			//这个题目特殊的是它的结果是它遍历中的每一个都是，而不是满足了什么条件才是,所以递归结束条件才不一样
+			subsets_ret.push_back(subsets_signal);// 收集子集，要放在终止添加的上面，否则会漏掉自己
+			//2.2、确定回溯函数结束条件
+			if (startIndex >= nums.size())return;// 终止条件可以不加
+			//2.3、确定单层搜索的过程——！！for负责横向遍历，递归负责纵向遍历。
+			for (size_t i = startIndex; i < nums.size(); i++)
+			{
+				subsets_signal.push_back(nums[i]);
+				subsetsTracking(nums, i + 1);
+				subsets_signal.pop_back();
+			}
+			return;
+		}
+		vector<vector<int>> subsets(vector<int>& nums) {
+			subsetsTracking(nums, 0);
+			return subsets_ret;
+		}
+
+
+
+
 		void test()
 		{
 			//2.1、确定返回值和参数
@@ -5158,9 +5189,6 @@ namespace BackTracking {
 			}
 		}
 	};
-
-
-
 
 
 }
