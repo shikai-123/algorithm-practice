@@ -5167,8 +5167,42 @@ namespace BackTracking {
 			return subsets_ret;
 		}
 
-
-
+		/*
+		90. 子集 II
+		参考：
+		https://www.programmercarl.com/0090.%E5%AD%90%E9%9B%86II.html#%E6%80%9D%E8%B7%AF
+		这个题目和40题组合问题II 是非常相似的。是40题和78题的组合
+		！这个问题和40题组合问题II的关键都是去重，这种问题的去重分为
+		树枝去重，树层去重。树枝不用去重，树层才需要去重。
+		nums[i-1] == nums[i] 这个时候树枝去重，树层去重都会生效，很明显不符合要求。
+		加上 used[i-1]==false;才能完成树枝不用去重，树层才需要去重。
+		树枝：used[i-1]=true，used[i]=true;
+		树层：used[i-1]=false，used[i]=true;
+		不同就看链接中的视频
+		*/
+		vector<int>subsetsWithDup_signal;
+		vector<vector<int>>subsetsWithDup_ret;
+		void subsetsWithDup_tracking(vector<int>& nums, vector<bool>&used, int startIndex)
+		{
+			subsetsWithDup_ret.push_back(subsetsWithDup_signal);
+			for (size_t i = startIndex; i < nums.size(); i++)
+			{
+				if (i > 0 && nums[i - 1] == nums[i] && used[i - 1] == false)
+					continue;
+				subsetsWithDup_signal.push_back(nums[i]);
+				used[i] = true;
+				subsetsWithDup_tracking(nums, used, i + 1);//!!!要说的我回溯了一下上面的所有的题目都是i+1，没有一个startIndex+1
+				used[i] = false;
+				subsetsWithDup_signal.pop_back();
+			}
+			return;
+		}
+		vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+			vector<bool>used(nums.size(), false);
+			sort(nums.begin(), nums.end());
+			subsetsWithDup_tracking(nums, used, 0);
+			return subsetsWithDup_ret;
+		}
 
 		void test()
 		{
@@ -5176,8 +5210,9 @@ namespace BackTracking {
 			//2.2、确定回溯函数结束条件
 			//2.3、确定单层搜索的过程——！！for负责横向遍历，递归负责纵向遍历。
 
-			string s = "101023";
-			restoreIpAddresses(s);
+			string s = "112";
+			vector<int> nums = { 1,1,2 };
+			subsetsWithDup(nums);
 
 			for (auto i : restoreIpAddresses_ret)
 			{
