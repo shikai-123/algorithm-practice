@@ -5204,6 +5204,39 @@ namespace BackTracking {
 			return subsetsWithDup_ret;
 		}
 
+		/*
+		491.递增子序列
+		参考：
+		https://www.programmercarl.com/0491.%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		本题可以用数组来实现去重，但是这里为了学习不同的方法，选择用set去重。但以后就只保留一种方法即可。数组的性能更好，并且和上面的题目更统一。
+		去重要不要回溯？
+		如果要保证树层是不重复的，树枝是可以重复的。就要在for中去定义变量，并且不回溯。
+		否则就得回溯。
+		参考：491.递增子序列
+
+		*/
+		vector<vector<int>> findSubsequences_ret;
+		vector<int> findSubsequences_signal;
+		void findSubsequences_tracking(vector<int>& nums, int startIndex)
+		{
+			if (findSubsequences_signal.size() > 1)
+				findSubsequences_ret.push_back(findSubsequences_signal);
+			unordered_set<int> findSubsequences_set;//!!一定要放在for中，因为我们要做的就是避免树层的重复，而树枝的重复这个可以重复。
+			for (size_t i = startIndex; i < nums.size(); i++)
+			{
+				if (!findSubsequences_signal.empty() && findSubsequences_signal.back() > nums[i] || findSubsequences_set.find(nums[i]) != findSubsequences_set.end())continue;
+				findSubsequences_set.insert(nums[i]);//!这个不用回溯，因为回溯是不能保证一层上的数据不重复，而这里是为了保证整个树，每个结果都得是不重复的。
+				findSubsequences_signal.push_back(nums[i]);
+				findSubsequences_tracking(nums, i + 1);
+				findSubsequences_signal.pop_back();
+			}
+			return;
+		}
+		vector<vector<int>> findSubsequences(vector<int>& nums) {
+			findSubsequences_tracking(nums, 0);
+			return 		findSubsequences_ret;
+		}
+
 		void test()
 		{
 			//2.1、确定返回值和参数
