@@ -5187,7 +5187,7 @@ namespace BackTracking {
 			subsetsWithDup_ret.push_back(subsetsWithDup_signal);
 			for (size_t i = startIndex; i < nums.size(); i++)
 			{
-				if (i > 0 && nums[i - 1] == nums[i] && used[i - 1] == false)
+				if (i > 0 && nums[i - 1] == nums[i] && used[i - 1] == false)//used[i-1]==true;在本题也行，就是性能差点
 					continue;
 				subsetsWithDup_signal.push_back(nums[i]);
 				used[i] = true;
@@ -5275,6 +5275,46 @@ namespace BackTracking {
 			permute_tracking(nums, used);
 			return permute_ret;
 		}
+
+
+		/*
+		47.全排列 II
+		最重要的就是树层去重，树枝不去重。
+		参考：
+		https://www.programmercarl.com/0047.%E5%85%A8%E6%8E%92%E5%88%97II.html#%E6%80%BB%E7%BB%93
+		*/
+		vector<int>permuteUnique_signal;
+		vector<vector<int>>permuteUnique_ret;
+		void permuteUnique_tracking(vector<int>& nums, vector<bool>& used)
+		{
+			//在叶子节点上取结果
+			if (permuteUnique_signal.size() == nums.size())
+			{
+				permuteUnique_ret.push_back(permuteUnique_signal);
+				return;
+			}
+			//排列要从0开始取。!并且要“树层”去重
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				//树层去重
+				if (i > 0 && nums[i - 1] == nums[i] && used[i - 1] == false)continue;
+				//如果元素被用了，就跳过——树枝去重
+				if (used[i] == true)continue;
+				permuteUnique_signal.push_back(nums[i]);
+				used[i] = true;
+				permuteUnique_tracking(nums, used);
+				used[i] = false;
+				permuteUnique_signal.pop_back();
+			}
+			return;
+		}
+		vector<vector<int>> permuteUnique(vector<int>& nums) {
+			vector<bool>used(nums.size(), false);
+			sort(nums.begin(), nums.end());
+			permuteUnique_tracking(nums, used);
+			return permuteUnique_ret;
+		}
+
 
 
 		void test()
