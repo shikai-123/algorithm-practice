@@ -5317,6 +5317,139 @@ namespace BackTracking {
 		}
 
 
+		/*
+		51. N皇后
+		参考：
+		https://www.programmercarl.com/0051.N%E7%9A%87%E5%90%8E.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		和其他题目不同的是，这是一个二维数组的回溯，之前的都是一维数组的回溯。
+		用递归来控制每一行，在每层的递归中遍历这一行的不同列
+		棋盘的宽度就是for循环的长度，递归的深度就是棋盘的高度，这样就可以套进回溯法的模板里了。
+		*/
+		bool solveNQueens_isValid(int row, int col, vector<string>& chessboard, int n) {
+			//检查列——只用检查到row（当前遍历的行数），不用检查到底
+			for (size_t i = 0; i < row; i++)
+			{
+				if (chessboard[i][col] == 'Q')return false;
+			}
+			//检查行——这里不用；因为在遍历每一层的时候，只会选for循环（也就是同一行）里的一个元素，所以不用去重了。
+			// 检查 135度角是否有皇后-解析应该写错了
+			for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+				if (chessboard[i][j] == 'Q') {
+					return false;
+				}
+			}
+			// 检查 45度角是否有皇后
+			for (int i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++) {
+				if (chessboard[i][j] == 'Q') {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		vector<vector<string>> solveNQueens_ret;
+
+		//n是棋盘的宽度
+		//row是当前递归到棋盘的第几行了
+		//signalchessboard构造的单个棋盘
+		void solveNQueensStracking(int n, int row, vector<string>&signalchessboard)
+		{
+			if (row == n)
+			{
+				solveNQueens_ret.push_back(signalchessboard);
+				return;
+			}
+			for (size_t i = 0; i < n; i++)
+			{
+				//如果当前皇后的位置符合要求的话，就放到
+				if (solveNQueens_isValid(row, i, signalchessboard, n))
+				{
+					signalchessboard[row][i] = 'Q';
+					solveNQueensStracking(n, row + 1, signalchessboard);
+					signalchessboard[row][i] = '.';
+				}
+			}
+		}
+
+		vector<vector<string>> solveNQueens(int n) {
+			//!!这个其实是个二维的数组，所以初始化signalchessboard(n, ('.'));是不对的
+			vector<string> signalchessboard(n, std::string(n, '.'));
+			solveNQueensStracking(n, 0, signalchessboard);
+			return solveNQueens_ret;
+		}
+
+		/*
+		37. 解数独
+		参考：
+		https://www.programmercarl.com/0037.%E8%A7%A3%E6%95%B0%E7%8B%AC.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		这套题目和前面的题目的不同是，这个题目是有2维递归，也就是用到了两个for。
+		如果结果只有一个，那么返回值的是直接从尾返回到头，并且递归函数带返回值
+		因为解数独找到一个符合的条件（就在树的叶子节点上）立刻就返回，相当于找从根节点到叶子节点一条唯一路径，所以需要使用bool返回值
+		只有有了返回值，才能对返回值做判断，返回值复合条件了就可以返回，正好返回值的判断就在递归函数下面，接着返回，就能造成上面说的一直放回到头的效果。
+		*/
+
+		bool solveSudoku_isValid(int row, int col, char val, vector<vector<char>>& board)
+		{
+			for (int i = 0; i < 9; i++) { // 判断行里是否重复
+				if (board[row][i] == val) {
+					return false;
+				}
+			}
+			for (int j = 0; j < 9; j++) { // 判断列里是否重复
+				if (board[j][col] == val) {
+					return false;
+				}
+			}
+			int startRow = (row / 3) * 3;
+			int startCol = (col / 3) * 3;
+			for (int i = startRow; i < startRow + 3; i++) { // 判断9方格里是否重复
+				for (int j = startCol; j < startCol + 3; j++) {
+					if (board[i][j] == val) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		bool solveSudoku_tracking(vector<vector<char>>& board)
+		{
+			for (size_t i = 0; i < board.size(); i++)
+			{
+				for (size_t l = 0; l < board[0].size(); l++)
+				{
+					//如果当前棋盘的位置是空的，那就开始放数字
+					if (board[i][l] == '.')
+					{
+						//从1到9依次放放试试。！是小于等于
+						for (char val = '1'; val <= '9'; val++)
+						{
+							//如果这个数字是有效的，就放到棋盘中。
+							//既然是有效的，那么开始下一个位置。
+							//！！别忘了在递归函数做判断，接返回值。
+							//要是下个位置不行，就开始回溯到上层，开始回溯
+							bool result = solveSudoku_isValid(i, l, val, board);
+							if (result)
+							{
+								board[i][l] = val;
+								if (solveSudoku_tracking(board)) return true; // 如果找到合适一组立刻返回
+								board[i][l] = '.';
+							}
+							//如果这个数不满足要求，那就下一个数试试。
+						}
+						//如果1-9都不行，那就回溯到上一层，用上一层的另外一个数再试。总归是有一个满足要求的。！其实就是回到上面那行board[i][l] = '.';代码。进行回溯
+						return false;
+					}
+				}
+			}
+			//遍历到最后了，肯定是满足要求的。不满足要求的，在中间早就返回了很多次了。不会到这
+			return true;
+		}
+		void solveSudoku(vector<vector<char>>& board) {
+			solveSudoku_tracking(board);
+		}
+
+
+
 
 
 
