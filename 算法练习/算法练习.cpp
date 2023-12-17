@@ -5237,6 +5237,46 @@ namespace BackTracking {
 			return 		findSubsequences_ret;
 		}
 
+
+		/*
+		46.全排列
+		参考：
+		https://www.programmercarl.com/0046.%E5%85%A8%E6%8E%92%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		used数组用来标记那些元素被用了。之前都是用来去重。
+		每次开始的位置都是0，因为他是排列。不是组合，比如12 有12 21 ，组合12 21是一个，
+		排列中取了2之后，发现1还没取就要去取了，
+		元素取没取，用used数组来判断。
+		*/
+		vector<int>permute_signal;
+		vector<vector<int>>permute_ret;
+		void permute_tracking(vector<int>& nums, vector<bool>& used)
+		{
+			//在叶子节点上取结果
+			if (permute_signal.size() == nums.size())
+			{
+				permute_ret.push_back(permute_signal);
+				return;
+			}
+			//排列要从0开始取。
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				//如果元素被用了，就跳过
+				if (used[i] == true)continue;
+				permute_signal.push_back(nums[i]);
+				used[i] = true;
+				permute_tracking(nums, used);
+				used[i] = false;
+				permute_signal.pop_back();
+			}
+			return;
+		}
+		vector<vector<int>> permute(vector<int>& nums) {
+			vector<bool>used(nums.size(), false);
+			permute_tracking(nums, used);
+			return permute_ret;
+		}
+
+
 		void test()
 		{
 			//2.1、确定返回值和参数
