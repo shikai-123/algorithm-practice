@@ -5210,10 +5210,11 @@ namespace BackTracking {
 		https://www.programmercarl.com/0491.%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		本题可以用数组来实现去重，但是这里为了学习不同的方法，选择用set去重。但以后就只保留一种方法即可。数组的性能更好，并且和上面的题目更统一。
 		去重要不要回溯？
-		如果要保证树层是不重复的，树枝是可以重复的。就要在for中去定义变量，并且不回溯。
+		如果要保证同一个父节点下的树层是不重复的（不是整个树的同一层并且挨边的两个元素重复），树枝是可以重复的。就要在for中去定义变量，并且不回溯。
 		否则就得回溯。
 		参考：491.递增子序列
-
+		参考：
+		https://mp.weixin.qq.com/s?__biz=MzUxNjY5NTYxNA==&mid=2247485532&idx=1&sn=d341f09725185a6a21e5241e44bd955b&scene=21#wechat_redirect
 		*/
 		vector<vector<int>> findSubsequences_ret;
 		vector<int> findSubsequences_signal;
@@ -5314,6 +5315,8 @@ namespace BackTracking {
 			permuteUnique_tracking(nums, used);
 			return permuteUnique_ret;
 		}
+
+
 
 
 
