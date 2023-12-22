@@ -5449,10 +5449,6 @@ namespace BackTracking {
 		}
 
 
-
-
-
-
 		void test()
 		{
 			//2.1、确定返回值和参数
@@ -5473,11 +5469,83 @@ namespace BackTracking {
 			}
 		}
 	};
-
-
 }
 
+//贪心
+namespace Greedy {
+	class Solution {
+	public:
+		/*
+		455. 分发饼干
+		参考：
+			https://www.programmercarl.com/0455.%E5%88%86%E5%8F%91%E9%A5%BC%E5%B9%B2.html#%E6%80%9D%E8%B7%AF
+		思路：
+			贪心思路，从最大的胃口开始喂，直到喂完。
+			这个一定是建立在元素有序的基础上。
+		*/
+		int findContentChildren(vector<int>& g, vector<int>& s) {
+			sort(g.begin(), g.end());
+			sort(s.begin(), s.end());
+			//胃口值 g  饼干 s
+			int index = s.size() - 1;
+			int ret = 0;
 
+			for (int i = g.size() - 1; i >= 0; )
+			{
+				//要注意的就是，这个代码中饼干有时候喂了“同一个胃口”，但是不影响结果
+				//比如饼干33 胃口 12 根据这个代码3喂2之后，i不会变化，index--，所以新的饼干又喂了老的个胃口
+				//因为排序了，新饼干能喂后面就一定能喂前面。
+				while (index >= 0 && s[index] >= g[i])//如果满足条件，ret++  饼干s就往前挪一个。
+				{
+					ret++;
+					index--;
+					if (i == 0)
+					{
+						return ret;
+					}
+					i--;
+					continue;
+				}
+				i--;
+			}
+			return ret;
+		}
+		//我自己写的这个，可以完美避免重复喂问题，但是代码复杂
+		int findContentChildren1(vector<int>& g, vector<int>& s) {
+			sort(g.begin(), g.end());
+			sort(s.begin(), s.end());
+			//胃口值 g  饼干 s
+			int index = s.size() - 1;
+			int ret = 0;
+
+			for (int i = g.size() - 1; i >= 0; )
+			{
+				while (index >= 0 && s[index] >= g[i])//如果满足条件，ret++  饼干s就往前挪一个。
+				{
+					ret++;
+					index--;
+					if (i == 0)
+					{
+						return ret;
+					}
+					i--;
+					continue;
+				}
+				i--;
+			}
+			return ret;
+		}
+
+
+		void test()
+		{
+			vector<int> a{ 1,2,3 };
+			vector<int> b{ 1,1 };
+			cout << findContentChildren(a, b);
+		}
+	};
+
+}
 
 
 int main()
@@ -5491,7 +5559,7 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 
-	BackTracking::Solution tree;
+	Greedy::Solution tree;
 	tree.test();
 
 
