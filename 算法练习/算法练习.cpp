@@ -5487,29 +5487,21 @@ namespace Greedy {
 			sort(g.begin(), g.end());
 			sort(s.begin(), s.end());
 			//胃口值 g  饼干 s
-			int index = s.size() - 1;
-			int ret = 0;
-
-			for (int i = g.size() - 1; i >= 0; )
-			{
-				//要注意的就是，这个代码中饼干有时候喂了“同一个胃口”，但是不影响结果
-				//比如饼干33 胃口 12 根据这个代码3喂2之后，i不会变化，index--，所以新的饼干又喂了老的个胃口
-				//因为排序了，新饼干能喂后面就一定能喂前面。
-				while (index >= 0 && s[index] >= g[i])//如果满足条件，ret++  饼干s就往前挪一个。
-				{
-					ret++;
+			int index = s.size() - 1; // 饼干数组的下标
+			int result = 0;
+			//要注意的就是，这个代码中饼干有时候喂了“同一个胃口”，但是不影响结果
+			//比如饼干33 胃口 12 根据这个代码3喂2之后，i不会变化，index--，所以新的饼干又喂了老的个胃口
+			//因为排序了，新饼干能喂后面就一定能喂前面。
+			for (int i = g.size() - 1; i >= 0; i--) { // 遍历胃口 //如果满足条件，ret++  饼干s就往前挪一个。
+				if (index >= 0 && s[index] >= g[i]) { // 遍历饼干
+					result++;
 					index--;
-					if (i == 0)
-					{
-						return ret;
-					}
-					i--;
-					continue;
 				}
-				i--;
 			}
-			return ret;
+			return result;
 		}
+
+
 		//我自己写的这个，可以完美避免重复喂问题，但是代码复杂
 		int findContentChildren1(vector<int>& g, vector<int>& s) {
 			sort(g.begin(), g.end());
@@ -5536,6 +5528,34 @@ namespace Greedy {
 			return ret;
 		}
 
+
+		/*
+		376. 摆动序列
+		参考：
+			https://www.programmercarl.com/0376.%E6%91%86%E5%8A%A8%E5%BA%8F%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+			它的这个思路就是默认两头各有一个摆动。其实就为了满足当数组长度只有2的时候，统一一下思想
+			当长度是2的时候，但是元素相同，最后的结果是1
+			这个贪心算法的思路不是从后往前走，而是先计算出局部最优解，然后把这些局部的加一起就是最好的。
+		其他：
+			这个思路搞的太复杂了，看看有没有其他的办法
+		*/
+		int wiggleMaxLength(vector<int>& nums) {
+			if (nums.size() <= 1) return nums.size();
+			int curDiff = 0;//
+			int preDiff = 0; //这个默认是0，是因为这个思路中默认会在数组的前面延长一段和数组头部的元素相同的元素。一切都是为了满足下面的判断
+			int result = 1;  // 记录峰值个数，序列默认序列最右边有一个峰值
+			for (size_t i = 0; i < nums.size() - 1; i++)
+			{
+				//这段代码，要注意的就是只有preDiff能为0的情况
+				curDiff = nums[i + 1] - nums[i];
+				if (preDiff >= 0 && curDiff < 0 || preDiff <= 0 && curDiff > 0)
+				{
+					result++;
+					preDiff = curDiff;
+				}
+			}
+			return result;
+		}
 
 		void test()
 		{
