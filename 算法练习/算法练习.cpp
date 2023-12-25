@@ -5557,6 +5557,38 @@ namespace Greedy {
 			return result;
 		}
 
+
+		/*
+		53. 最大子数组和
+		参考：
+			https://www.programmercarl.com/0053.%E6%9C%80%E5%A4%A7%E5%AD%90%E5%BA%8F%E5%92%8C.html#%E6%80%9D%E8%B7%AF
+		思路：
+			要注意的就是，只有当连续和小于0的时候，cout才要赋值0.
+			因为只有当“和小于0了”，最后的数的相加是削减作用。
+			所以这个时候，就要把这一段连续数组抛掉了。
+			也就是累加和cout=0；
+		*/
+		int maxSubArray(vector<int>& nums)
+		{
+			int ret = INT32_MIN;//因为有可能最后的结果有多小不知道，弄个这个最好
+			int cout = 0;
+
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				cout += nums[i];
+				if (cout > ret)
+					ret = cout;
+				if (cout < 0)
+					cout = 0;
+			}
+			return ret;
+		}
+
+
+
+
+
+
 		void test()
 		{
 			vector<int> a{ 1,2,3 };
