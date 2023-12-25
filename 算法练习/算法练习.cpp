@@ -165,43 +165,8 @@ namespace String_Array
 
 		}
 
-		//时间复杂度是n方。测试过不了
-		int maxProfit1(vector<int>& prices) {
-			int maxValue = 0;
-			for (size_t i = 0; i < prices.size(); i++)
-			{
-				for (size_t l = i + 1; l < prices.size(); l++)
-				{
-					if (prices[l] - prices[i] > maxValue)
-					{
-						maxValue = prices[l] - prices[i];
-					}
-				}
-			}
-			//cout << "利润 " << maxValue << endl;
-			return maxValue;
-		}
-
-		int maxProfit2(vector<int>& prices) {
-			int maxValue = prices[0];
-			int minValue = prices[0];
-			int result = 0;
-			for (size_t i = 0; i < prices.size(); i++)
-			{
-				if (prices[i] < minValue)
-				{
-					minValue = prices[i];
-				}
-				else if (prices[i] - minValue > result)
-				{
-					result = prices[i] - minValue;
-				}
-			}
-			cout << "利润 " << result << endl;
-			return result;
-		}
-
-		int maxProfit(vector<int>& prices) {
+		//这个还不是最简单的
+		int maxProfit3(vector<int>& prices) {
 			int result = 0;
 
 			for (size_t i = 1; i < prices.size(); i++)
@@ -215,46 +180,25 @@ namespace String_Array
 			return result;
 		}
 
-		bool canJump1(vector<int>& nums) {
-			int index = nums[0];
-			for (size_t i = 0; i < nums.size(); i++)
-			{
-
-				if (nums[i] >= nums.size() - i)//当前的元素的大小超过或等于剩余的步数，就认为成功
-				{
-					return true;
-				}
-				if (i == nums.size() - 1)
-				{
-					return true;
-				}
-				i = i + nums[i];
-				if (i >= nums.size() || i == i + nums[i] && i != nums.size() - 1)//下标走到了0元素，并且不是该数组的最后位置。就说明跳跃失败
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-		/*！题解中有更简单的，另外我这是从后往前走的贪心算法，也可以试试从前往后，路径应该都是一样的。*/
+		/*
+			题解中有更简单的，另外我这是从后往前走的贪心算法，也可以试试从前往后，路径应该都是一样的。
+			我已经看不懂，我当时是怎么想的了。
+			下面贪心的时候，有新的解法，代码简答，看他这个吧
+		*/
 		bool canJump(vector<int>& nums) {
-
 			if (nums.size() == 1)
 			{
 				return true;
-
 			}
 			if (nums[0] == 0)//根据规则，第一个如果是0，并且size不是1.那么肯定不行
 			{
 				return false;
-
 			}
 			int orderIndex = nums.size() - 1;//目标点的下标
 			for (int i = 1; i <= nums.size() - 1; i)//i是所在这个位置的点的下标
 			{
 				if (orderIndex - i < 0) {
 					return false;//如果目标点的下标orderIndex,比从当前遍历的点到目标点需要的步数，还大。肯定是数组越界了
-
 				}
 				if (orderIndex - i + nums[orderIndex - i] >= orderIndex)//往目标点，往前退一个目标。计算它的下表+它的值，是否》=当前目标的下表。
 				{
@@ -5586,7 +5530,45 @@ namespace Greedy {
 
 
 
+		/*
+		122. 买卖股票的最佳时机 II
+		参考：
+			https://www.programmercarl.com/0122.%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BAII.html#%E6%80%9D%E8%B7%AF
+		思路：
+			局部最优接，然后把这个局部都加一起，得到最后的。
+		其他：
+			之前做过。搜索函数名就可
+		*/
+		int maxProfit(vector<int>& prices) {
+			int ret = 0;
+			for (size_t i = 0; i < prices.size() - 1; i++)
+			{
+				//只要是每天的收益大于0（局部最优），就加上
+				ret += max(prices[i + 1] - prices[i], 0);
+			}
+			return ret;
+		}
 
+		/*
+		55. 跳跃游戏
+		参考：
+			https://www.programmercarl.com/0055.%E8%B7%B3%E8%B7%83%E6%B8%B8%E6%88%8F.html#%E6%80%9D%E8%B7%AF
+		思路：
+			先算出每走一步走，算出覆盖范围有多大，然后不断的往下走，然后不断更新更大的范围（局部最优），
+			如果嘴个范围大于等于了这个数组的长度，说明符合条件。（全局最优解）
+		*/
+		bool canJump(vector<int>& nums) {
+			if (nums.size() == 1) return true; // 只有一个元素，就是能达到，即使元素是0，因为一个元素它本身就是尾巴
+			int cover = nums[0];//数组最小长度为1，不会出现错误。注意cover代表的是下表，便于理解。
+			// 注意这里是小于等于cover 本质就是只有小于等于才能让下标走到cover代表的位置，要不然【123】过不去，
+			for (int i = 0; i <= cover; i++)
+			{
+				cover = max(cover, i + nums[i]);
+				if (cover >= nums.size() - 1)//-1是因为cover代表的是下标
+					return true;
+			}
+			return false;
+		}
 
 
 		void test()
