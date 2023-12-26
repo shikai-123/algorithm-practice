@@ -220,7 +220,7 @@ namespace String_Array
 
 		/*和前一个不同的是，它跳跃的距离是不固定的，之前跳的距离就是元素大小，现在是0--元素大小之间0 <= j <= nums[i]
 		这个更只能用贪心算法
-
+		这个我已经忘了当初是怎么写的了，所以换成代码随想的思路，最重要的是有个可以回顾的东西
 		*/
 		int jump(vector<int>& nums) {
 			int jumpNums = 0;
@@ -5569,6 +5569,44 @@ namespace Greedy {
 			}
 			return false;
 		}
+
+		/*
+		45. 跳跃游戏 II
+		参考：
+			https://www.programmercarl.com/0045.%E8%B7%B3%E8%B7%83%E6%B8%B8%E6%88%8FII.html#%E6%80%9D%E8%B7%AF
+		思路：
+			这个思路和我想的差不多，遍历一个数，先确定一个范围，然后记录这其中最大的范围。（局部最优解）
+			然后判断这个最大范围有没有超过这个数组，超过的话，就走新的一步，然后结束判断。
+			没有超的话，就往后一直往后走。看看有没有合适的范围能超过数组长度的。如果一直没有，走到旧范围的最后，那么开始新的范围，也就是步数加1。
+			一直这样重复，直到结束。
+			每一步都是走的最大的范围，把这些最大的范围结合起来就是最好的结果（选择每一阶段的局部最优，从而达到全局最优）
+			这个题目明确说明，一定能走到最后的。
+		其他：
+			比代码随想的效率高，可以达到8ms
+		*/
+		int jump(vector<int>& nums) {
+			if (nums.size() == 1) return 0;//别忘了当长度为1的时候
+			int step = 0;//走的步数
+			int currCover = 0;//当前的最大范围
+			int nextCover = 0;//下一步能走的最大范围
+			for (int i = 0; i < nums.size(); i++)
+			{
+				nextCover = max(nextCover, nums[i] + i);//获取currCover当前的最大范围中的能得到的最大范围
+				if (nextCover >= nums.size() - 1)//判断这个最大范围有没有超过这个数组，超过的话，就走新的一步，然后结束判断。
+				{
+					step++;
+					break;
+				}
+				//没有超的话，就往后一直往后走。
+				if (i == currCover)//如果一直没有，走到旧范围的最后，那么开始新的范围，也就是步数加1。
+				{
+					currCover = nextCover;
+					step++;
+				}
+			}
+			return step;
+		}
+
 
 
 		void test()
