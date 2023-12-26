@@ -5607,13 +5607,40 @@ namespace Greedy {
 			return step;
 		}
 
-
+		/*
+		1005.K次取反后最大化的数组和
+		参考：
+			https://www.programmercarl.com/1005.K%E6%AC%A1%E5%8F%96%E5%8F%8D%E5%90%8E%E6%9C%80%E5%A4%A7%E5%8C%96%E7%9A%84%E6%95%B0%E7%BB%84%E5%92%8C.html#%E6%80%9D%E8%B7%AF
+			和他的思路差不多，。我这个更好理解
+		思路：
+			先排序，然后让小的在前面（sort默认就是这样），然后翻转那些负数（局部最优解）
+			如果负数不够翻转的，再次排序，找到最小的数，翻转，知道结束
+			翻转的这些最小的，自然得到的和就最大的（选择每一阶段的局部最优，从而达到全局最优）
+		*/
+		int largestSumAfterKNegations(vector<int>& nums, int k) {
+			int ret = 0;
+			sort(nums.begin(), nums.end());
+			size_t i = 0;
+			for (i; i < k && i < nums.size() && nums[i] < 0; i++)//小于0并且翻转次数小于k的全部翻转
+			{
+				nums[i] = 0 - nums[i];
+			}
+			//这时候数组中已经是全是非负数了，这个时候在排序一下，如果没有翻转k次，就翻转最小的拿一个数
+			//这个时候就翻转这一个元素就行
+			sort(nums.begin(), nums.end());
+			for (int l = 0; l < k - i; l++)
+			{
+				nums[0] = 0 - nums[0];
+			}
+			for (int a : nums)ret += a;
+			return ret;
+		}
 
 		void test()
 		{
-			vector<int> a{ 1,2,3 };
+			vector<int> a{ -4,-2,-3 };
 			vector<int> b{ 1,1 };
-			cout << findContentChildren(a, b);
+			cout << largestSumAfterKNegations(a, 4);
 		}
 	};
 
