@@ -5702,8 +5702,46 @@ namespace Greedy {
 			return ret;
 		}
 
-
-
+		/*
+		860. 柠檬水找零
+		参考：
+			https://leetcode.cn/problems/lemonade-change/description/
+		思路：
+			首先，我个人感觉这个贪心不明显；
+			记录收到不同钱的数量，20的不用加，因为20不会找出去。
+			找出去的钱只有5、10两种。
+			优先找出10块的(局部优先解)，5块的最好用能不出去就不出去。
+			最后能找完，就满足，否则就不满足（全局最优解）
+		*/
+		bool lemonadeChange(vector<int>& bills) {
+			int five = 0, ten = 0, twenty = 0;
+			for (size_t i = 0; i < bills.size(); i++)
+			{
+				if (bills[i] == 5) {
+					five++;
+				}
+				else if (bills[i] == 10) {//
+					ten++;
+					five--;
+					if (five < 0) return false;
+				}
+				else if (bills[i] == 20) {//收到了20，优先找出10，不够了再去找出5
+					twenty++;
+					if (ten > 0) {
+						ten--;
+						five--;
+						if (five < 0) return false;
+					}
+					else {
+						five--;
+						five--;
+						five--;
+						if (five < 0) return false;
+					}
+				}
+			}
+			return true;
+		}
 
 
 		void test()
