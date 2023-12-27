@@ -5636,11 +5636,41 @@ namespace Greedy {
 			return ret;
 		}
 
+		/*
+		134. 加油站
+		参考：
+			https://www.programmercarl.com/0134.%E5%8A%A0%E6%B2%B9%E7%AB%99.html#%E6%80%9D%E8%B7%AF
+		思路：
+			先计算出每一个消耗的油量，然后累加这些油量，得到区间油耗，如果区间油耗是负数，说明从累加开始开始到结束的这部分都不行。
+			但是说不定后面的就可能可以，所以就得开始新的起点，区间油耗归零，从新计算。(局部最优解)
+			一直重复上述过程，直到遍历数组结束。（选择每一阶段的局部最优，从而达到全局最优）
+			如果最后的总油耗和是大于0的，说明有解，这个接就是最新的起点下标。
+			否则就是没有解，返回-1
+		*/
+		int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+			int secSum = 0;//区间油耗
+			int allSum = 0;//总的油耗
+			int step = 0;//起步的下标
+			for (size_t i = 0; i < gas.size(); i++)
+			{
+				secSum += (gas[i] - cost[i]);
+				allSum += (gas[i] - cost[i]);
+				if (secSum < 0)//如区间油耗小于0，则说明从累加开始开始到结束的这部分都不行，就得开始新的起点。
+				{
+					secSum = 0;
+					step = i + 1;
+				}
+			}
+			if (allSum < 0) return -1;//总的油耗不行，啥都不用管了，油的总量就不够，从哪开始也白搭。
+			return step;
+		}
+
+
 		void test()
 		{
-			vector<int> a{ -4,-2,-3 };
-			vector<int> b{ 1,1 };
-			cout << largestSumAfterKNegations(a, 4);
+			vector<int> a{ 1,2,3,4,5 };
+			vector<int> b{ 3,4,5,1,2 };
+			cout << canCompleteCircuit(a, b);
 		}
 	};
 
