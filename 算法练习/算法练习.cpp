@@ -532,6 +532,7 @@ namespace String_Array
 			return -1;
 		}
 
+		//我已经忘了思路了，可能是看别人的额答案吧。下面的思路比较简单呐。这个就不管了
 		int candy(vector<int>& ratings) {
 			int allValue = 0;
 			vector<int> lValue(ratings.size(), 1);
@@ -5666,11 +5667,50 @@ namespace Greedy {
 		}
 
 
+		/*
+		135. 分发糖果
+		参考：
+			https://www.programmercarl.com/0135.%E5%88%86%E5%8F%91%E7%B3%96%E6%9E%9C.html
+		思路：
+			这种需要两边比较的题目，统一的做法都是先比较左边，然后再比较右边。
+			首先，从左向右开始比较，如果右边大于左边，糖果在左边的基础上加一。
+			然后，从右向左开始比较，如果左边大于右边，糖果在右边的基础上加一；
+			（每次只加一个，保证了每次都是局部最优）
+			最后，取这次两次分发糖果的最大值最为最终的结果（这样做保证糖果是即大于左边也大于右边）。
+			（把所有的局部最优解加到一块，得到了全局最优解）
+			然后计算所有糖果数量。
+		*/
+		int candy(vector<int>& ratings) {
+			int ret = 0;
+			vector<int> candyNums(ratings.size(), 1);//每个小孩手里的糖果数量，默认是1个，方便处理。
+			for (size_t i = 1; i < ratings.size(); i++)//从左向右开始比较
+			{
+				if (ratings[i] > ratings[i - 1])//如果右边大于左边
+				{
+					candyNums[i] = candyNums[i - 1] + 1;//糖果在左边的基础上加一。
+				}
+			}
+			//注意这个i会有《0的时候，size_t类型不行
+			for (size_t i = ratings.size() - 2; i >= 0; i--)//从右向左开始比较
+			{
+				if (ratings[i] > ratings[i + 1])//如果左边大于右边
+				{
+					candyNums[i] = max(candyNums[i], candyNums[i + 1] + 1); //糖果在右边的基础上加一,取这次两次分发糖果的最大值最为最终的结果
+				}
+			}
+			for (int a : candyNums) ret += a;
+			return ret;
+		}
+
+
+
+
+
 		void test()
 		{
 			vector<int> a{ 1,2,3,4,5 };
 			vector<int> b{ 3,4,5,1,2 };
-			cout << canCompleteCircuit(a, b);
+			cout << candy(a);
 		}
 	};
 
