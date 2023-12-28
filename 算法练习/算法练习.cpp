@@ -5743,6 +5743,52 @@ namespace Greedy {
 			return true;
 		}
 
+		/*
+		406. 根据身高重建队列
+		参考：
+			https://www.programmercarl.com/0406.%E6%A0%B9%E6%8D%AE%E8%BA%AB%E9%AB%98%E9%87%8D%E5%BB%BA%E9%98%9F%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		题目说明：
+			people[i] = [hi, ki] h是它的身高，k是比他高的数量。
+			最后每个people都有大于等于k个的元素
+		重点：
+			对我而言，他其实是可以细化为4个维度的，所以选择哪个维度很重要，要不然就一个个的去试，到时候效率会很低。所以还是记住吧。
+			很明显这是两个维度。遇到两个维度就一个一个维度单独去计算。这个题目也是不例外。
+			维度有四：
+			分别按照身高和k的大小组合出四种情况。但是最后符合条件的只有一个，（我测试了三个，最后一种情况每次，我觉得浪费时间）
+			1、按照身高从大到小排序，身高相同，按照k从小到大。这是是最合适的。
+			按照身高从大到小排序是因为：后来的排序是：
+				先从头到尾遍历这些元素，然后根据元素中的k来决定插入的位置；
+				从大到小的顺序保证了那些小的元素如果插到了大元素的前面，大元素也能满足条件。
+			2、k从小到大是因为满足题意。
+		思路：
+			首先对二维数组排序。
+			然后遍历这个数组。
+			遍历的时候按照元素中的k作为新的位置，插入到结果数组中。
+			最后返回这个数组
+			用vec性能差点，因为用的是insetapi所以不能对vec预设大小，所以会出现vec扩容，导致性能下降。
+			用list性能好点，代码稍微复杂点
+		*/
+		static bool cmp(vector<int>&a, vector<int>&b)
+		{
+			//比较身高，身高大的在前面
+			if (a[0] > b[0]) return true;
+			else if (a[0] < b[0])
+				return false;
+			//如果身高相等，k小的在前面
+			if (a[0] = b[0])return a[1] < b[1];
+			return 1;//为了让力扣的编译器过去
+		}
+		vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
+			sort(people.begin(), people.end(), cmp);
+			vector<vector<int>> ret;
+			for (size_t i = 0; i < people.size(); i++)
+			{
+				ret.insert(ret.begin() + people[i][1], people[i]);
+			}
+			return ret;
+		}
+
+
 
 		void test()
 		{
