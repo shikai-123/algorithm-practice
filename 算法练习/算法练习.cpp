@@ -1995,7 +1995,8 @@ namespace Ranges
 			贪心思路；
 			具体，参考注释和链接
 		参考：
-			https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/submissions/479348550/?envType=study-plan-v2&envId=top-interview-150
+			https://www.programmercarl.com/0452.%E7%94%A8%E6%9C%80%E5%B0%91%E6%95%B0%E9%87%8F%E7%9A%84%E7%AE%AD%E5%BC%95%E7%88%86%E6%B0%94%E7%90%83.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+			下面贪心命名空间中，也写了一遍
 		*/
 		int findMinArrowShots(vector<vector<int>>& points) {
 			if (points.empty())
@@ -5789,6 +5790,42 @@ namespace Greedy {
 		}
 
 
+		/*
+		452. 用最少数量的箭引爆气球
+		思路：
+			首先，对数组排序，按照每个元素的左边的值，从小到达排序。（怎排序都可以）
+			然后，从第一个元素开始，比较上个元素的右值和当前元素的左值；
+			如果，上个元素的右值小于当前元素的左值，说明两者不接触。所以就需要新的弓箭。
+			否则，两者是接触的。
+				这时候，需要更新当前元素的右值，是为了下次的对比。具体看图就明白了。
+			直到，遍历结束。
+			返回，弓箭的数量。
+			!!注意； 起始数量是1。下面开始遍历的时候，第一次遇到边界不相邻，两只🗡才能射完。
+		参考：
+			https://www.programmercarl.com/0452.%E7%94%A8%E6%9C%80%E5%B0%91%E6%95%B0%E9%87%8F%E7%9A%84%E7%AE%AD%E5%BC%95%E7%88%86%E6%B0%94%E7%90%83.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+			下面贪心命名空间中，也写了一遍
+		*/
+		static bool findMinArrowShots_cmp(vector<int>&a, vector<int>&b)
+		{
+			return a[0] < b[0];
+		}
+		int findMinArrowShots(vector<vector<int>>& points) {
+			if (points.empty())return 0;
+			sort(points.begin(), points.end(), findMinArrowShots_cmp);
+			int ret = 1;//!! 起始数量是1。下面开始遍历的时候，第一次遇到边界不相邻，两只🗡才能射完。
+			for (size_t i = 1; i < points.size(); i++)
+			{
+				if (points[i][0] > points[i - 1][1])
+				{
+					ret++;
+				}
+				else
+				{
+					points[i][1] = min(points[i][1], points[i - 1][1]);
+				}
+			}
+			return ret;
+		}
 
 		void test()
 		{
