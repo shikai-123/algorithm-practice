@@ -5827,6 +5827,49 @@ namespace Greedy {
 			return ret;
 		}
 
+
+		/*
+		435. 无重叠区间
+		参考：
+			https://www.programmercarl.com/0435.%E6%97%A0%E9%87%8D%E5%8F%A0%E5%8C%BA%E9%97%B4.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			这个题目和452. 用最少数量的箭引爆气球的思路非常的相似。
+			这个题目要求计算出删除最少重叠区间，变得不重叠。其实就是让我们求这个区间里面重叠了多少个区间。
+			怎么让空间更好的重叠，方便处理呢？那就是——排序。从小到大或者是从大到小排序都行。
+			首先，对数组进行排序，按照左区间从小到大的顺序排列。
+			然后，遍历这个数组，如果当前的元素的左区间“小于”上个元素的右区间，说明两者重合，那么结果++
+			并且，要更新当前元素右边界的值，为当前和上个元素有边界值的最小值；这么做是为了准备的判断出下个元素是不是也有重叠
+			最后，直到遍历结束，返回最后的结果。
+		*/
+		static bool eraseOverlapIntervals_cmp(vector<int>& a, vector<int>& b)
+		{
+			return a[0] < b[0];
+		}
+		int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+			sort(intervals.begin(), intervals.end(), eraseOverlapIntervals_cmp);
+			int ret = 0;
+
+			for (size_t i = 1; i < intervals.size(); i++)
+			{
+				//如果当前的元素的左区间“小于”上个元素的右区间，说明两者重合，那么结果++
+				if (intervals[i][0] < intervals[i - 1][1])
+				{
+					ret++;
+					intervals[i][1] = min(intervals[i][1], intervals[i - 1][1]);
+				}
+			}
+			return ret;
+		}
+
+		/*
+		763. 划分字母区间
+		思路：
+
+		*/
+		vector<int> partitionLabels(string s) {
+
+		}
+
 		void test()
 		{
 			vector<int> a{ 1,2,3,4,5 };
