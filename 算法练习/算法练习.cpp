@@ -5900,7 +5900,7 @@ namespace Greedy {
 		56. 合并区间
 		参考：
 			https://www.programmercarl.com/0056.%E5%90%88%E5%B9%B6%E5%8C%BA%E9%97%B4.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC
-			和他的思路一样的，但是代码不精简。
+			和他的思路一样的，但是代码不精简。！！！！
 		思路：
 			和上面的思路很是接近。
 			首先，对数组排序。方便后续处理
@@ -5925,8 +5925,8 @@ namespace Greedy {
 				//如果当前的元素的右值“大于等于”下个元素的左值，就说明两个区间和重叠的。
 				if (intervals[i][1] >= intervals[i + 1][0])
 				{
-					ret.back()[1] = max(ret.back()[1], intervals[i + 1][1]);//既然是重叠的，新结果中的区间右值赋值成下个区间的右值。
-					intervals[i + 1][1] = max(ret.back()[1], intervals[i + 1][1]);
+					ret.back()[1] = max(ret.back()[1], intervals[i + 1][1]);//既然是重叠的，新结果中的区间右值用和下个区间元素的右值 被赋值 下个区间的右值和当前结果右值的最大值。
+					intervals[i + 1][1] = max(ret.back()[1], intervals[i + 1][1]);//【1 10】 【5 6】 【8 9】 没有这个max就出问题
 				}
 				else
 				{
