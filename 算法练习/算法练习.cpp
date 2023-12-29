@@ -5863,11 +5863,37 @@ namespace Greedy {
 
 		/*
 		763. 划分字母区间
+		题目解释：
+			 划分字符，让这个区间的字符只出现在这个区间，不出现在其他的区间。
+			 如果区间里包含了a，那么完后遍历的时候，就得把所有的a全部拿进来。
+			 最后，返回截取的各个区间长度。
+		参考：
+			https://www.programmercarl.com/0763.%E5%88%92%E5%88%86%E5%AD%97%E6%AF%8D%E5%8C%BA%E9%97%B4.html
 		思路：
-
+			 如果区间里包含了a，那么完后遍历的时候，就得把所有的a全部拿进来。
+			 如果中间遇到了其他的字符，然后就得把这个字符也得放进去。
+			 结束的条件就是一直往后遍历，直到遍历到了之前纳入的那些字符，他们中的最靠后的位置。
+			首先，先确定所有字符最后出现的位置。
+			然后，开始遍历字符，不断的更新字符最后的位置下标。
+			直到，遍历到了最大下标的位置，记录一下区间长度。
+			然后，更新新的区间开始位置。开始新的遍历，直到结束。
 		*/
 		vector<int> partitionLabels(string s) {
-
+			int hashbuf[26];
+			for (size_t i = 0; i < s.size(); i++)
+				hashbuf[s[i] - 'a'] = i;//越往后，下标越大，不用max函数
+			vector<int> ret;
+			int begin = 0, maxI = 0;
+			for (size_t i = 0; i < s.size(); i++)
+			{
+				maxI = max(maxI, hashbuf[s[i] - 'a']);//不断的更新字符最后的位置下标。
+				if (maxI == i)//遍历到了最大下标的位置，记录一下区间长度。
+				{
+					ret.push_back(maxI - begin + 1);
+					begin = maxI + 1;//新的区间位置就是最大位置+1
+				}
+			}
+			return ret;
 		}
 
 		void test()
