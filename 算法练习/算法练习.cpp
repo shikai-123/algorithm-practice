@@ -5935,13 +5935,46 @@ namespace Greedy {
 			}
 			return ret;
 		}
+		/*
+		738. 单调递增的数字
+		参考：
+			https://www.programmercarl.com/0738.%E5%8D%95%E8%B0%83%E9%80%92%E5%A2%9E%E7%9A%84%E6%95%B0%E5%AD%97.html#%E6%80%9D%E8%B7%AF
+		思路：
+			首先，把整形变成字符串，这样方便对单个数子做处理。
+			然后，定义一个标志，记录这个数字从哪开始变九。
+			然后，倒着遍历，从前往后遍历的话，不行。
+			然后，前一个数子一定要小于后面的数字。
+			然后，记录这个后面数字的下标，它后期是要变9的。
+			整个核心思路，就是先让前一个数字要小于后面的数字，然后后面的数字变成9.
+		*/
+		int monotoneIncreasingDigits(int n) {
+			string str = to_string(n);
+			int flag = str.size(); //这样定义是为了当不执行下面的遍历的时候，不会造成数字变化。
+
+			for (size_t i = str.size() - 1; i > 0; i--)
+			{
+				if (str[i - 1] > str[i])//后面数字大于前面数字,就让前一个数子一定要小于后面的数字。
+				{
+					//str[i - 1] = str[i];也白搭
+					//str[i - 1] = str[i] - 1; 【10】 【332】都有问题
+					str[i - 1] --;//!这个才对。这样能保证每次减少的数是最少的，从而保证了最后的结果是最大的
+					flag = i;// 记录这个后面数字的下标，它后期是要变9的
+				}
+			}
+			for (size_t i = flag; i < str.size(); i++)
+			{
+				str[i] = '9';//把要变成9的，都变成9
+			}
+			return std::atoi(str.c_str());
+		}
+
 
 
 		void test()
 		{
 			vector<int> a{ 1,2,3,4,5 };
 			vector<int> b{ 3,4,5,1,2 };
-			cout << candy(a);
+			cout << monotoneIncreasingDigits(10);
 		}
 	};
 
