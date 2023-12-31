@@ -4646,6 +4646,46 @@ namespace Tree {
 
 		}
 
+		/*
+		968. 监控二叉树
+		思路：
+		先分为三种情况；
+			0、未覆盖
+			1、覆盖
+			2、有相机
+		分四种不同的情况去讨论。
+			1、左右子节点都有“覆盖”，则父节点得是“无覆盖”；如果是相机也行，但是不能满足题目——最少相机节点的情况。
+				让这个子节点的爷爷节点是相机，才是最少相机。但是如果他爹就是相机了，则浪费相机。
+				但是，如果他爹是根节点的时候，没办法让他的爷爷做相机了（没有爷爷节点），所以父节点就赋值“相机”。（情况4）
+			2、左右子节点有一个“未覆盖”，其父节点一定是“相机”，这样才能保证覆盖。（等价两个节点都未覆盖；）
+			3、左右子节点有一个“相机”，其父节点一定是“覆盖”。
+			4、子节点返回上来的是“覆盖”，根据情况1，该点得是“无覆盖”，该点父节点得是“相机”，但该点是根节点。没有父节点，所以该点就得为“相机”
+		后续遍历：
+			从下往上走的思路。
+		*/
+		int minCameraCover_ret = 0;
+		int minCameraCover_Tra(TreeNode* root)
+		{
+			if (root == nullptr) return 1;//为了用到最少的相机，叶子节点的就得是覆盖的。
+			int left = minCameraCover_Tra(root->left);
+			int right = minCameraCover_Tra(root->right);
+			if (left == 1 && right == 1) return 0;//1、子节点都是“覆盖”，则父节点得是“无覆盖”；
+			if (left == 0 || right == 0) //2、左右子节点有一个“未覆盖”，其父节点一定是“相机”
+			{
+				minCameraCover_ret++;
+				return 2;
+			}
+			if (left == 2 || right == 2)return 1;//3、左右子节点有一个“相机”，其父节点一定是“覆盖”。
+			return -1;//为了满足letcode编译通过
+		}
+		int minCameraCover(TreeNode* root) {
+
+			if (minCameraCover_Tra(root) == 0)//情况4
+				minCameraCover_ret++;
+			return minCameraCover_ret;
+		}
+
+
 		void test()
 		{
 			cout << "测试树结构" << endl;
@@ -5968,7 +6008,15 @@ namespace Greedy {
 			return std::atoi(str.c_str());
 		}
 
+		/*
+		968. 监控二叉树
+		参考：
+			https://www.programmercarl.com/0968.%E7%9B%91%E6%8E%A7%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E6%80%9D%E8%B7%AF
+		这个贪心思想的不是很明确，所一放到二叉树的命名空间中。
+		int minCameraCover(TreeNode* root) {
 
+	}
+		*/
 
 		void test()
 		{
