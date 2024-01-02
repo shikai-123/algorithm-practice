@@ -6028,7 +6028,75 @@ namespace Greedy {
 			cout << monotoneIncreasingDigits(10);
 		}
 	};
+}
 
+namespace DynamicPlanning
+{
+	class Solution {
+	public:
+
+		/*
+			动态规划的思路
+			1、确定dp数组（dp table）以及下标的含义
+			2、确定递推公式
+			3、dp数组如何初始化
+			4、确定遍历顺序
+			5、举例推导dp数组，如果有问题的打印出来
+		*/
+
+		/*
+		509. 斐波那契数
+		参考：
+			https://www.programmercarl.com/0509.%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E6%95%B0.html#%E6%80%BB%E7%BB%93
+		思路：
+			这个题目简单，但是用来套动态规划的思路，是比较好理解的。
+		*/
+		int fib(int n) {
+			if (n <= 1)return n;
+			int fb[3] = { 0 };
+			fb[0] = 0;
+			fb[1] = 1;
+			for (size_t i = 2; i <= n; i++)
+			{
+				int sum = fb[0] + fb[1];
+				fb[0] = fb[1];
+				fb[1] = sum;
+			}
+			return fb[1];
+		}
+
+		/*
+		70. 爬楼梯
+		参考：
+			https://www.programmercarl.com/0070.%E7%88%AC%E6%A5%BC%E6%A2%AF.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			题目中说明了，每次只能跨1阶或者2阶楼梯。
+			所以跨到这阶楼梯的方式就可以通过前面两阶楼梯确定下来。（这个要是不明白，看下图就明白）
+			其中第i-1个台阶的本身的到达方法有dp[i-1]种
+			其中第i-2个台阶的本身的到达方法有dp[i-2]种
+			所以这个思路，很满足“动态规划”的思路，所以用动态规划是最合适的。
+		*/
+		int climbStairs(int n) {
+			if (n <= 3)return n;//根据图来看，前3阶台阶上去的方法是可以直接返回n
+			//1、确定dp数组（dp table）以及下标的含义——到第i个台阶的本身的到达方法有dp[i]种方法
+			//2、确定递推公式 dp[i]=dp[i-1]+dp[i-2];
+			int fb[4] = { 0 };
+			//3、dp数组如何初始化 我这里保证要和第一步是相同的思路；
+			fb[0] = 0;
+			fb[1] = 1;
+			fb[2] = 2;
+			fb[3] = 3;
+			//4、确定遍历顺序——正序遍历，因为后面的结果是依赖于前面的。
+			for (size_t i = 4; i <= n; i++)
+			{
+				int sum = fb[2] + fb[3];
+				fb[2] = fb[3];
+				fb[3] = sum;
+			}
+			return fb[3];
+		}
+
+	};
 }
 
 
