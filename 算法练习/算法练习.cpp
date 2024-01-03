@@ -6096,6 +6096,42 @@ namespace DynamicPlanning
 			return fb[3];
 		}
 
+		/*
+		746. 使用最小花费爬楼梯
+		题目：
+			cost[i] 代表从i阶楼梯往上上所消耗的费用
+			并且走出数组才算是结束了，而不是到到数组末尾
+		参考：
+			https://www.programmercarl.com/0746.%E4%BD%BF%E7%94%A8%E6%9C%80%E5%B0%8F%E8%8A%B1%E8%B4%B9%E7%88%AC%E6%A5%BC%E6%A2%AF.html
+		思路：
+			按照动态规划5步来走。
+			1、dp数组的含义：代表到第i个台阶，最小花费是dp[i]！！
+			2、确定dp公式：dp[i]=min(dp[i-1]+cost[i-1],dp[i-2]+cost[i-2]);
+			3、初始化：根据题目来看，当你到了0或1是不花费的，只有从0或1出发往后走才是要花钱的。
+				dp数组的初始化，经过思考只需要初始化dp[0]dp[1]，从题目看，可以知道它俩都是0
+			4、确定遍历顺序：后面的dp需要前面的dp来确定，所以是正序
+			5、打印dp数组
+		*/
+		int minCostClimbingStairs(vector<int>& cost) {
+			//2、确定dp公式.
+			int dp[3] = { 0 };
+			//4、确定遍历顺序
+			for (size_t i = 2; i <= cost.size(); i++)
+			{
+				dp[2] = min(dp[1] + cost[i - 1], dp[0] + cost[i - 2]);
+				dp[0] = dp[1];
+				dp[1] = dp[2];
+			}
+			return dp[2];
+		}
+
+
+
+
+
+
+
+
 	};
 }
 
