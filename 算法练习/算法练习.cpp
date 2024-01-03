@@ -6115,8 +6115,8 @@ namespace DynamicPlanning
 		int minCostClimbingStairs(vector<int>& cost) {
 			//2、确定dp公式.
 			int dp[3] = { 0 };
-			//4、确定遍历顺序
-			for (size_t i = 2; i <= cost.size(); i++)
+			//4、确定遍历顺序!!!为什么“<=” 因为这个时候才能计算 cost[i - 1] 数组的尾巴，要不然算不了
+			for (size_t i = 2; i <= cost.size(); i++)//
 			{
 				dp[2] = min(dp[1] + cost[i - 1], dp[0] + cost[i - 2]);
 				dp[0] = dp[1];
