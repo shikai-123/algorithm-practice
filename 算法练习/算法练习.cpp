@@ -6115,8 +6115,8 @@ namespace DynamicPlanning
 		int minCostClimbingStairs(vector<int>& cost) {
 			//2、确定dp公式.
 			int dp[3] = { 0 };
-			//4、确定遍历顺序!!!为什么“<=” 因为这个时候才能计算 cost[i - 1] 数组的尾巴，要不然算不了
-			for (size_t i = 2; i <= cost.size(); i++)//
+			//4、确定遍历顺序!!!为什么“<=”？因为dp数组的含义：代表到第i个台阶，最小花费是dp[i]。i不到n的话，没有办法计算dp[n]的花费。
+			for (size_t i = 2; i <= cost.size(); i++)
 			{
 				dp[2] = min(dp[1] + cost[i - 1], dp[0] + cost[i - 2]);
 				dp[0] = dp[1];
@@ -6127,10 +6127,35 @@ namespace DynamicPlanning
 
 
 
+		/*
+		62. 不同路径
+		其他：
+			dp数组只初始化左上角行不行，不行的。这样的话，用dp公式来算，复杂，不如直接初始化。
+		思路：
+			1、确定dp含义：dp[i][l] 到il有多少种不同的路径
+			2、确定dp公式：dp[i][l] = dp[i-1][l]+dp[i][l-1];
+			3、初始化dp：第一行第一列路径都只有一种
+			4、确定遍历：从左到右，从上往下。（题目要求只能从左往右，从上往下）
+		*/
+		int uniquePaths(int m, int n) {
+			vector<vector<int>> dp(m, vector<int>(n, 0));
+			for (size_t i = 0; i < m; i++) dp[i][0] = 1;//到这些边界的位置，路径只有1种。
+			for (size_t i = 0; i < n; i++) dp[0][i] = 1;
 
+			for (size_t i = 1; i < m; i++)
+			{
+				for (size_t l = 1; l < n; l++)
+				{
+					dp[i][l] = dp[i - 1][l] + dp[i][l - 1];
+				}
+			}
+			return dp[m - 1][n - 1];
+		}
 
-
-
+		void test()
+		{
+			cout << uniquePaths(3, 7);
+		}
 
 	};
 }
@@ -6147,7 +6172,7 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 
-	Greedy::Solution tree;
+	DynamicPlanning::Solution tree;
 	tree.test();
 
 
