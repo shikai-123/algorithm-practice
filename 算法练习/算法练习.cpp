@@ -6131,6 +6131,8 @@ namespace DynamicPlanning
 		62. 不同路径
 		其他：
 			dp数组只初始化左上角行不行，不行的。这样的话，用dp公式来算，复杂，不如直接初始化。
+		参考：
+			https://www.programmercarl.com/0062.%E4%B8%8D%E5%90%8C%E8%B7%AF%E5%BE%84.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
 			1、确定dp含义：dp[i][l] 到il有多少种不同的路径
 			2、确定dp公式：dp[i][l] = dp[i-1][l]+dp[i][l-1];
@@ -6151,6 +6153,37 @@ namespace DynamicPlanning
 			}
 			return dp[m - 1][n - 1];
 		}
+
+		/*
+		63. 不同路径 II
+		参考：
+			https://www.programmercarl.com/0063.%E4%B8%8D%E5%90%8C%E8%B7%AF%E5%BE%84II.html
+		思路：
+			这个题目和“62. 不同路径”非常相似。所以这里只写了他俩不同的思路；
+			1、初始化。62题目中，初始化的时候。第一行或者第一列中如果有障碍的话，后面的就没法到了。所以障碍后面的路径都是0。
+			2、遍历。如果路径不在边上，而是在中间的位置。这个时候，就跳过这个dp数组的计算了。其他的位置，正常计算。
+		*/
+		int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+			vector<vector<int>>dp(obstacleGrid.size(), vector<int>(obstacleGrid[0].size(), 0));
+			//如果障碍在起点或者是终点。则直接返回0；————不写这行代码也能过！
+			if (obstacleGrid[0][0] == 1 || obstacleGrid[obstacleGrid.size() - 1][obstacleGrid[0].size() - 1])
+				return 0;
+			//障碍后面的路径都是0。
+			for (size_t i = 0; i < obstacleGrid.size() && obstacleGrid[i][0] == 0; i++) dp[i][0] = 1;
+			for (size_t i = 0; i < obstacleGrid[0].size() && obstacleGrid[0][i] == 0; i++) dp[0][i] = 1;
+			for (size_t i = 1; i < obstacleGrid.size(); i++)
+			{
+				for (size_t l = 1; l < obstacleGrid[0].size(); l++)
+				{
+					//如果路径不在边上，而是在中间的位置。这个时候，就跳过这个dp数组的计算了。
+					if (obstacleGrid[i][l] == 1)
+						continue;
+					dp[i][l] = dp[i - 1][l] + dp[i][l - 1];
+				}
+			}
+			return dp[obstacleGrid.size() - 1][obstacleGrid[0].size() - 1];
+		}
+
 
 		void test()
 		{
