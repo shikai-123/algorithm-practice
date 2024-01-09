@@ -6402,6 +6402,39 @@ namespace DynamicPlanning
 		}
 
 
+		/*
+		1049. 最后一块石头的重量 II
+		参考：
+			https://www.programmercarl.com/1049.%E6%9C%80%E5%90%8E%E4%B8%80%E5%9D%97%E7%9F%B3%E5%A4%B4%E7%9A%84%E9%87%8D%E9%87%8FII.html
+		思路：
+			尽量把石头分成重量相等两堆，这样石头相撞下来，剩下的才是最小的的。
+			每个石头都是只能拿一次，所以是01背包问题。
+			这个题目和“416. 分割等和子集”几乎是一样的。
+		*/
+		int lastStoneWeightII(vector<int>& stones) {
+			//定义dp数组的大小，因为题目中最多30个石头和每个石头重量最大是100.
+			//因为我只要取一半，所有只需要1500,为了不让dp[1500]越界，所以只需要长度为1501
+			vector<int>dp(0, 1501);
+			int sum = 0;
+			for (size_t i = 0; i < stones.size(); i++)
+				sum += stones[i];
+			int target = sum / 2;
+			//下面的for的解释参考——416. 分割等和子集
+			for (size_t i = 0; i < stones.size(); i++)//遍历物品——本题就是石头
+			{
+				for (size_t l = target; l >= stones[i]; l--)//遍历背包——dp中还能放多少
+				{
+					dp[l] = max(dp[l], dp[l - stones[i]] + stones[i]);
+				}
+			}
+			//sum - dp[target]一定>= dp[target]; 因为target是sum/2，他是往下取整的。也就是说明target<=sum/2.target是小于等于所有数据的一半的。
+			//因为dp[target]他的值（价值）不会超过target。所以dp[target]不会超过sum/2；
+			//所以才有开头的结果
+			return sum - dp[target] - dp[target];//剩余的石头的数量
+		}
+
+
+
 
 		void test()
 		{
