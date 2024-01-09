@@ -6275,11 +6275,51 @@ namespace DynamicPlanning
 		}
 
 
+		/*
+		纯01背包问题。
+		这个题目，代码随想讲的不好。
+		有时间，我录个视频来说明一下。
+		具体的关于dp算法确定以及思路都在我的本子上，到时候抄录上去。
+		*/
+		void test_2_wei_bag_problem1() {
+			vector<int> weight = { 1, 3, 4 };//物品重量
+			vector<int> value = { 15, 20, 30 };//物品价值
+			int bagweight = 4; //这个是背包容量最大边界。不是指背包具体容量。
+
+			// 二维数组——先把所有的值初始化0；
+			vector<vector<int>> dp(weight.size(), vector<int>(bagweight + 1, 0));
+
+			//这个和下面的一样。下面的好理解
+			//for (int j = weight[0]; j <= bagweight; j++) //j是当前背包容量。当j《=最大背包容量。
+			//{
+			//	dp[0][j] = value[0];
+			//}
+
+			// 这个和上面一样。初始化——第一行中，意味着只能放物品1，那么只要当前背包容量>=物品重量，就可以放进去。
+			for (size_t i = 0; i <= bagweight; i++)//i是当前背包容量
+			{
+				if (i >= weight[0])//只要当前背包容量>=物品重量——发现只有>=的时候，代码才有效，那么不如直接从i = weight[0]开始，节省性能。
+					dp[0][i] = value[0];
+			}
+
+
+			// weight数组的大小 就是物品个数
+			for (int i = 1; i < weight.size(); i++) { // 遍历物品
+				for (int j = 0; j <= bagweight; j++) { // 遍历背包容量
+					//j是当前背包容量，当前背包容量《当前的物品重量的时候，意味着新的物品放不进去，当前物品价值保持不变。
+					if (j < weight[i]) dp[i][j] = dp[i - 1][j];
+					else dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
+
+				}
+			}
+
+			cout << dp[weight.size() - 1][bagweight] << endl;
+		}
 
 
 		void test()
 		{
-			cout << numTrees(3);
+			test_2_wei_bag_problem1();
 		}
 
 	};
