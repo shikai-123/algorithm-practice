@@ -6323,6 +6323,8 @@ namespace DynamicPlanning
 		参考：
 			https://www.programmercarl.com/%E8%83%8C%E5%8C%85%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%8001%E8%83%8C%E5%8C%85-2.html#%E6%80%9D%E8%B7%AF
 		思路：
+			确定dp数组的定义：dp[j]表示：容量为j的背包，所背的物品价值可以最大为dp[j]。
+
 			要注意的就是，遍历物品和容量的顺序不能反过来。
 			里面的for遍历，要倒叙遍历。
 			关于倒叙的解释：（我没想好）
@@ -6338,16 +6340,73 @@ namespace DynamicPlanning
 			// 初始化
 			vector<int> dp(bagWeight + 1, 0);
 			for (int i = 0; i < weight.size(); i++) { // 遍历物品
+				//bagWeight当前“剩余”背包容量，当剩余的容量》=当前物品的重量的时候，可以往包里放。每次新的循环就对背包容量一点点减下去。视频没有对这一块讲解。
 				for (int j = bagWeight; j >= weight[i]; j--) { // 遍历背包容量——倒叙遍历
+					//dp[j]而不是dp[i]是因为dp数组的含义，dp[x]中x代表的是容量，自然是由j这个代表容量的来代替
+					//weight[i]是代表的某一个物品重量，value[i]某一个物品的价值。都是说明某一个物品，所以用i。
 					dp[j] = max(dp[j], dp[j - weight[i]] + value[i]);
 				}
 			}
 			cout << dp[bagWeight] << endl;
 		}
 
+
+		/*
+		416. 分割等和子集
+		参考：
+			https://www.programmercarl.com/0416.%E5%88%86%E5%89%B2%E7%AD%89%E5%92%8C%E5%AD%90%E9%9B%86.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			把这个问题，转换成01背包问题。
+			就是把这些数放进背包中，每个数只能放一次。背包的价值就是这些元素的和。
+			就是相当于有个有个sum/2容量的背包，数组的中元素加起来这个是否为sum/2。
+			这么做能判读的原因是因为：
+			题目中是要分成两份子集，并且两个子集相等才行。
+			所以其中一个子集只要他的和为总和的一半，那么另外一半自然也是这个数据，
+			两个子集自然就相等。
+
+
+			定义dp数组：dp[i]：i就是“容量”（i代表的就是元素和的最大值，不能超过他，所以有点像容量的概念）为i的时候，能存的最大的元素和是多少。
+				比如dp[7]在这个“nums = [1,5,11,5]”中，dp[7]=6; 7是dp能接受的不大于7最大和，而在这个题目中，最大只能是6
+				所以最后判断的时候，
+				如果dp[sum/2]==sum/2;则说明满足条件。（也就是当让dp的最大值为sum/2的时候，他的dp[sum/2]的值也确实为sum/2，这是符合条件的）
+			初始化dp数组：dp[0] =0;容量是0.存的是数也是0;
+			确定dp数组等式：dp[i]=max(dp[i],dp[i-m[j]]+value[i]);
+				这个地方不一样——他的重量和价值相同。
+				所以：dp[i]=max(dp[i],dp[i-sum[j]]+sum[i]);
+			确定遍历顺序：根据这个01背包问题的话，第二个for是倒叙遍历。
+		*/
+		bool canPartition(vector<int>& nums) {
+			//vector<int> dp(0, nums.size());这个不对！！！ 根据dp的含义，dp[i]中的i和他的结果有可能是一样的，和nums的大小没关系
+			// 题目中说：每个数组中的元素不会超过 100，数组的大小不会超过 200
+			// 总和不会大于20000，背包最大只需要其中一半，所以10001大小就可以了
+			vector<int> dp(10001, 0);
+			int sum = 0;
+			for (size_t i = 0; i < nums.size(); i++)
+				sum += nums[i];
+			if (sum % 2 == 1)//数组的和奇数的时候，他是不满足条件的。不满足题意中的“使得两个子集的元素和相等”
+				return false;
+			sum = sum / 2;
+
+			for (size_t i = 0; i < nums.size(); i++)//遍历“物品”——实质就是遍历要放到背包的数——在本题目中就是nums[i]
+			{
+				//j代表剩余的可以加的大小，当剩余可加的大小》=要加上的数，说明可以往dp中加（可以往dp中放）
+				for (size_t j = sum; j >= nums[i]; j--)//遍历背包“容量”——实质就是遍历背包的剩余容量——在本体中就是剩余可以加的大小。
+				{
+					dp[j] = max(dp[j], dp[j - nums[i]] + nums[i]);
+				}
+			}
+			if (dp[sum] == sum)
+				return true;
+
+			return false;
+		}
+
+
+
 		void test()
 		{
-			test_2_wei_bag_problem1();
+			vector<int> dp{ 1,5,11,5 };
+			canPartition(dp);
 		}
 
 	};
