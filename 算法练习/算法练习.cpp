@@ -6276,10 +6276,14 @@ namespace DynamicPlanning
 
 
 		/*
-		纯01背包问题。
+		纯01背包问题——dp是二维数组
 		这个题目，代码随想讲的不好。
 		有时间，我录个视频来说明一下。
 		具体的关于dp算法确定以及思路都在我的本子上，到时候抄录上去。
+		参考：
+			https://www.programmercarl.com/%E8%83%8C%E5%8C%85%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%8001%E8%83%8C%E5%8C%85-1.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			两个for遍历顺序可以颠倒。
 		*/
 		void test_2_wei_bag_problem1() {
 			vector<int> weight = { 1, 3, 4 };//物品重量
@@ -6302,20 +6306,44 @@ namespace DynamicPlanning
 					dp[0][i] = value[0];
 			}
 
-
 			// weight数组的大小 就是物品个数
 			for (int i = 1; i < weight.size(); i++) { // 遍历物品
 				for (int j = 0; j <= bagweight; j++) { // 遍历背包容量
 					//j是当前背包容量，当前背包容量《当前的物品重量的时候，意味着新的物品放不进去，当前物品价值保持不变。
 					if (j < weight[i]) dp[i][j] = dp[i - 1][j];
 					else dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
-
 				}
 			}
 
 			cout << dp[weight.size() - 1][bagweight] << endl;
 		}
 
+		/*
+		纯01背包中，dp用1维数组做。
+		参考：
+			https://www.programmercarl.com/%E8%83%8C%E5%8C%85%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%8001%E8%83%8C%E5%8C%85-2.html#%E6%80%9D%E8%B7%AF
+		思路：
+			要注意的就是，遍历物品和容量的顺序不能反过来。
+			里面的for遍历，要倒叙遍历。
+			关于倒叙的解释：（我没想好）
+			二维数组中每一层的数值是由上一层的正上方和左上方数据得出的
+			一维数组模拟二维数组，倒序的话可以保证每一层数据也是由上一层正上方和左上方得出的
+			如果是正序的话，左上方数据就会被覆盖掉了
+		*/
+		void test_1_wei_bag_problem() {
+			vector<int> weight = { 1, 3, 4 };
+			vector<int> value = { 15, 20, 30 };
+			int bagWeight = 4;
+
+			// 初始化
+			vector<int> dp(bagWeight + 1, 0);
+			for (int i = 0; i < weight.size(); i++) { // 遍历物品
+				for (int j = bagWeight; j >= weight[i]; j--) { // 遍历背包容量——倒叙遍历
+					dp[j] = max(dp[j], dp[j - weight[i]] + value[i]);
+				}
+			}
+			cout << dp[bagWeight] << endl;
+		}
 
 		void test()
 		{
