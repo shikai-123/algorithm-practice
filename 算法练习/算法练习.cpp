@@ -6434,6 +6434,23 @@ namespace DynamicPlanning
 		}
 
 
+		/*
+		494. 目标和
+		参考：
+			https://www.programmercarl.com/0494.%E7%9B%AE%E6%A0%87%E5%92%8C.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			给了我们一个背包，问我们有多少种方式能装满。
+			dp[j] 表示：填满j（包括j）这么大容积的包，有dp[j]种方法
+
+		总结：
+			416. 分割等和子集——能不能装满这个背包，能装满，就返回tre，不能就返回false
+			1049. 最后一块石头的重量 II——给一个背包的重量，能装多少装多少。装完了之后，按照规则计算出来最后剩余的石头的重量。
+			本题——给了我们一个背包，问我们有多少种方式能装满。
+			这三个题目，都是01背包，在不同层面上的应用。
+		*/
+		int findTargetSumWays(vector<int>& nums, int target) {
+
+		}
 
 
 		void test()
