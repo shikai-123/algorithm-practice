@@ -6420,9 +6420,9 @@ namespace DynamicPlanning
 				sum += stones[i];
 			int target = sum / 2;
 			//下面的for的解释参考——416. 分割等和子集
-			for (size_t i = 0; i < stones.size(); i++)//遍历物品——本题就是石头
+			for (size_t i = 0; i < stones.size(); i++)//遍历物品——本题就是要放的石头
 			{
-				for (size_t l = target; l >= stones[i]; l--)//遍历背包——dp中还能放多少
+				for (size_t l = target; l >= stones[i]; l--)//遍历背包——dp中还能放多少石头到dp中
 				{
 					dp[l] = max(dp[l], dp[l - stones[i]] + stones[i]);
 				}
@@ -6441,22 +6441,78 @@ namespace DynamicPlanning
 		思路：
 			给了我们一个背包，问我们有多少种方式能装满。
 			dp[j] 表示：填满j（包括j）这么大容积的包，有dp[j]种方法
-
+			没弄懂，别一直卡着了。讲究效率；
 		总结：
+			纯01背包问题——装满这么大容量，最大价值是多少。
 			416. 分割等和子集——能不能装满这个背包，能装满，就返回tre，不能就返回false
 			1049. 最后一块石头的重量 II——给一个背包的重量，能装多少装多少。装完了之后，按照规则计算出来最后剩余的石头的重量。
-			本题——给了我们一个背包，问我们有多少种方式能装满。
-			这三个题目，都是01背包，在不同层面上的应用。
+			494. 目标和——给了我们一个背包，问我们有多少种方式能装满。
+			474. 一和零——装满这个背包有多少个物品。
+			这4个题目，都是01背包，在不同层面上的应用。
 		*/
-		int findTargetSumWays(vector<int>& nums, int target) {
-
+		int findTargetSumWays(vector<int>& nums, int S) {
+			int sum = 0;
+			for (int i = 0; i < nums.size(); i++) sum += nums[i];
+			if (abs(S) > sum) return 0; // 此时没有方案
+			if ((S + sum) % 2 == 1) return 0; // 此时没有方案
+			int bagSize = (S + sum) / 2;
+			vector<int> dp(bagSize + 1, 0);
+			dp[0] = 1;
+			for (int i = 0; i < nums.size(); i++) {
+				for (int j = bagSize; j >= nums[i]; j--) {
+					dp[j] += dp[j - nums[i]];
+				}
+			}
+			return dp[bagSize];
 		}
+
+
+		/*
+		474. 一和零
+		参考：
+			https://www.programmercarl.com/0474.%E4%B8%80%E5%92%8C%E9%9B%B6.html
+		思路：
+			转成01背包问题
+			dp[i][j]：最多有i个0和j个1的strs的最大子集的大小为dp[i][j]。
+			dp[i][j]：放满容量可以有i个0和j个1的背包的时候，最大子集的尺寸为dp[i][j]。
+			有个很关键的问题，为什么dp[][]的值就代表了最大子集的尺寸？
+			看dp[i][j] = max(dp[i][j], dp[i - zeroNum][j - oneNum] + 1);，以及除了“494. 目标和”之外的所有题目的dp，
+			都是发现，它的值是由“+ 1”这个位置来决定的。
+			dp[i - zeroNum][j - oneNum] + 1。这个代码的含义就是去掉一些0，一些1，然后再加上一些0一些1，这个时候尺寸就+1。而这个地方就决定了dp的值的变化，决定了dp的值代表的含义。
+		*/
+		int findMaxForm(vector<string>& strs, int m, int n) {
+			vector<vector<int>>dp(m + 1, vector<int>(n + 1, 0));//初始化二维数组，为了不越界长度+1
+			for (auto str : strs)
+			{
+				int zeroNums = count(str.begin(), str.end(), '0');
+				int oneNums = count(str.begin(), str.end(), '1');
+				for (int i = m; i >= zeroNums; i--)//01背包问题中，i的初始值都是要放满物品的最大值，于i对比的就是外层for中确定本次要放的物品的数量。
+				{
+					for (int l = n; l >= oneNums; l--)
+					{
+						//把代表物品和容量的变量，代入到01的公式中，一般来说，都是一维的dp公式，并且都要根据题目，来做出具体的改变
+						dp[i][l] = max(dp[i][l], dp[i - zeroNums][l - oneNums] + 1);
+					}
+				}
+			}
+			return dp[m][n];
+		}
+
+
+
+
+
+
+
+
+
+
 
 
 		void test()
 		{
-			vector<int> dp{ 1,5,11,5 };
-			canPartition(dp);
+			vector<string> dp{ "10", "0001", "111001", "1", "0" };
+			findMaxForm(dp, 5, 3);
 		}
 
 	};
