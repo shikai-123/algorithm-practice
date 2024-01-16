@@ -6310,8 +6310,10 @@ namespace DynamicPlanning
 			for (int i = 1; i < weight.size(); i++) { // 遍历物品
 				for (int j = 0; j <= bagweight; j++) { // 遍历背包容量
 					//j是当前背包容量，当前背包容量《当前的物品重量的时候，意味着新的物品放不进去，当前物品价值保持不变。
-					if (j < weight[i]) dp[i][j] = dp[i - 1][j];
-					else dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
+					if (j < weight[i])
+						dp[i][j] = dp[i - 1][j];
+					else
+						dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
 				}
 			}
 
@@ -6439,28 +6441,52 @@ namespace DynamicPlanning
 		参考：
 			https://www.programmercarl.com/0494.%E7%9B%AE%E6%A0%87%E5%92%8C.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
-			给了我们一个背包，问我们有多少种方式能装满。
-			dp[j] 表示：填满j（包括j）这么大容积的包，有dp[j]种方法
-			没弄懂，别一直卡着了。讲究效率；
-		总结：
-			纯01背包问题——装满这么大容量，最大价值是多少。
-			416. 分割等和子集——能不能装满这个背包，能装满，就返回tre，不能就返回false
-			1049. 最后一块石头的重量 II——给一个背包的重量，能装多少装多少。装完了之后，按照规则计算出来最后剩余的石头的重量。
-			494. 目标和——给了我们一个背包，问我们有多少种方式能装满。
-			474. 一和零——装满这个背包有多少个物品。
-			这4个题目，都是01背包，在不同层面上的应用。
+			这个题目，要求的是在给定目标值(S)一定的情况下，有几种方法。
+			把计算分为加法、减法一部分。
+			在S确定，数组的和确定，的前提下。
+			只需要计算出加法或者减法一边的值就行。
+			因为和确定，加法一边确定了，减法一边也确定了。
+			计算方法：
+				假设加法的总和为x，那么减法对应的总和就是sum - x。
+				所以我们要求的是 x - (sum - x) = target
+				x = (target + sum) / 2
+			那么这个题目，就变成“从数组中挑选一些数据，是他们的和为x，每个数只能用一次，有多少种组合方法，多少种方法就是数组得到S有多少种方法”。
+			这就是典型的01背包
+
+			1、确定dp含义
+			给了我们一个背包，问我们有多少种方式能装满。这个所谓的“装满”就是从数组中挑选一些元素，使和为加法的一边。
+			dp[j] 表示：
+				填满j（包括j）这么大容积的包，有dp[j]种方法
+
+			dp[j] 表示：
+				加法一边为j（包括j），有dp[j]种方法可以加到这个数
+			2、确定的dp递推公式
+				这里视频说的不好，我感觉很多动态规划题目讲的都不好。
+				当“加法一边为1”有dp【1】中方法
+				当“加法一边为2”有dp【2】中方法
+				当“加法一边为3”有dp【3】中方法，而这个3可以从dp[1]+dp[2]来得到，也就是“加法一边为3”可以分为“加法一边为1”，“加法一边为2”
+				所以：dp[j] = dp[j] + dp[j - nums[i]];
+				！其实还是说的不明白。
+			3、初始化
+				dp[0] = 1;
+				其实也没说明白，从我的思路看，“加法一边的和=0”，能有几种方法这个真不确定。
+				从他的思路看，填满j（包括j）这么大容积的包，有dp[j]种方法。容量是0,填满容量是0的方法，0说的过去，1也说的过去。
+				但是最终确定，还是靠试。
+			4、遍历顺序
+
 		*/
-		int findTargetSumWays(vector<int>& nums, int S) {
+		int findTargetSumWays(vector<int>& nums, int S) {//S就是最后要得到的值
 			int sum = 0;
 			for (int i = 0; i < nums.size(); i++) sum += nums[i];
-			if (abs(S) > sum) return 0; // 此时没有方案
-			if ((S + sum) % 2 == 1) return 0; // 此时没有方案
-			int bagSize = (S + sum) / 2;
-			vector<int> dp(bagSize + 1, 0);
+			if (abs(S) > sum) return 0; // 此时没有方案——要求的和S，比nums中这些所有的数得到的极大值极小值都大，肯定是不行的。
+			//(S + sum) / 2是计算出加法或者减法一边的值
+			if ((S + sum) % 2 == 1) return 0; // 此时没有方案——！！这个不知掉为啥，去掉之后，代码不通过，视频中没有对这个一块有个详细的解释。
+			int bagSize = (S + sum) / 2;//加法最大的值就是这个
+			vector<int> dp(bagSize + 1, 0);//根据我写的dp数组的含义，dp的下标就是“加法一边的和”，vec的大小自然就是S + sum) / 2+1
 			dp[0] = 1;
-			for (int i = 0; i < nums.size(); i++) {
-				for (int j = bagSize; j >= nums[i]; j--) {
-					dp[j] += dp[j - nums[i]];
+			for (int i = 0; i < nums.size(); i++) {//遍历物品，其实就是要被组合的数组中各个元素
+				for (int j = bagSize; j >= nums[i]; j--) {//遍历背包，其实就是谁做dp的下标，就遍历谁。这里下标就是一边的加法和。让“加法最大的值”和“当前能提供的数值”比较。
+					dp[j] = dp[j] + dp[j - nums[i]];
 				}
 			}
 			return dp[bagSize];
@@ -6502,6 +6528,39 @@ namespace DynamicPlanning
 
 
 
+		/*
+		518. 零钱兑换 II
+		参考：
+			https://www.programmercarl.com/0518.%E9%9B%B6%E9%92%B1%E5%85%91%E6%8D%A2II.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			转换成完全背包最合适。
+			每个物品都能用多次，并且是组合。用完全背包最合适。
+			1、dp数组定义：
+				dp【j】 金币总额为j的时候，有多少种组合。
+			2、确定递推公式：
+				这个和“494目标和”题目很相似
+				dp[j]=dp[j]+dp[i-cost[i]]
+			3、dp数组初始化
+				dp[0]=1 dp[其他非零下表]=0
+			4、确定遍历顺序
+				因为是题目要求的是组合，所以是先遍历物品，再遍历背包。
+		*/
+		int change(int amount, vector<int>& coins) {
+
+			vector<int>dp(amount + 1, 0);
+			dp[0] = 1;
+			//组合问题，先遍历物品，在遍历背包。
+			for (int i = 0; i < coins.size(); i++)//物品——遍历每一种物品
+			{
+				for (int j = 1; j <= amount; j++)//背包——每一种物品能放的最大数量。
+				{
+					if (j - coins[i] >= 0)
+						dp[j] = dp[j] + dp[j - coins[i]];
+				}
+			}
+			return dp[amount];
+		}
+
 
 
 
@@ -6511,8 +6570,8 @@ namespace DynamicPlanning
 
 		void test()
 		{
-			vector<string> dp{ "10", "0001", "111001", "1", "0" };
-			findMaxForm(dp, 5, 3);
+			vector<int> dp{ 1, 2, 5 };
+			cout << change(5, dp);
 		}
 
 	};
