@@ -6564,14 +6564,36 @@ namespace DynamicPlanning
 
 
 
-
-
+		/*
+		377. 组合总和 Ⅳ
+		参考：
+			https://www.programmercarl.com/0377.%E7%BB%84%E5%90%88%E6%80%BB%E5%92%8C%E2%85%A3.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			和上题目非常相似_518. 零钱兑换 II
+		*/
+		int combinationSum4(vector<int>& nums, int target) {
+			vector<int>dp(target + 1, 0);
+			dp[0] = 1;
+			//排序问题，先遍历背包，再遍历物品。
+			//!!!两个for颠倒了顺序，外面的依旧为i 里面的是j。
+			//dp的下标依旧是“target”。要注意改变的就变。
+			for (int i = 0; i <= target; i++)//背包——每一种物品能放的最大数量。
+			{
+				for (int j = 0; j < nums.size(); j++)//物品——遍历每一种物品
+				{
+					//C++测试用例有两个数相加超过int的数据( dp[j] + dp[j - nums[i]])，所以需要在if里加上dp[i] < INT_MAX - dp[i - num]。
+					if (i - nums[j] >= 0 && dp[i] < INT_MAX - dp[i - nums[j]])
+						dp[i] = dp[i] + dp[i - nums[j]];
+				}
+			}
+			return dp[target];
+		}
 
 
 		void test()
 		{
-			vector<int> dp{ 1, 2, 5 };
-			cout << change(5, dp);
+			vector<int> dp{ 1, 2, 3 };
+			cout << combinationSum4(dp, 4);
 		}
 
 	};
