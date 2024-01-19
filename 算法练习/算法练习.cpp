@@ -6590,6 +6590,37 @@ namespace DynamicPlanning
 		}
 
 
+		/*
+		322. 零钱兑换
+		参考：
+			https://www.programmercarl.com/0322.%E9%9B%B6%E9%92%B1%E5%85%91%E6%8D%A2.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			物品“钱”可以用多次，是完全背包问题;物品“钱”不分先后顺序，所以是组合,先遍历物品，再遍历背包。
+			完全背包内for是正序。
+			1、是在“确定dp公式上”
+				dp[i] 金额为i的时候，dp[i]为所用的“最少”金币数。
+				dp[j]=min(dp[j],dp[j-coins[i] + 1])
+			2、在初始化dp数组
+				因为要求的是最小值，所以dp要初始化intmax，但是当金币总额为0的时候，就是0种兑换方法。可以用题目测出来。
+			这两点是这个题目的要注意的地方。
+
+		*/
+		int coinChange(vector<int>& coins, int amount) {
+			vector<unsigned int>dp(amount + 1, INT_MAX);//因为dp[j - coins[i]] + 1会出现INT_MAX+1，出现越界，所有要定义无符号
+			dp[0] = 0;
+			for (int i = 0; i < coins.size(); i++)
+			{
+				for (int j = coins[i]; j <= amount; j++)
+				{
+					dp[j] = min(dp[j], dp[j - coins[i]] + 1);
+				}
+			}
+			if (dp[amount] == INT_MAX) return -1;
+			return dp[amount];
+		}
+
+
+
 		void test()
 		{
 			vector<int> dp{ 1, 2, 3 };
