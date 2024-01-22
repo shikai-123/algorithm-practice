@@ -6595,6 +6595,7 @@ namespace DynamicPlanning
 		参考：
 			https://www.programmercarl.com/0322.%E9%9B%B6%E9%92%B1%E5%85%91%E6%8D%A2.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
+			转换成背包问题：就是背包容量一定，最少能放几种背包来填满背包。
 			物品“钱”可以用多次，是完全背包问题;物品“钱”不分先后顺序，所以是组合,先遍历物品，再遍历背包。
 			完全背包内for是正序。
 			1、是在“确定dp公式上”
@@ -6603,7 +6604,6 @@ namespace DynamicPlanning
 			2、在初始化dp数组
 				因为要求的是最小值，所以dp要初始化intmax，但是当金币总额为0的时候，就是0种兑换方法。可以用题目测出来。
 			这两点是这个题目的要注意的地方。
-
 		*/
 		int coinChange(vector<int>& coins, int amount) {
 			vector<unsigned int>dp(amount + 1, INT_MAX);//因为dp[j - coins[i]] + 1会出现INT_MAX+1，出现越界，所有要定义无符号
@@ -6612,6 +6612,10 @@ namespace DynamicPlanning
 			{
 				for (int j = coins[i]; j <= amount; j++)
 				{
+					/*
+					dp[j]：“j”背包容量；
+					dp[j - coins[i]] + 1：dp[背包容量-当前物品重量]+1：拿掉当前物品“j - coins[i]”，然后加上新的物品就是物品数+1；
+					*/
 					dp[j] = min(dp[j], dp[j - coins[i]] + 1);
 				}
 			}
@@ -6619,6 +6623,39 @@ namespace DynamicPlanning
 			return dp[amount];
 		}
 
+
+		/*
+		279. 完全平方数
+		参考：
+			https://www.programmercarl.com/0279.%E5%AE%8C%E5%85%A8%E5%B9%B3%E6%96%B9%E6%95%B0.html
+		题目说明：
+			1 4 9 这种被称为“完全平方数”，这个题目要给一个n，然后这个是由“完全平方数”加起来组成的数。
+			求用到的“完全平方数”的最少数量
+		思路：
+			每个“完全平方数”可以多次使用，完全背包问题。
+			不在乎顺序，就是排列。
+			转换为背包思路：背包容量是n，“完全平方数”是每个物品的重量。
+			问放满背包，“最少”有多少“物品”。
+			1、定义dp：dp[j] 当和为j的时候，最少有dp[j]中方法。
+			2、初始化：题目描述，“完全平方数”1, 4, 9, 16, ...。题目中没有0.所以=0；
+			3、确定dp公式：
+		*/
+		int numSquares(int n) {
+			vector<size_t>dp(n + 1, INT_MAX);//!!!取最小值，1、往往都是INT_MAX来初始化。2、小心dp[i - j * j] + 1越界了，正好越界1
+			dp[0] = 0;//题目描述，“完全平方数”1, 4, 9, 16, ...。题目中没有0.所以=0；
+			for (size_t i = 0; i <= n; i++)//背包
+			{
+				for (size_t j = 0; j*j <= i; j++)//物品-J*J就是具体的要放的物品的重量，这个时候要小于等于背包容量
+				{
+					/*
+					dp[i]：“i”背包容量；
+					dp[i - j * j] + 1：dp[背包容量-当前物品重量]+1：拿掉当前物品“i - j * j”，然后加上新的物品就是物品数+1；
+					*/
+					dp[i] = min(dp[i - j * j] + 1, dp[i]);
+				}
+			}
+			return dp[n];
+		}
 
 
 		void test()
