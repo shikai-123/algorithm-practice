@@ -6608,9 +6608,10 @@ namespace DynamicPlanning
 		int coinChange(vector<int>& coins, int amount) {
 			vector<unsigned int>dp(amount + 1, INT_MAX);//因为dp[j - coins[i]] + 1会出现INT_MAX+1，出现越界，所有要定义无符号
 			dp[0] = 0;
-			for (int i = 0; i < coins.size(); i++)
+			for (int i = 0; i < coins.size(); i++)//物品
 			{
-				for (int j = coins[i]; j <= amount; j++)
+				//当前物品重量《=背包容量
+				for (int j = coins[i]; j <= amount; j++)//背包
 				{
 					/*
 					dp[j]：“j”背包容量；
@@ -6645,7 +6646,8 @@ namespace DynamicPlanning
 			dp[0] = 0;//题目描述，“完全平方数”1, 4, 9, 16, ...。题目中没有0.所以=0；
 			for (size_t i = 0; i <= n; i++)//背包
 			{
-				for (size_t j = 0; j*j <= i; j++)//物品-J*J就是具体的要放的物品的重量，这个时候要小于等于背包容量
+				//物品-J*J就是具体的要放的物品的重量，！物品要小于等于背包容量！
+				for (size_t j = 0; j*j <= i; j++)
 				{
 					/*
 					dp[i]：“i”背包容量；
@@ -6656,6 +6658,44 @@ namespace DynamicPlanning
 			}
 			return dp[n];
 		}
+
+
+		/*
+		139.单词拆分
+		参考：
+			https://www.programmercarl.com/0139.%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			转成背包问题：
+			此数组中拿到单词放到s中，看最后能不能放满背包。
+			背包容量是要拼凑的单词的长度。
+			dp[i]含义：当遍历到字符串s到位置i的时候，前面的都可以被“单词”组成
+			递推公式：dp[i]很明显是依托于前面的部分。在前面能匹配上的前提下，后面的才有意义。
+					if(j-i的区间能匹配，并且下标为j的时候也为true)，这个时候dp[i]=true
+					为了方便匹配，用set匹配方便
+			确定遍历顺序：对于组成单词而言，单词的顺序不能随意指定，所以就是排列。
+			初始化：一开始一定要为true，要不然后面都是false了
+		*/
+		bool wordBreak(string s, vector<string>& wordDict) {
+			vector<bool>dp(s.size() + 1, false);
+			unordered_set<string>wordSet(wordDict.begin(), wordDict.end());
+			dp[0] = true;
+			//转换成背包问题，相当于往s中去放,遍历背包就是遍历s
+			for (size_t i = 0; i <= s.size(); i++)//背包
+			{
+				//物品《=背包容量，这里人就是保持这个规则
+				for (size_t j = 0; j < i; j++)//物品
+				{
+					//在前面能匹配上的前提下，后面的才有意义。
+					//!!!截取从j开始，也就是每次从最近的dp[j]=true开始，然后往后截取，直到遍历结束
+					string tmp = s.substr(j, i - j);//substr(起始位置，截取的个数)
+					if (dp[j] && wordSet.find(tmp) != wordSet.end())//if(j-i的区间能匹配，并且下标为j的时候也为true)
+						dp[i] = true;//新的字符串匹配上了，说明dp为true的下表要往后挪到i了
+				}
+			}
+			return dp[s.size()];
+		}
+
+
 
 
 		void test()
