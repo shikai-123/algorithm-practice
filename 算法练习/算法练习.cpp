@@ -6695,8 +6695,39 @@ namespace DynamicPlanning
 			return dp[s.size()];
 		}
 
+		/*
+		198.打家劫舍
+		题目解析：
+			从数组中偷，挨边的不能偷。
+		参考：
+			https://www.programmercarl.com/0198.%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D.html
+		思路：
 
+			乍一想，i能不能偷，只看i-1不就完了，不为什么这么做的原因，是因为要考虑“最大价值”
+			279为例。一开始不知道要偷2还是7。所以就要比较2+7和9的大小，谁大要谁，然后i++往后移动。
+			说明，当前i房间能不能偷，取决于i-1房间偷了不，以及i-2房间偷了没。
+			当前状态和前面状态会有一种依赖关系，那么这种依赖关系都是动规的递推公式。
+			所以用“动态规划”
 
+			1、往背包放钱，很明显的是背包，每个钱只能放一次，01背包。
+			2、在背包容量一定的情况下，求最大的价值，要用到max函数
+			dp[j] = max(dp[j], dp[j - weight[i]] + value[i]);
+			dp数组含义：dp[j] 偷到“下标为i”的时候最大价值
+			递推公式：dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
+			初始化：从递推公式来看，要初始化1，2,，但是dp[1]要为 0 1的最大值
+		*/
+		int rob(vector<int>& nums) {
+			if (nums.size() == 0) return 0;
+			if (nums.size() == 1) return nums[0];
+			vector<int>dp(nums.size(), 0);
+			dp[0] = nums[0];
+			dp[1] = max(nums[0], nums[1]);//初始化dp[1]，用max别忘了。这里要访问两个元素，小于两个元素，上面要单独处理
+			for (size_t i = 2; i < nums.size(); i++)
+			{
+				dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
+			}
+			return dp[nums.size() - 1];
+		}
 
 		void test()
 		{
