@@ -6729,6 +6729,42 @@ namespace DynamicPlanning
 			return dp[nums.size() - 1];
 		}
 
+
+		/*
+		213.打家劫舍II
+		题目解析：
+			房间是个圈，挨边的不能偷。
+		参考：
+			https://www.programmercarl.com/0213.%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8DII.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			把这个“圆数组”分解成“线性数组”，然后用“198.打家劫舍”思路解决。
+			根据题意知道，头尾不能同时取，所以就分为：有头没尾，无头有尾，无头无尾。
+			无头无尾，在前两种情况中都包含了。
+		*/
+		int robRange(vector<int>& nums, int start, int end)
+		{
+
+			vector<int>dp(nums.size(), 0);
+			dp[start] = nums[start];
+			dp[start + 1] = max(nums[start], nums[start + 1]);//初始化dp[1]，用max别忘了。这里要访问两个元素，小于两个元素，上面要单独处理
+			for (size_t i = start + 2; i < end; i++)
+			{
+				dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
+			}
+			return dp[end - 1];
+		}
+
+
+		int rob2(vector<int>& nums) {
+			if (nums.size() == 0) return 0;
+			if (nums.size() == 1) return nums[0];
+			if (nums.size() == 2)return  max(nums[0], nums[1]);//这题目。只有两个元素的时候，虽然首尾相连，但能偷一个
+			int ret = robRange(nums, 1, nums.size());
+			int ret1 = robRange(nums, 0, nums.size() - 1);
+			return max(ret, ret1);
+		}
+
+
 		void test()
 		{
 			vector<int> dp{ 1, 2, 3 };
