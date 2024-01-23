@@ -6765,6 +6765,48 @@ namespace DynamicPlanning
 		}
 
 
+		/*
+		337.打家劫舍 III
+		题目解析：
+			换成了“树”结构，还是相邻的不能偷
+		参考：
+			https://www.programmercarl.com/0337.%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8DIII.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			这个题目就是“树+动态规划”；
+			用“后序遍历”，是因为解决思路是“从下往上”，得到的返回值让上一层节点用。
+			dp含义：dp[0]不偷该点的最大值，dp[1]不偷该点的最大值
+			其他思路，看注释
+		*/
+		struct TreeNode {/*这个题目是树。放在动态规划里*/
+			int val;
+			TreeNode *left;
+			TreeNode *right;
+		};
+
+		vector<int> rob3Range(TreeNode* root)
+		{
+			/*这个不行，假设，当root左存在的时候，右不存在。进入下层递归，右的右造成非法访问。
+			if (root->left == nullptr&& root->right == nullptr)
+				return{ 0,root->val };*/
+			if (root == nullptr)//遍历到叶子节点的下一个节点。也就是不存在的节点，偷不偷都是0；
+				return { 0,0 };
+			//!后序遍历
+			vector<int>dpLeft = rob3Range(root->left);
+			vector<int>dpRight = rob3Range(root->right);
+
+			//当前节点没偷，左右孩子有可能偷有可能不偷
+			int left = max(dpLeft[0], dpLeft[1]) + max(dpRight[0], dpRight[1]);
+			//当前节点偷了，子节点一定不能偷
+			int right = root->val + dpLeft[0] + dpRight[0];
+			return{ left ,right };
+		}
+		int rob3(TreeNode* root) {
+			if (root == nullptr)
+				return 0;
+			vector<int> val = rob3Range(root);
+			return max(val[0], val[1]);
+		}
+
 		void test()
 		{
 			vector<int> dp{ 1, 2, 3 };
