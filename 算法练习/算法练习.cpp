@@ -165,8 +165,14 @@ namespace String_Array
 
 		}
 
-		//这个还不是最简单的
-		int maxProfit3(vector<int>& prices) {
+		/*
+		122.买卖股票的最佳时机II
+		参考：
+			https://www.programmercarl.com/0122.%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BAII.html#%E6%80%9D%E8%B7%AF
+		思路：
+			贪心，只计算盈利的天数，然后把这些盈利加在一起。就是最大盈利
+		*/
+		int maxProfit2_1(vector<int>& prices) {
 			int result = 0;
 
 			for (size_t i = 1; i < prices.size(); i++)
@@ -5574,7 +5580,6 @@ namespace Greedy {
 		}
 
 
-
 		/*
 		122. 买卖股票的最佳时机 II
 		参考：
@@ -5582,9 +5587,9 @@ namespace Greedy {
 		思路：
 			局部最优接，然后把这个局部都加一起，得到最后的。
 		其他：
-			之前做过。搜索函数名就可
+			之前做过。搜索函数名maxProfit2_1
 		*/
-		int maxProfit(vector<int>& prices) {
+		int maxProfit2_2(vector<int>& prices) {
 			int ret = 0;
 			for (size_t i = 0; i < prices.size() - 1; i++)
 			{
@@ -6806,6 +6811,127 @@ namespace DynamicPlanning
 			vector<int> val = rob3Range(root);
 			return max(val[0], val[1]);
 		}
+
+
+		/*
+			动态规划股票问题的优势是可以用这个方法解决一系列的股票问题。
+			其他思路，只能解决几个。
+		*/
+
+		/*
+		121. 买卖股票的最佳时机1
+		参考：
+			https://www.programmercarl.com/0122.%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BAII.html#%E6%80%9D%E8%B7%AF
+		思路：
+			这个题目特点是，只能交易一次。
+			贪心思路
+			1、始终找最小值
+			2、用“当前的价格-最小值”，不断的更新“最小值”右侧更大的利润。
+		*/
+		int maxProfit1_1(vector<int>& prices) {
+			int maxValue = prices[0];
+			int minValue = prices[0];
+			int result = 0;
+			for (size_t i = 0; i < prices.size(); i++)
+			{
+				if (prices[i] < minValue)
+					minValue = prices[i];
+				else if (prices[i] - minValue > result)
+					result = prices[i] - minValue;
+			}
+			cout << "利润 " << result << endl;
+			return result;
+		}
+
+
+		/*
+		121. 买卖股票的最佳时机1
+		参考：
+			https://www.programmercarl.com/0122.%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BAII.html#%E6%80%9D%E8%B7%AF
+		思路：
+			这个题目特点是，只能交易一次。
+			动态规划思路
+			这个题目，用这个思路不值当的，主要为了买卖股票的最佳时机3以及以后的题目，做思想熟悉
+			1、dp数组定义：
+				他用二维的原因是一维表示不出来，另外他对dp数组的描述，没我这个好。
+				dp[i][0] 表示第i天持有股票所得最多现金;dp[i][1]表示第i天不持有股票所得最多现金
+				*dp[i][0] 表示第i天持有股票手里最多的“利润”;dp[i][1]表示第i天不持有股票手里最多的“利润”
+			2、dp数组递推公式
+				dp[i][0] 表示第i天持有股票所得最多利润;
+					1、i之前就持有了，手里的利润没变化和dp[i-1][0]一样
+					2、i的时候买了，利润就变成-prices[i]
+					两种利润去最大的那个。
+				dp[i][1]表示第i天不持有股票所得最多“利润”
+					1、i之前就卖了，手里的利润没变化和dp[i-1][1]一样
+					2、i的时候卖了，利润就变成dp[i-1][0]+prices[i],前天没卖，今天卖了
+			3、遍历顺序
+				后面的利润，依靠前面的来算，所以从头开始遍历
+			4、初始化
+				第0天的时候，
+				dp[0][0]=-prices[0];//第0天持有股票，就是买了，要花钱，利润就是-prices[0]
+				dp[0][1]=0;//第i天不持有股票，没花钱利润=0；
+
+			返回值：
+				最后的要返回dp[i][0]，dp[i][1]中较大的那个，但实际上肯定是卖出股票的dp[i][1]大
+		*/
+
+		int maxProfit1_2(vector<int>& prices) {
+			if (prices.size() == 0) return 0;
+			vector<vector<int>>dp(prices.size(), { 0,0 });
+			//vector<vector<int>>dp(prices.size(), { 0 });//力扣过不去
+			dp[0][0] = -prices[0];
+			dp[0][1] = 0;
+			for (size_t i = 1; i < prices.size(); i++)
+			{
+				dp[i][0] = max(dp[i - 1][0], -prices[i]);
+				dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] + prices[i]);
+			}
+			return dp[prices.size() - 1][1];
+		}
+
+
+
+
+		/*
+		122.买卖股票的最佳时机II
+		参考：
+			https://www.programmercarl.com/0122.%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BAII.html#%E6%80%9D%E8%B7%AF
+		思路：
+			这个题目特点是，每天都能交易。
+			动态规划
+			这个题目，用这个思路不值当的，主要为了买卖股票的最佳时机3以及以后的题目，做思想熟悉
+
+			2、dp数组递推公式
+				dp[i][0] 表示第i天持有股票所得最多利润;
+					1、i之前就持有了，手里的利润没变化和dp[i-1][0]一样
+					2、i的时候买了，利润就变成-prices[i]（原先的）
+					！！“和121. 买卖股票的最佳时机1”相比，唯一的差别在这
+					因为可以多次买卖，所以在i买了的时候，可能之前也交易过，
+					利润就不是“第一次买的时候的-prices[i]”，那么利润就变成了：
+					“之前的利润-买股票的花费”
+					dp[i-1][1]-prices[i]
+
+					两种利润去最大的那个。
+				dp[i][1]表示第i天不持有股票所得最多“利润”
+					1、i之前就卖了，手里的利润没变化和dp[i-1][1]一样
+					2、i的时候卖了，利润就变成dp[i-1][0]+prices[i],前天没卖，今天卖了
+		*/
+		int maxProfit2_3(vector<int>& prices) {
+			if (prices.size() == 0) return 0;
+			vector<vector<int>>dp(prices.size(), { 0,0 });
+			dp[0][0] = -prices[0];
+			dp[0][1] = 0;
+			for (size_t i = 1; i < prices.size(); i++)
+			{
+				dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] - prices[i]);
+				dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] + prices[i]);
+			}
+			return dp[prices.size() - 1][1];
+		}
+
+
+
+
 
 		void test()
 		{
