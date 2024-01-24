@@ -6814,6 +6814,8 @@ namespace DynamicPlanning
 
 
 		/*
+			动态规划——股票问题总结
+			1、dp数组的含义都是一样的——代表手里剩余的利润，只是具体情况不同罢了。
 			动态规划股票问题的优势是可以用这个方法解决一系列的股票问题。
 			其他思路，只能解决几个。
 		*/
@@ -6931,12 +6933,58 @@ namespace DynamicPlanning
 
 
 
+		/*
+		123.买卖股票的最佳时机III
+		参考：
+			https://www.programmercarl.com/0123.%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BAIII.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			这个题目特点是“最多交易两次”，可以一次， 可以两次。
+
+			1、确定dp：
+				0、没有操作 （其实我们也可以不设置这个状态,前面两个题目都没有设置）
+				1、第一次持有股票
+				2、第一次不持有股票
+				3、第二次持有股票
+				4、第二次不持有股票
+			2、初始化
+				dp[0][0]=0;
+				dp[0][1]=-prices[0];
+				dp[0][2]=0;//第0天买了再卖，“利润”就是0
+				dp[0][3]=-prices[0];//第0天买了再卖，这是第二次了，“利润”就是-prices[0]
+				dp[0][4]=0;//第0天买了再卖，“利润”就是0。第二次也是这样
+			3、遍历顺序
+				第i天持有，有可能i-1就买过了dp[i-1][1]，有可能i天刚买
+				dp[i][1] = max(dp[i-1][1],dp[i-1][0]-prices[i]);
+				dp[i][1] = max(dp[i-1][1],-prices[i]);//两个都行，建议是这个，逻辑上更好
+				dp[i][2] = max(dp[i-1][2],dp[i-1][1]+prices[i]);
+				dp[i][3] = max(dp[i-1][3],dp[i-1][2]-prices[i]);
+				dp[i][4] = max(dp[i-1][4],dp[i-1][3]+prices[i]);
+			4、返回值的确定
+				我们肯定会想到，取两次的卖出最大值。但是他说第二次卖出一定是最大值，他说的也不好，我没理解。
+		*/
+		int maxProfit3(vector<int>& prices) {
+			if (prices.size() == 0) return 0;
+			vector<vector<int>>dp(prices.size(), { 0,0,0,0,0 });
+			dp[0][0] = 0;
+			dp[0][1] = -prices[0];
+			dp[0][2] = 0;
+			dp[0][3] = -prices[0];
+			dp[0][4] = 0;
+			for (size_t i = 1; i < prices.size(); i++)
+			{
+				dp[i][1] = max(dp[i - 1][1], -prices[i]);//两个都行，建议是这个，逻辑上更好
+				dp[i][2] = max(dp[i - 1][2], dp[i - 1][1] + prices[i]);
+				dp[i][3] = max(dp[i - 1][3], dp[i - 1][2] - prices[i]);
+				dp[i][4] = max(dp[i - 1][4], dp[i - 1][3] + prices[i]);
+			}
+			return dp[prices.size() - 1][4];
+		}
 
 
 		void test()
 		{
-			vector<int> dp{ 1, 2, 3 };
-			cout << combinationSum4(dp, 4);
+			vector<int> dp{ 3,3,5,0,0,3,1,4 };
+			cout << maxProfit3(dp);
 		}
 
 	};
