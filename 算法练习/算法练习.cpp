@@ -6912,6 +6912,7 @@ namespace DynamicPlanning
 					利润就不是“第一次买的时候的-prices[i]”，那么利润就变成了：
 					“之前的利润-买股票的花费”
 					dp[i-1][1]-prices[i]
+					即使是第一次买，dp[i-1][1]=0,也能满足题意
 
 					两种利润去最大的那个。
 				dp[i][1]表示第i天不持有股票所得最多“利润”
@@ -6980,6 +6981,41 @@ namespace DynamicPlanning
 			return dp[prices.size() - 1][4];
 		}
 
+
+		/*
+		188. 买卖股票的最佳时机 IV
+		参考：
+			https://www.programmercarl.com/0188.%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BAIV.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			这个题目特点是交易次数由“k”指定。
+			之前都固定的，所以需要一个for来控制交易次数
+			1、dp含义
+				和以前一样
+				2 * l - 2：第l次没有操作 （其实我们也可以不设置这个状态,前面两个题目都没有设置）
+				2 * l - 1：第l次持有股票
+				2 * l：    第l次不持有股票
+			2、递推公式
+				和以前一样，只不过用for来控制
+			3、dp初始化
+				和以前一样，只不过也得初始化。而且要注意，是每次交易的开始利润都是“- -prices[0]”
+
+		*/
+		int maxProfit4(int k, vector<int>& prices) {
+			if (prices.size() == 0) return 0;
+			vector<vector<int>> dp(prices.size(), vector<int>(2 * k + 1, 0));
+			for (int j = 1; j <= k; j++) {
+				dp[0][2 * j - 1] = -prices[0];
+			}
+			for (size_t i = 1; i < prices.size(); i++)
+			{
+				for (size_t l = 1; l <= k; l++)
+				{
+					dp[i][2 * l - 1] = max(dp[i - 1][2 * l - 1], dp[i - 1][2 * l - 2] - prices[i]);
+					dp[i][2 * l] = max(dp[i - 1][2 * l], dp[i - 1][2 * l - 1] + prices[i]);
+				}
+			}
+			return dp[prices.size() - 1][2 * k];
+		}
 
 		void test()
 		{
