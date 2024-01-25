@@ -7100,6 +7100,8 @@ namespace DynamicPlanning
 			为什么有两层循环？
 				因为要求的递增序列，不一定是连续的。
 				每个nums的最长子序列长度需要单独去算，而他要算的长度就到i。
+			为什么这个用max，后面两个没有用max？
+				可能和连不连续有关系吧。
 		*/
 		int lengthOfLIS(vector<int>& nums) {
 			if (nums.size() <= 1) return 1;
@@ -7110,7 +7112,7 @@ namespace DynamicPlanning
 				for (size_t l = 0; l < i; l++)
 				{
 					if (nums[i] > nums[l])
-						dp[i] = max(dp[l] + 1, dp[i]);
+						dp[i] = max(dp[l] + 1, dp[i]);//!!!
 				}
 				//cout << "dp " << dp[i] << endl;
 				ret = max(ret, dp[i]);
@@ -7147,14 +7149,50 @@ namespace DynamicPlanning
 			return ret;
 		}
 
-
-
+		/*
+		718. 最长重复子数组
+		参考：
+			https://www.programmercarl.com/0718.%E6%9C%80%E9%95%BF%E9%87%8D%E5%A4%8D%E5%AD%90%E6%95%B0%E7%BB%84.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			1、dp含义：
+				dp[i][j]:数组nums1的下表i-1和数组nums2的下表l-1，最长重复子序列
+			2、公式
+				if (nums1[i-1] == nums2[l-1])//注意这！！！
+						dp[i][l] = dp[i - 1][l - 1] + 1;
+				else
+					dp[i][l] = 1;
+			3、初始化
+				 假设nums1，nums2相同的话，dp[1][1]=1;
+				 根据公式dp[1][1]=dp[0][0]+1;
+				 所以，dp[0][0]=0;
+				 这个推断也不好，总之不好初始化的时候，就赋值0或者1。
+		*/
+		int findLength(vector<int>& nums1, vector<int>& nums2) {
+			//因为dp[i]表示遍历到i-1的位置的长度，需要多+1。另外默认值为0，因为1的时候，过不去。主要是我没找到一个好的解释，解析中也没提，也可能我没找到。
+			vector<vector<int>>dp(nums1.size() + 1, vector<int>(nums2.size() + 1, 0));
+			int ret = 0;
+			dp[0][0] = 0;
+			for (size_t i = 1; i < nums1.size() + 1; i++)
+			{
+				for (size_t l = 1; l < nums2.size() + 1; l++)
+				{
+					if (nums1[i - 1] == nums2[l - 1])//因为dp数组含义i，代表i-1下表位置，所以遍历dp[i]的时候，就是nums[i-1]
+						dp[i][l] = dp[i - 1][l - 1] + 1;
+					else
+						dp[i][l] = 0;
+					ret = max(ret, dp[i][l]);
+					//cout << ret << endl;
+				}
+			}
+			return ret;
+		}
 
 
 		void test()
 		{
-			vector<int> dp{ 1,3,5,4,7 };
-			cout << lengthOfLIS(dp);
+			vector<int> dp{ 1,2,3,2,1 };
+			vector<int> dp1{ 3,2,1,4,7 };
+			cout << findLength(dp, dp1);
 		}
 
 	};
