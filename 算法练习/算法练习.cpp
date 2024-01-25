@@ -6813,12 +6813,6 @@ namespace DynamicPlanning
 		}
 
 
-		/*
-			动态规划——股票问题总结
-			1、dp数组的含义都是一样的——代表手里剩余的利润，只是具体情况不同罢了。
-			动态规划股票问题的优势是可以用这个方法解决一系列的股票问题。
-			其他思路，只能解决几个。
-		*/
 
 		/*
 		121. 买卖股票的最佳时机1
@@ -7085,10 +7079,46 @@ namespace DynamicPlanning
 			return dp[prices.size() - 1][1];
 		}
 
+
+		/*
+		300.最长递增子序列
+		参考：
+			https://www.programmercarl.com/0300.%E6%9C%80%E9%95%BF%E4%B8%8A%E5%8D%87%E5%AD%90%E5%BA%8F%E5%88%97.html
+		思路：
+			1、dp含义：dp[i]代表数组nums从0-i的最长子序列的长度
+			2、dp递推公式：
+				if (nums[i] > nums[l])
+					dp[i]=max(dp[i-1]+1,dp[i]);
+				遍历到位置i，他的长度是由前面的最大长度+1，如果后面的值是》前面的值的话。
+			3、初始化：
+				!所有的都初始化1，因为最短就是1。
+				初始化0，结果最后差一个。
+		思考：
+			这个为什么想起来用动态规划？
+				因为，后面的最大长度，是由前面的最大长度+1来决定的，如果后面的值是》前面的值的话。
+				这种由前后推出后面的情况，都可以用动态规划。
+		*/
+		int lengthOfLIS(vector<int>& nums) {
+			if (nums.size() <= 1) return 1;
+			vector<int>dp(nums.size(), 1);
+			int ret = 0;
+			for (size_t i = 1; i < nums.size(); i++)
+			{
+				for (size_t l = 0; l < i; l++)
+				{
+					if (nums[i] > nums[l])
+						dp[i] = max(dp[l] + 1, dp[i]);
+				}
+				cout << "dp " << dp[i] << endl;
+				ret = max(ret, dp[i]);
+			}
+			return ret;
+		}
+
 		void test()
 		{
-			vector<int> dp{ 3,3,5,0,0,3,1,4 };
-			cout << maxProfit3(dp);
+			vector<int> dp{ 10,9,2,5,3,7,101,18 };
+			cout << lengthOfLIS(dp);
 		}
 
 	};
