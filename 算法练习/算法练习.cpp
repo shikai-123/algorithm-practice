@@ -7097,6 +7097,9 @@ namespace DynamicPlanning
 			这个为什么想起来用动态规划？
 				因为，后面的最大长度，是由前面的最大长度+1来决定的，如果后面的值是》前面的值的话。
 				这种由前后推出后面的情况，都可以用动态规划。
+			为什么有两层循环？
+				因为要求的递增序列，不一定是连续的。
+				每个nums的最长子序列长度需要单独去算，而他要算的长度就到i。
 		*/
 		int lengthOfLIS(vector<int>& nums) {
 			if (nums.size() <= 1) return 1;
@@ -7109,15 +7112,48 @@ namespace DynamicPlanning
 					if (nums[i] > nums[l])
 						dp[i] = max(dp[l] + 1, dp[i]);
 				}
-				cout << "dp " << dp[i] << endl;
+				//cout << "dp " << dp[i] << endl;
 				ret = max(ret, dp[i]);
 			}
 			return ret;
 		}
 
+
+		/*
+		674. 最长连续递增序列
+		参考：
+			https://www.programmercarl.com/0674.%E6%9C%80%E9%95%BF%E8%BF%9E%E7%BB%AD%E9%80%92%E5%A2%9E%E5%BA%8F%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			这个题目和个题目不同的是“连续递增”，相对上题而言，不需要第二个for。
+			1、dp含义：dp[i]:从上次递增结束的地方开始，到i的最长“连续”子序列的长度。
+			2、公式：
+				if(nums[i]>nums[i-1])
+					dp[i]=dp[i-1]+1;
+				else
+					dp[i]=1;
+		*/
+		int findLengthOfLCIS(vector<int>& nums) {
+			if (nums.size() <= 1) return 1;
+			vector<int>dp(nums.size(), 1);
+			int ret = 0;
+			for (size_t i = 1; i < nums.size(); i++)
+			{
+				if (nums[i] > nums[i - 1])
+					dp[i] = dp[i - 1] + 1;
+				else
+					dp[i] = 1;
+				ret = max(ret, dp[i]);
+			}
+			return ret;
+		}
+
+
+
+
+
 		void test()
 		{
-			vector<int> dp{ 10,9,2,5,3,7,101,18 };
+			vector<int> dp{ 1,3,5,4,7 };
 			cout << lengthOfLIS(dp);
 		}
 
