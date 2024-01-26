@@ -7085,7 +7085,7 @@ namespace DynamicPlanning
 		参考：
 			https://www.programmercarl.com/0300.%E6%9C%80%E9%95%BF%E4%B8%8A%E5%8D%87%E5%AD%90%E5%BA%8F%E5%88%97.html
 		思路：
-			1、dp含义：dp[i]代表数组nums从0-i的最长子序列的长度
+			1、dp含义：dp[i]代表数组nums从“上次递增结束位置”开始的的最长子序列的长度
 			2、dp递推公式：
 				if (nums[i] > nums[l])
 					dp[i]=max(dp[i-1]+1,dp[i]);
@@ -7154,6 +7154,7 @@ namespace DynamicPlanning
 		参考：
 			https://www.programmercarl.com/0718.%E6%9C%80%E9%95%BF%E9%87%8D%E5%A4%8D%E5%AD%90%E6%95%B0%E7%BB%84.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
+			这个题目的 重复子数组是“连续的”。
 			1、dp含义：
 				dp[i][j]:数组nums1的下表i-1和数组nums2的下表l-1，最长重复子序列
 			2、公式
@@ -7179,13 +7180,64 @@ namespace DynamicPlanning
 					if (nums1[i - 1] == nums2[l - 1])//因为dp数组含义i，代表i-1下表位置，所以遍历dp[i]的时候，就是nums[i-1]
 						dp[i][l] = dp[i - 1][l - 1] + 1;
 					else
-						dp[i][l] = 0;
+						dp[i][l] = 0;//一旦出现不想等的情况，长度清零
 					ret = max(ret, dp[i][l]);
 					//cout << ret << endl;
 				}
 			}
 			return ret;
 		}
+
+
+		/*
+		1143.最长公共子序列
+		参考：
+			https://www.programmercarl.com/1143.%E6%9C%80%E9%95%BF%E5%85%AC%E5%85%B1%E5%AD%90%E5%BA%8F%E5%88%97.html
+		思考：
+			这个题目的 重复子数组在text1或2中是可以“不连续的”。
+			1、dp含义：dp[i][l] 代表从下表0到text1[i-1] text2[i-1]这个位置的最长子序列
+			2、公式：
+				相同的时候：
+				if(text1[i]==text2[l])
+					dp[i][l]=max(dp[i-1][l-1]+1,dp[i][l]);
+				不相同的时候：
+					比如abc和ace，遍历到第三个位置，c和e不同，但是此时的最长公共子序列为2
+					所以，我们要考虑abc和ac或者是ab和ace。
+				else
+					dp[i][l]=max(dp[i][l-1],dp[i-1][l]);
+
+			3、初始化
+				dp[0][0]=0;
+				test1[0, i-1]和空串的最长公共子序列自然是0，
+				所以dp[i][0] = 0;
+				同理dp[0][j]也是0。
+				其实我一开始没想到，还是那句话，这中不好想的。先试试0，再试试1
+
+		*/
+		int longestCommonSubsequence(string text1, string text2) {
+			vector<vector<int>>dp(text1.size() + 1, vector<int>(text2.size() + 1, 0));
+
+			//int ret = 0;			ret = max(ret, dp[i][l]); 不用这个了，用这个也不错，但是dp的含义已经是
+			for (size_t i = 1; i < text1.size() + 1; i++)
+			{
+				for (size_t l = 1; l < text2.size() + 1; l++)
+				{
+					if (text1[i - 1] == text2[l - 1])//-1别忘了， 遍历到i的时候，下表是i-1
+						dp[i][l] = max(dp[i - 1][l - 1] + 1, dp[i][l]);
+					else
+						dp[i][l] = max(dp[i][l - 1], dp[i - 1][l]);
+				}
+			}
+			return dp[text1.size()][text2.size()];
+		}
+
+		/*
+		子序列，总结：
+		结果什么时候用max函数来确定？
+		只有dp的定义，是从下表0开始来计算最终的长度，比如“1143.最长公共子序列”，最后的返回值就是
+		*/
+
+
 
 
 		void test()
