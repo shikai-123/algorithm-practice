@@ -7212,7 +7212,6 @@ namespace DynamicPlanning
 				所以dp[i][0] = 0;
 				同理dp[0][j]也是0。
 				其实我一开始没想到，还是那句话，这中不好想的。先试试0，再试试1
-
 		*/
 		int longestCommonSubsequence(string text1, string text2) {
 			vector<vector<int>>dp(text1.size() + 1, vector<int>(text2.size() + 1, 0));
@@ -7230,12 +7229,6 @@ namespace DynamicPlanning
 			}
 			return dp[text1.size()][text2.size()];
 		}
-
-		/*
-		子序列，总结：
-		结果什么时候用max函数来确定？
-		只有dp的定义，是从下表0开始来计算最终的长度，比如“1143.最长公共子序列”，最后的返回值就是
-		*/
 
 
 
@@ -7263,11 +7256,93 @@ namespace DynamicPlanning
 		}
 
 
+		/*
+		53. 最大子序和
+		参考：
+			https://www.programmercarl.com/0053.%E6%9C%80%E5%A4%A7%E5%AD%90%E5%BA%8F%E5%92%8C%EF%BC%88%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%EF%BC%89.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			之前贪心思路的时候，写过一次，代码和思路都很简单。
+			1、含义：dp[i] 从0开始遍历到下标i的时候，最大的子数组和。
+			2、公式：
+				一看到是从0下标开始的，我都想用max，不知道后面通用不。先这么记者。
+				dp[i]=max(dp[i-1]+nums[i],nums[i]);
+				如果加上前面的结果加上nums[i],该没有当前的数大的话，不如用当前的数
+			3、初始化：dp[0]=0;
+			4、返回值，因为要求的是“连续”序列和，所以最大的结果可能在中间就出现。
+		*/
+		int maxSubArray(vector<int>& nums)
+		{
+			vector<int>dp(nums.size(), INT32_MIN);
+			dp[0] = nums[0];
+			int ret = dp[0];
+			for (size_t i = 1; i < nums.size(); i++)
+			{	//如果不是求“连续子序列和”，下面这个肯定没错——我还没试过，哈哈
+				//dp[i] = max(max(dp[i - 1] + nums[i], nums[i]), dp[i - 1]);
+				dp[i] = max(dp[i - 1] + nums[i], nums[i]);
+				//if (dp[i] < 0) dp[i] = 0;//！！用不着，因为dp[i]已经是遍历到i的最大值了，不用把贪心的那部分弄过来当前结果《0的话，对后面的结果，就没有增益了，所以赋值0；
+				//cout << "i" << i << " " << dp[i] << endl;
+				ret = max(ret, dp[i]);
+			}
+			return ret;
+		}
+
+
+		/*
+		392.判断子序列
+		参考：
+			https://www.programmercarl.com/0392.%E5%88%A4%E6%96%AD%E5%AD%90%E5%BA%8F%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			这道题目算是编辑距离的入门题目（毕竟这里只是涉及到减法），也是动态规划解决的经典题型。
+			这个题目，只是为了熟悉动态规划才去用，貌似双指针是很好的方法。
+			大概思路就是，s出现的元素，t中也有的就留，t单独有的就“删除”。
+			最后dp的值和s的长度一致，说明s是t的子串，否则是不是。
+			和“1143.最长公共子序列”非常的相似。
+			如果最后s的长度和最大的共有子串的长度是一样的，s肯定是t的子串。
+			1、dp含义：dp[i][l] 代表从下表0到s[i-1] t[i-1]这个位置的最长子序列
+			2、公式：
+				相同的时候：
+				if (s[i - 1] == t[l - 1])
+					dp[i][l] = max(dp[i - 1][l - 1] + 1, dp[i][l]);
+				不相同的时候：
+					字符串s肯定是不能动的，要做的就是跳过t的当前字符串，
+					dp的值保持“上一次遍历到t的字符串”的dp的值——最大的共有子串的长度。
+				else
+					dp[i][l] = dp[i][l - 1];
+		*/
+		bool isSubsequence(string s, string t) {
+			vector<vector<int>>dp(s.size() + 1, vector<int>(t.size() + 1, 0));
+			for (size_t i = 1; i < s.size() + 1; i++)//遍历s
+			{
+				for (size_t l = 1; l < t.size() + 1; l++)//遍历t
+				{
+					if (s[i - 1] == t[l - 1])
+						dp[i][l] = max(dp[i - 1][l - 1] + 1, dp[i][l]);
+					else
+						dp[i][l] = dp[i][l - 1];
+				}
+			}
+			if (s.size() == dp[s.size()][t.size()])
+				return true;
+			return false;
+		}
+
+
+		/*
+		子序列，总结：
+		结果什么时候用max函数来确定？
+			只有dp的定义，是从下表0开始来计算最终的长度，比如“1143.最长公共子序列”，最后的返回值就是
+		什么时候dp[i][l] 代表的含义是i-1的下标怎么样
+			从上面的题目来看，凡是判断nums1[i]==nums2[l]都要用-1。
+		为什么上面判断相等要用i-1？
+			？？？？？？？？？？
+		*/
+
+
 		void test()
 		{
-			vector<int> dp{ 1,2,3,2,1 };
+			vector<int> dp{ -2,1,-3,4,-1,2,1,-5,4 };
 			vector<int> dp1{ 3,2,1,4,7 };
-			cout << findLength(dp, dp1);
+			cout << maxSubArray(dp);
 		}
 
 	};
