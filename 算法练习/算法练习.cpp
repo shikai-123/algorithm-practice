@@ -7239,6 +7239,29 @@ namespace DynamicPlanning
 
 
 
+		/*
+		1035.不相交的线
+		参考：
+			https://www.programmercarl.com/1035.%E4%B8%8D%E7%9B%B8%E4%BA%A4%E7%9A%84%E7%BA%BF.html
+		思考：
+			这个题目和“1143.最长公共子序列”，代码是一样的；
+			都是从下标0开始，然后到结束，nums1和nums2两个的子串都各个字符的顺序都不会改变位置，且两个子串是相同的。
+		*/
+		int maxUncrossedLines(vector<int>& nums1, vector<int>& nums2) {
+			vector<vector<int>>dp(nums1.size() + 1, vector<int>(nums2.size() + 1, 0));
+			for (size_t i = 1; i < nums1.size() + 1; i++)
+			{
+				for (size_t l = 1; l < nums2.size() + 1; l++)
+				{
+					if (nums1[i - 1] == nums2[l - 1])//-1别忘了， 遍历到i的时候，下表是i-1
+						dp[i][l] = max(dp[i - 1][l - 1] + 1, dp[i][l]);
+					else
+						dp[i][l] = max(dp[i][l - 1], dp[i - 1][l]);
+				}
+			}
+			return dp[nums1.size()][nums2.size()];
+		}
+
 
 		void test()
 		{
