@@ -7380,10 +7380,6 @@ namespace DynamicPlanning
 			return dp[word1.size()][word2.size()];
 		}
 
-
-
-
-
 		/*
 		子序列，总结：
 		结果什么时候用max函数来确定？
@@ -7395,7 +7391,44 @@ namespace DynamicPlanning
 		什么时候用二维数组？
 			对比两个数组它的元素是否相同的情况，要用二维。
 			二维数组，自然对应的就是两个for
+		什么时候初始化一条边
+			首要，是二维的dp，然后dp[0][i]的时候每个值还不一样，这种很少。参考583. 两个字符串的删除操作
 		*/
+
+		/*
+		72. 编辑距离
+		参考：
+			https://www.programmercarl.com/0072.%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			和“583. 两个字符串的删除操作”非常像
+			1、dp[i][j]：坐标i-1和j-1，最少的操作次数
+			2、公式
+				i-1和j-1元素相等：dp[i-1][j-1];因为这两个元素相同，所以不用删除元素，也就不用添加删除次数。
+				i-1和j-1元素不相等：
+				增加：dp[i-1][j]+1或者：dp[i][j-1]+1
+				删除：dp[i-1][j]+1或者：dp[i][j-1]+1；和“增加”是一样的，比如abc和ab，增加c和去掉c都是一样，最后哪个小，就用谁就行。
+				替换：dp[i-1][j-1]+1；dp[i-1][j-1]是前一次两者都相等，比如abc和abd，到了d开始不相等了，只需要操作一次就行
+		*/
+		int minDistance1(string word1, string word2) {
+			vector<vector<int>>dp(word1.size() + 1, vector<int>(word2.size() + 1, 0));
+			for (size_t i = 0; i < word1.size() + 1; i++)
+				dp[i][0] = i;
+			for (size_t j = 0; j < word2.size() + 1; j++)
+				dp[0][j] = j;
+			for (size_t i = 1; i < word1.size() + 1; i++)
+			{
+				for (size_t j = 1; j < word2.size() + 1; j++)
+				{
+					if (word1[i - 1] == word2[j - 1])
+						dp[i][j] = dp[i - 1][j - 1];
+					else
+						dp[i][j] = min(dp[i - 1][j - 1] + 1, min(dp[i - 1][j] + 1, dp[i][j - 1] + 1));
+				}
+			}
+			return dp[word1.size()][word2.size()];
+		}
+
+
 
 
 		void test()
