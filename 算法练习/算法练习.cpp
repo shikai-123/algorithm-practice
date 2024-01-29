@@ -7475,9 +7475,17 @@ namespace DynamicPlanning
 		int countSubstrings(string s) {
 			vector<vector<bool>>dp(s.size(), vector<bool>(s.size(), 0));
 			int ret = 0;
+			//参考中的for放在了下面的for中，这样虽然节省性能，但是代码不统一！！
+			//！并且l的开始也改成i+1开始！
+			//都是为了让“647. 回文子串”和“516. 最长回文子序列”代码和思路统一
+			for (size_t i = 0; i < s.size(); i++)
+			{
+				ret++;
+				dp[i][i] = 1;
+			}
 			for (int i = s.size() - 1; i >= 0; i--)
 			{
-				for (int l = i; l < s.size(); l++)//！因为要检查的区间是i到l，所以l的值从i开始
+				for (int l = i + 1; l < s.size(); l++)//！因为要检查的区间是i到l，所以l的值从i开始
 				{
 					if (s[i] == s[l])
 					{
@@ -7499,15 +7507,67 @@ namespace DynamicPlanning
 		}
 
 
+		/*
+		516. 最长回文子序列
+		参考：
+			https://www.programmercarl.com/0516.%E6%9C%80%E9%95%BF%E5%9B%9E%E6%96%87%E5%AD%90%E5%BA%8F%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思考：
+			和“647. 回文子串”代码很相似
+			1、dp含义：
+				dp[i][l]区间il之间最长的回文子序列的长度
+			2、公式
+				1、如果s[i] == s[l]
+					长度是内部已知的长度+2(dp[i+1][l-1]+2)；
+					dp[i][l]=dp[i+1][l-1]+2;
+				2、如果不想等，
+					回文字符串的长度，最长的那部分有两种可能，
+					加上左边的一个，或者加上右边的一个
+					加上左边：dp[i][l-1]
+					加上右边：dp[i+1][l]
+					dp[i][l]=max(dp[i][l-1],dp[i+1][l])
+			3、初始化
+				上题“647. 回文子串”，把一部分的初始化放在内部了，
+				其实还是放在外边好点，统一，并且好做题。
+		*/
+		int longestPalindromeSubseq(string s) {
+			vector<vector<int>>dp(s.size(), vector<int>(s.size(), 0));
 
+			for (size_t i = 0; i < s.size(); i++)
+				dp[i][i] = 1;
+
+			for (int i = s.size() - 1; i >= 0; i--)
+			{
+				/*!为什么这里又从l=i+1开始了，不是从i开始吗？
+				参考中的解释是i到l的赋值已经在初始化中做了，所以没有必要，
+				但实际上在本地中，从i开始的话，会报错，比如aaa，dp[2][2]=dp[3][1]会出现越界，
+				但是上面的那个题目，却不会出现，应该是比较巧。
+				后来，我修改了上面的代码，让他们尽量保持一样，然后都比较好理解。
+				具体的参考一下上面。
+				*/
+				for (int l = i + 1; l < s.size(); l++)//有
+				{
+					if (s[i] == s[l])
+						dp[i][l] = dp[i + 1][l - 1] + 2;
+					else
+						dp[i][l] = max(dp[i][l - 1], dp[i + 1][l]);
+				}
+			}
+			return dp[0][s.size() - 1];
+		}
+
+
+		/*
+		回文子序列总结：
+		1、基本上都是二维数组，并且dp的定义都是i到l区间来决定怎么怎么样。
+		*/
 
 
 		void test()
 		{
-			string str = "aaa";
+			string str = "bbbab";
 			vector<int> dp{ -2,1,-3,4,-1,2,1,-5,4 };
 			vector<int> dp1{ 3,2,1,4,7 };
-			cout << countSubstrings(str);
+			cout << longestPalindromeSubseq(str);
 		}
 
 	};
