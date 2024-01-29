@@ -7398,11 +7398,116 @@ namespace DynamicPlanning
 		*/
 
 
+
+		/*
+		72. 编辑距离
+		参考：
+			https://www.programmercarl.com/0072.%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			和“583. 两个字符串的删除操作”非常像
+			1、dp[i][j]：坐标i-1和j-1，最少的操作次数
+			2、公式
+				i-1和j-1元素相等：dp[i-1][j-1];因为这两个元素相同，所以不用删除元素，也就不用添加删除次数。
+				i-1和j-1元素不相等：
+				增加：dp[i-1][j]+1或者：dp[i][j-1]+1
+				删除：dp[i-1][j]+1或者：dp[i][j-1]+1；和“增加”是一样的，比如abc和ab，增加c和去掉c都是一样，最后哪个小，就用谁就行。
+				替换：dp[i-1][j-1]+1；dp[i-1][j-1]是前一次两者都相等，比如abc和abd，到了d开始不相等了，只需要操作一次就行
+		*/
+		int minDistance1(string word1, string word2) {
+			vector<vector<int>>dp(word1.size() + 1, vector<int>(word2.size() + 1, 0));
+			for (size_t i = 0; i < word1.size() + 1; i++)
+				dp[i][0] = i;
+			for (size_t j = 0; j < word2.size() + 1; j++)
+				dp[0][j] = j;
+			for (size_t i = 1; i < word1.size() + 1; i++)
+			{
+				for (size_t j = 1; j < word2.size() + 1; j++)
+				{
+					if (word1[i - 1] == word2[j - 1])
+						dp[i][j] = dp[i - 1][j - 1];
+					else
+						dp[i][j] = min(dp[i - 1][j - 1] + 1, min(dp[i - 1][j] + 1, dp[i][j - 1] + 1));
+				}
+			}
+			return dp[word1.size()][word2.size()];
+		}
+
+
+		/*
+		647. 回文子串
+		参考：
+			https://www.programmercarl.com/0647.%E5%9B%9E%E6%96%87%E5%AD%90%E4%B8%B2.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE思路：
+		思路1：
+			双指针，感觉这个不错
+		思路2：
+			动态规划也挺好，但是空间复杂度差点。另外这个思路要是第一次见这个题目，也挺难想。
+			因为是判断dp[i+1][l-1]来确定dp[i][l]，所以dp[i][l]是依赖dp[i+1][l-1]
+			箭头顺序是右上，所有是从下往上，从左往右遍历。（看连接中的图）
+			1、dp含义：
+				dp[i][l] 区间il之间的字符串是“回文字符串”.布尔量。
+			2、递推公式——错的，可以不按
+				1、如果字符串il区间是回文字符串，并且str[i-1]==str[l+1],
+				则说明i-1到l+1的中间是回文字符串。
+				说明dp[i-1][l+1]依赖dp[i][l]，从图上画出来——遍历顺序：从下到上，从左到右
+				!!这个是不对的,主要是依赖关系麻烦！对！我没有验证他不对，只是我代码没写出来，可能再改改代码就出来了，但是依赖关系非常麻烦。
+				所以依赖关系还是要正常dp[i][l]依赖于其他的dp[][].这样的路是最简单的。
+				2、i==l或者l-i==1，并且并且str[i-1]==str[l+1],
+				则说明字符串il区间是回文字符串
+				if(l-i<=1) ret++
+
+
+			为了有这样的依赖关系，所以思路要换一下
+			2、递推公式
+			   如果str[i]==str[l]
+			   如果dp[i+1][l-1]是回文字符串，则dp[i][l]是回文字符串；这样一个正常的依赖关系就出来了。
+			   其实一般情况下，递推公式确定基本上是想到这。然后初始化。本教程里面，把初始化也写到这了。
+
+
+			3、初始化
+				初始化肯定要说全为false。
+				如果i=l或者l-i=1，并str[i]==str[l]。则说明是回文字符串。
+				这个其实可以合并到2中。
+
+			4、遍历顺序
+				这个顺序不太一样，不过只要在图上画出箭头的方向，就知道遍历的顺序了，具体可以看图；
+
+		*/
+		int countSubstrings(string s) {
+			vector<vector<bool>>dp(s.size(), vector<bool>(s.size(), 0));
+			int ret = 0;
+			for (int i = s.size() - 1; i >= 0; i--)
+			{
+				for (int l = i; l < s.size(); l++)//！因为要检查的区间是i到l，所以l的值从i开始
+				{
+					if (s[i] == s[l])
+					{
+						if (l - i <= 1)
+						{
+							ret++;
+							dp[i][l] = true;
+						}
+						else if (dp[i + 1][l - 1] == true)
+						{
+							ret++;
+							dp[i][l] = true;
+						}
+					}
+					//cout << "dp[i][l] i" << i << " l" << l << " " << dp[i][l] << endl;
+				}
+			}
+			return ret;
+		}
+
+
+
+
+
 		void test()
 		{
+			string str = "aaa";
 			vector<int> dp{ -2,1,-3,4,-1,2,1,-5,4 };
 			vector<int> dp1{ 3,2,1,4,7 };
-			cout << maxSubArray(dp);
+			cout << countSubstrings(str);
 		}
 
 	};
