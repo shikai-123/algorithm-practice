@@ -7446,7 +7446,7 @@ namespace DynamicPlanning
 				删除：dp[i-1][j]+1或者：dp[i][j-1]+1；和“增加”是一样的，比如abc和ab，增加c和去掉c都是一样，最后哪个小，就用谁就行。
 				替换：dp[i-1][j-1]+1；dp[i-1][j-1]是前一次两者都相等，比如abc和abd，到了d开始不相等了，只需要操作一次就行
 		*/
-		int minDistance1(string word1, string word2) {
+		int minDistance2(string word1, string word2) {
 			vector<vector<int>>dp(word1.size() + 1, vector<int>(word2.size() + 1, 0));
 			for (size_t i = 0; i < word1.size() + 1; i++)
 				dp[i][0] = i;
@@ -7607,6 +7607,150 @@ namespace DynamicPlanning
 }
 
 
+namespace Dandiaozhan//单调站
+{
+	class Solution {
+	public:
+		/*
+		 什么时候用单调栈呢？
+			通常是一维数组，
+			要寻找任一个元素的右边或者左边第一个比自己大或者小的元素的"距离"，
+			此时我们就要想到可以用单调栈了。时间复杂度为O(n)。
+		单调栈里元素是递增呢？ 还是递减呢？
+			如果求一个元素右边第一个更大元素，单调栈就是递增的，
+			如果求一个元素右边第一个更小元素，单调栈就是递减的。
+		*/
+
+
+		/*
+		739. 每日温度
+		参考：
+			https://www.programmercarl.com/0739.%E6%AF%8F%E6%97%A5%E6%B8%A9%E5%BA%A6.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			核心就是求右侧第一个大于钙元素的距离。
+			当元素小于栈顶元素，进栈
+			当元素等于栈顶元素，进栈
+			当元素大于栈顶元素：
+				记录当前栈顶元素到该元素的距离——result[stk.top()] = i - stk.top();
+				把所有大于的元素都出栈或者栈空了，把元素放进去。
+
+			栈中放的元素是数组的下标
+			结果数组的含义：result[1]=2;在数组中下标1的元素，它的右侧第一个大于它的元素，与他的距离为2.
+		*/
+		vector<int> dailyTemperatures(vector<int>& temperatures) {
+			vector<int> result(temperatures.size(), 0);
+			stack<int> stk;
+			stk.push(0);
+			for (size_t i = 1; i < temperatures.size(); i++)
+			{
+				if (temperatures[i] < temperatures[stk.top()])//当元素小于栈顶元素，进栈
+					stk.push(i);
+				else if (temperatures[i] == temperatures[stk.top()])//当元素等于栈顶元素，进栈;前两种情况可以合成一个，都已放到while下面，具体看下面的代码。
+					stk.push(i);
+				else
+				{
+					while (!stk.empty() && temperatures[i] > temperatures[stk.top()])//当元素大于栈顶元素：
+					{
+						result[stk.top()] = i - stk.top();
+						stk.pop();
+					}
+					stk.push(i);
+				}
+			}
+			return result;
+		}
+
+		//简化写法，但是思路没有上面的明确。
+		vector<int> dailyTemperatures1(vector<int>& temperatures) {
+			vector<int> result(temperatures.size(), 0);
+			stack<int> stk;
+			stk.push(0);
+			for (size_t i = 1; i < temperatures.size(); i++)
+			{
+				while (!stk.empty() && temperatures[i] > temperatures[stk.top()])//当元素大于栈顶元素：
+				{
+					result[stk.top()] = i - stk.top();
+					stk.pop();
+				}
+				stk.push(i);//当元素小于栈顶元素，进栈;当元素等于栈顶元素，进栈。都可以放到这。
+			}
+			return result;
+		}
+
+
+
+		/*
+		496.下一个更大元素 I
+		参考：
+			https://www.programmercarl.com/0496.%E4%B8%8B%E4%B8%80%E4%B8%AA%E6%9B%B4%E5%A4%A7%E5%85%83%E7%B4%A0I.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			首先还是单调栈的思路。
+			不过不同的是，这次是分为两个数组，要从一个数组中到另外一个数组中找寻。
+			为了解决这样的问题，所以具体思路如下：
+			因为nums1是nums2的子数组，所以从nums2中找到“对应点它的最近的一个比它大的元素”
+			然后看这个元素在nums1中有没有
+			如果没有，那么就正常操作，继续往下遍历nums2
+			如果有，那么就找到这个元素在nums1中的下标。！而根据元素找nums1的可以用umap省点事。
+			然后result【对应下标】=nums2【i】
+		*/
+		vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
+			vector<int>result(nums1.size(), -1);//初始化是-1，题目中找不到返回是-1；
+			stack<int>stk;
+			unordered_map<int, int>umap;
+			for (size_t i = 0; i < nums1.size(); i++)
+				umap[nums1[i]] = i;
+			stk.push(0);
+			for (size_t i = 1; i < nums2.size(); i++)
+			{
+				while (!stk.empty() && nums2[i] > nums2[stk.top()])
+				{
+					if (umap.find(nums2[stk.top()]) != umap.end())
+					{
+						//不对，因为nums2[i]是个比当前栈顶元素要大的元素。根据题意，要做的是把这个大的元素作为result对应位置的值去赋值。
+						//而对应的位置，是根据“栈底”的值去找的。
+						//!别弄错，这个题目，我在这出错了。
+						//result[umap[nums2[i]]] = nums2[i];//不错
+						result[umap[nums2[stk.top()]]] = nums2[i];//不错
+					}
+					stk.pop();
+				}
+				stk.push(i);
+			}
+			return result;
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+		void test()
+		{
+			string str = "bbbab";
+			vector<int> dp{ 4,1,2 };
+			vector<int> dp1{ 1,3,4,2 };
+			//dailyTemperatures(dp);
+			vector<int> ret = nextGreaterElement(dp, dp1);
+			for (size_t i = 0; i < ret.size(); i++)
+			{
+				cout << ret[i] << endl;
+			}
+		}
+
+
+
+
+
+	};
+}
+
 int main()
 {
 	vector<int> nums{ 0,1,2,4,5,7 };
@@ -7618,7 +7762,7 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 
-	DynamicPlanning::Solution tree;
+	Dandiaozhan::Solution tree;
 	tree.test();
 
 
