@@ -7748,22 +7748,69 @@ namespace Dandiaozhan//单调站
 		}
 
 
+		/*
+		42. 接雨水
+		参考：
+			https://www.programmercarl.com/0042.%E6%8E%A5%E9%9B%A8%E6%B0%B4.html#%E6%80%9D%E8%B7%AF
+		思路：
+			方法有暴力，双指针，单调栈
+			还是用单调栈的思路，因为比较符合“找某一个值右侧的最大值”。（不明白，看图）
+			这个题目，貌似用3个元素，比较好理解，就像这个连接中的图展示的那样。
+			在单调栈出栈的时候操作，这个时候一定出现了大于nums[stk.top()]的元素，出现了凹槽，这个时候有积水
+			！它的计算其实是，while循环一次，计算一个新的栈顶元素和nums[i]的面积。（如果能进while的话）
+			之前计算过的面积，不会重复计算已经计算过的面积。
+			虽然宽度增加了，但是底的高度会变化。也就是高度会变化，这个高度是取决于栈顶元素的大小。
+			mid=nums[stk.top()];//取出积水中间的坐标，也就是“上面说的底”
+			高度：
+				min（mid左侧的高度，mid右侧的高度）- mid高度
+				stk.pop();让栈顶为mid左侧的值
+				hih=min(nums[stk.top()],nums[i])-mid;
+			宽度：
+				当前nums的下标-最新的栈顶元素的值-1；-1才是求凹槽的宽度
+				wid = i-stk.top()-1;
+			面积：
+				are = hih*wid;
+				在while中不断的累加are的值。
 
+			用四个元素，比如“4314”，先计算距离nums[i]最近的且小于它的面积。
+			如果下一个height[st.top()]也是小于height[i] ，则计算他俩的面积
+			然后通过while，不断的计算。直到结束。
+		*/
+		int trap(vector<int>& height) {
+			stack<int> stk;
+			int ret = 0;
 
+			for (size_t i = 0; i < height.size(); i++)
+			{
+				while (!stk.empty() && height[i] > height[stk.top()])
+				{
+					int mid = height[stk.top()];
+					stk.pop();
+					if (!stk.empty())//!这里因为上面有pop，所以要有个删除，否则就有可能出现越界。
+					{
+						int hih = min(height[stk.top()], height[i]) - mid;
+						int wid = i - stk.top() - 1;
+						ret += hih * wid;
+					}
+				}
+				stk.push(i);
+			}
+			return ret;
+		}
 
 
 
 		void test()
 		{
 			string str = "bbbab";
-			vector<int> dp{ 4,1,2 };
+			vector<int> dp{ 0,1,0,2,1,0,1,3,2,1,2,1 };
 			vector<int> dp1{ 1,3,4,2 };
-			//dailyTemperatures1(dp);
-			vector<int> ret = nextGreaterElement(dp, dp1);
+			cout << trap(dp) << endl;
+			/*vector<int> ret = nextGreaterElement(dp, dp1);
 			for (size_t i = 0; i < ret.size(); i++)
 			{
 				cout << ret[i] << endl;
-			}
+			}*/
 		}
 
 
