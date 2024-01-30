@@ -7664,8 +7664,8 @@ namespace Dandiaozhan//单调站
 		vector<int> dailyTemperatures1(vector<int>& temperatures) {
 			vector<int> result(temperatures.size(), 0);
 			stack<int> stk;
-			stk.push(0);
-			for (size_t i = 1; i < temperatures.size(); i++)
+			//stk.push(0);//!这个可以放在里面.当一次遍历，stk为空的时候，stk会插入0
+			for (size_t i = 0; i < temperatures.size(); i++)
 			{
 				while (!stk.empty() && temperatures[i] > temperatures[stk.top()])//当元素大于栈顶元素：
 				{
@@ -7722,8 +7722,30 @@ namespace Dandiaozhan//单调站
 
 
 
-
-
+		/*
+		503.下一个更大元素II
+		参考：
+			https://www.programmercarl.com/0503.%E4%B8%8B%E4%B8%80%E4%B8%AA%E6%9B%B4%E5%A4%A7%E5%85%83%E7%B4%A0II.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			这个和“739. 每日温度”,"496.下一个更大元素 I"很相似，不同的是这个数组是循环的。
+			方法看题解有两种方式：
+			1、扩充数组，相当于复制一份数组接到后面，
+			2、在原数组上遍历，遍历两边。用“取余”
+		*/
+		vector<int> nextGreaterElements(vector<int>& nums) {
+			vector<int>result(nums.size(), -1);//初始化-1，找不到就是-1.
+			stack<int> stk;
+			for (size_t i = 0; i < nums.size() * 2; i++)
+			{
+				while (!stk.empty() && nums[i % nums.size()] > nums[stk.top()])
+				{
+					result[stk.top()] = nums[i % nums.size()];
+					stk.pop();
+				}
+				stk.push(i % nums.size());
+			}
+			return result;
+		}
 
 
 
@@ -7736,7 +7758,7 @@ namespace Dandiaozhan//单调站
 			string str = "bbbab";
 			vector<int> dp{ 4,1,2 };
 			vector<int> dp1{ 1,3,4,2 };
-			//dailyTemperatures(dp);
+			//dailyTemperatures1(dp);
 			vector<int> ret = nextGreaterElement(dp, dp1);
 			for (size_t i = 0; i < ret.size(); i++)
 			{
