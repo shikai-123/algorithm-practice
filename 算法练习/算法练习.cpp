@@ -7867,9 +7867,6 @@ namespace Dandiaozhan//单调站
 		但，视频没有看完，从我做这个题目的时候，我发现视频种有些思想我可能没想到，
 		这种虽然不至于让我做不出来，但还是心里有点不稳当，二刷的时候看一下视频再，巩固一下。
 		*/
-
-
-
 		void test()
 		{
 			string str = "bbbab";
@@ -7882,13 +7879,97 @@ namespace Dandiaozhan//单调站
 				cout << ret[i] << endl;
 			}*/
 		}
+	};
+}
+namespace TULUN
+{
+	class Solution {
 
+	private:
+		vector<int> path;
+		vector<vector<int>> result;
+
+	public:
+		/*
+		dfs的代码框架和回溯算法的代码框架是差不多的。几乎是一样的。
+		void dfs(参数) {
+			if (终止条件) {
+				存放结果;
+				return;
+			}
+
+			for (选择：本节点所连接的其他节点) {
+				处理节点;
+				dfs(图，选择的节点); // 递归
+				回溯，撤销处理结果
+			}
+		}
+
+
+
+		*/
+
+		/*
+		797.所有可能的路径
+		参考：
+			https://www.programmercarl.com/0797.%E6%89%80%E6%9C%89%E5%8F%AF%E8%83%BD%E7%9A%84%E8%B7%AF%E5%BE%84.html#%E6%80%9D%E8%B7%AF
+		思路：
+			递归函数功能就是接上于x相连的所有路径。不包括x。
+			所以在外面需要把x这个点额外的加上。所以一开始需要把0加上。
+		*/
+		//graph：图  x：当前遍历的节点在graph中的下标。当然在下标的值就是图中的节点的值
+		void allPathsSourceTarget_dfs(vector<vector<int>>& graph, int x)
+		{
+			if (x == graph.size() - 1) {//遍历到最后的点，递归结束
+				//path.push_back(x);//在加这个就重复加尾巴了。
+				result.push_back(path);
+				return;
+			}
+
+			//未到最后的点，开始遍历和x接触的点
+			for (size_t i = 0; i < graph[x].size(); i++)
+			{
+				path.push_back(graph[x][i]);
+				allPathsSourceTarget_dfs(graph, graph[x][i]);
+				path.pop_back();//这个x点，已经在上面的函数中已经添加进去了，这个时候就要换个路径了。
+			}
+			return;//为了保持语法
+		}
+
+		vector<vector<int>> allPathsSourceTarget(vector<vector<int>>& graph) {
+			path.push_back(0);//下面函数的功能：就是接上于x相连的所有路径。不包括x，所以在外面需要把x这个点额外的加上。
+			allPathsSourceTarget_dfs(graph, 0);
+			return result;
+		}
+
+
+
+
+
+		void test()
+		{
+			string str = "bbbab";
+			vector<	vector<int> > graph{ {1,2},{3},{3},{} };
+			vector<int> dp1{ 1,3,4,2 };
+			//cout << allPathsSourceTarget(graph) << endl;
+			vector<vector<int>> ret = allPathsSourceTarget(graph);
+			for (size_t i = 0; i < ret.size(); i++)
+			{
+				for (size_t l = 0; l < ret[i].size(); l++)
+				{
+					cout << ret[i][l] << "->";
+				}
+				cout << endl;
+			}
+		}
 
 
 
 
 	};
 }
+
+
 
 int main()
 {
@@ -7901,7 +7982,7 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 
-	Dandiaozhan::Solution tree;
+	TULUN::Solution tree;
 	tree.test();
 
 
