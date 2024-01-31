@@ -7891,6 +7891,7 @@ namespace TULUN
 
 	public:
 		/*
+		深度优先搜索理论基础
 		dfs的代码框架和回溯算法的代码框架是差不多的。几乎是一样的。
 		void dfs(参数) {
 			if (终止条件) {
@@ -7904,9 +7905,6 @@ namespace TULUN
 				回溯，撤销处理结果
 			}
 		}
-
-
-
 		*/
 
 		/*
@@ -7945,14 +7943,109 @@ namespace TULUN
 
 
 
+		/*
+		广度优先搜索理论基础
+		因为广搜是从起点出发，以起始点为中心一圈一圈进行搜索，一旦遇到终点，记录之前走过的节点就是一条最短路。
+
+		当然，也有一些问题是广搜 和 深搜都可以解决的，
+		例如岛屿问题，这类问题的特征就是不涉及具体的遍历方式，只要能把相邻且相同属性的节点标记上就行。
+
+		用队列，还是用栈，甚至用数组，都是可以的。
+		*/
+
+
+		/*
+		200、岛屿数量
+		参考：
+			https://www.programmercarl.com/0200.%E5%B2%9B%E5%B1%BF%E6%95%B0%E9%87%8F.%E5%B9%BF%E6%90%9C%E7%89%88.html#%E6%80%9D%E8%B7%AF
+		思路：
+			用这个思路——图的“广度遍历”或者是“广度优先搜索”；
+			不是从中间走的，而是从图的左上角开始。
+			递归函数的功能——找到xy所在岛屿的所有的坐标，并标记visited[i][l]=true;找完了就出来
+		*/
+
+		//grid图 visited图上哪个点被访问过 xy 要访问的点的坐标
+		void numIslands_dfs(vector<vector<char>>& grid, vector<vector<bool>>& visited, int x, int y)
+		{
+			int dir[4][2] = { {1,0},{-1,0},{0,1},{0,-1} };
+			queue<pair<int, int>> que;
+			que.push({ x, y });//访问到了谁，待会就遍历他的四个方向。
+			visited[x][y] = true;//访问到了谁，visited赋值true
+			while (!que.empty())//只要是队列不空，那就是要接着遍历这个元素的四周
+			{
+				//每次从队列中都要拿出新的，遍历新的四个方向。
+				pair<int, int> cur = que.front();
+				que.pop();//!这个别忘了！
+				int curX = cur.first;
+				int curY = cur.second;
+				for (size_t i = 0; i < 4; i++)
+				{
+					int nextX = curX + dir[i][0];
+					int nextY = curY + dir[i][1];
+					//判断数组是否越界
+					if (0 <= nextX && nextX < grid.size() && 0 <= nextY && nextY < grid[0].size())
+					{
+						//判断这个点4个方向都是陆地的点，然后不断的加到队列中，这样就能找到与一开始提供的xy是同一块岛屿的所有坐标。
+						if (!visited[nextX][nextY] && grid[nextX][nextY] == '1')
+						{
+							que.push({ nextX, nextY });
+							visited[nextX][nextY] = true;
+						}
+					}
+				}
+			}
+
+
+		}
+		int numIslands(vector<vector<char>>& grid) {
+			vector<vector<bool>> visited(grid.size(), vector<bool>(grid[0].size(), false));
+			int ret = 0;
+			for (size_t i = 0; i < grid.size(); i++)
+			{
+				for (size_t l = 0; l < grid[0].size(); l++)//从图的左上角开始
+				{
+					if (!visited[i][l] && grid[i][l] == '1')
+					{
+						ret++;
+						numIslands_dfs(grid, visited, i, l);
+						//在这个函数功能：找到xy所在岛屿的所有的坐标，并标记visited[i][l]=true;
+						//所以这个if每进来一次，就说明出现了的新的“没有标记的”。
+						//这就是新的岛屿，所以ret++;
+					}
+				}
+			}
+			return ret;
+		}
+
+
+		/*
+		200、岛屿数量——深度搜索，我没看。题目一样，我节省点时间，二刷的时候看！
+		参考：
+			https://www.programmercarl.com/0200.%E5%B2%9B%E5%B1%BF%E6%95%B0%E9%87%8F.%E6%B7%B1%E6%90%9C%E7%89%88.html
+		思路：
+
+		*/
+
+		/*
+		695. 岛屿的最大面积
+		参考：
+			https://www.programmercarl.com/0695.%E5%B2%9B%E5%B1%BF%E7%9A%84%E6%9C%80%E5%A4%A7%E9%9D%A2%E7%A7%AF.html
+		思路：
+
+		*/
+		int maxAreaOfIsland(vector<vector<int>>& grid) {
+
+		}
 
 		void test()
 		{
 			string str = "bbbab";
 			vector<	vector<int> > graph{ {1,2},{3},{3},{} };
+			vector<	vector<char> > graph1{ {'1','1','1','1','0'},{'1','1','0','1','0'},{'1','1','0','0','0'},{'0','0','0','0','0'} };
 			vector<int> dp1{ 1,3,4,2 };
-			//cout << allPathsSourceTarget(graph) << endl;
-			vector<vector<int>> ret = allPathsSourceTarget(graph);
+			cout << numIslands(graph1) << endl;
+			vector<vector<int>> ret;
+			//= numIslands(graph1);
 			for (size_t i = 0; i < ret.size(); i++)
 			{
 				for (size_t l = 0; l < ret[i].size(); l++)
