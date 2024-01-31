@@ -12,7 +12,7 @@
 #include <map>
 #include <unordered_set>
 #include <queue>
-
+#include<windows.h>
 
 using namespace std;
 
@@ -8093,14 +8093,110 @@ namespace TULUN
 			return ret;
 		}
 
+
+
+		/*
+		1020. 飞地的数量——第一个深度思想的矩阵题目
+		参考：
+			https://www.programmercarl.com/1020.%E9%A3%9E%E5%9C%B0%E7%9A%84%E6%95%B0%E9%87%8F.html#%E6%80%9D%E8%B7%AF
+		其他：
+			这个题目用深度或者广度都行，为了熟悉深度，所以用深度来做。
+			我看了一下这个题解的代码，发现这个以及前面这两个题目的深度的代码和第一个题目的代码都不像，
+			核心还是在于后面这个三个题目，他都是矩阵，所以遍历的时候固定都是4
+			而第一个题目，一个节点到下个节点有几个节点接着不确定，所以遍历的次数不确定，是要根据当前元素的个数来确定的。
+
+			总结：
+				第一个题目，只适合用来找路径，其他的题目套不上去。
+				矩阵题目的话，广度和深度都差不多。
+
+			为了熟悉深度，最终还是决定要用“深度”思想.
+			我个人感觉深搜的思路，没有广搜的思路好，以后这种矩阵，都是用“广搜”吧
+		思路：
+			卡子哥的思路，是遍历四条边的，边上如果有陆地，就进去深搜，并把他们变成海洋，直到四条边都结束。
+			这样，飞地就在地图上剩下来了。
+			最后再来一遍深搜，记录深搜次数，这个次数就是最终的飞地的数量。
+			他这个代码中，没有visited[i][l]，是怎么知道哪些元素被访问了？
+			其实核心还是有的，只不过他把陆地变成海洋，下次开始的位置，一定和陆地和visited[i][l]本质一样。
+
+			我的思路——，每个岛屿都遍历，如果发现该岛屿中有地块和边界接触，则说明该岛屿不是飞地，则返回0
+			是非地的，返回飞地数量。
+			不断的累加，最后返回所有的数量。
+
+			！！！执行时间300ms，不知道为啥，我看好几遍，没发现有问题的点，就是普通的深度递归啊。
+			卡子哥的就用50ms。
+			先这样吧，不浪费时间了
+		*/
+		int numEnclaves_ret = 0;
+		bool numEnclaves_flag = false;//岛屿中有靠边的就是true
+		int numEnclaves_dfs(vector<vector<int>>& graph, vector<vector<bool>>& visited, int x, int y)
+		{
+			int dir[4][2] = { {1,0},{-1,0},{0,1},{0,-1} };//下 上 右 左
+			for (size_t i = 0; i < 4; i++)
+			{
+				int nextX = x + dir[i][0];
+				int nextY = y + dir[i][1];
+				//判断数组是否越界
+				if (0 <= nextX && nextX < graph.size() && 0 <= nextY && nextY < graph[0].size())
+				{
+					//没有遍历过，并且是陆地
+					if (!visited[nextX][nextY] && graph[nextX][nextY] == 1)
+					{
+						numEnclaves_ret++;
+						if (nextX == 0 || nextX == graph.size() - 1 || nextY == 0 || nextY == graph[0].size() - 1)//说明是这个点碰到了边
+							numEnclaves_flag = true;
+						visited[nextX][nextY] = true;
+						numEnclaves_dfs(graph, visited, nextX, nextY);
+					}
+				}
+			}
+			return numEnclaves_ret;
+		}
+
+
+		int numEnclaves(vector<vector<int>>& grid) {
+			int num = 0;
+			vector<vector<bool>> visited(grid.size(), vector<bool>(grid[0].size(), false));
+			for (size_t i = 0; i < grid.size(); i++)
+			{
+				for (size_t l = 0; l < grid[0].size(); l++)
+				{
+					if (i == 0 || i == grid.size() - 1 || l == 0 || l == grid[0].size() - 1)//说明是这个点碰到了边——直接跳过。
+						continue;
+					if (!visited[i][l] && grid[i][l] == 1)
+					{
+						num++;
+						numEnclaves_flag = false;
+						numEnclaves_ret = 0;
+						visited[i][l] = true;
+						int ret = numEnclaves_dfs(grid, visited, i, l);
+						if (numEnclaves_flag == false)
+							num += ret;
+						else
+							num--;//!--是因为我每次遍历一个岛屿，都要提前加上一个，如果这个岛屿是靠边的，那么我肯定要减去。
+					}
+				}
+			}
+			return num;
+
+		}
+
+
 		void test()
 		{
 			string str = "bbbab";
 			vector<	vector<int> > graph{ {0,0,1,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,1,1,0,1,0,0,0,0,0,0,0,0},{0,1,0,0,1,1,0,0,1,0,1,0,0},
 			{0,1,0,0,1,1,0,0,1,1,1,0,0},{0,0,0,0,0,0,0,0,0,0,1,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,0,0,0,0,0,0,1,1,0,0,0,0} };
-			vector<	vector<char> > graph1{ {'1','1','1','1','0'},{'1','1','0','1','0'},{'1','1','0','0','0'},{'0','0','0','0','0'} };
+			vector<	vector<int> > graph1{ {0,0,0,0},{1,0,1,0},{0,1,1,0},{0,0,0,0} };
+			vector<	vector<int> > graph2{ {0, 0, 0, 1, 1, 1, 0, 1, 0, 0}, {1, 1, 0, 0, 0, 1, 0, 1, 1, 1}, {0, 0, 0, 1, 1, 1, 0, 1, 0, 0}, {0, 1, 1, 0, 0, 0, 1, 0, 1, 0}, {0, 1, 1, 1, 1, 1, 0, 0, 1, 0}, {0, 0, 1, 0, 1, 1, 1, 1, 0, 1}, {0, 1, 1, 0, 0, 0, 1, 1, 1, 1}, {0, 0, 1, 0, 0, 1, 0, 1, 0, 1}, {1, 0, 1, 0, 1, 1, 0, 0, 0, 0}, {0, 0, 0, 0, 1, 1, 0, 0, 0, 1} };
 			vector<int> dp1{ 1,3,4,2 };
-			cout << maxAreaOfIsland(graph) << endl;
+			int Start = GetTickCount();
+			cout << numEnclaves(graph1) << endl;
+			int Stop = GetTickCount();
+			cout << "消耗时间" << Stop - Start << endl;
+
+
+
+
 			vector<vector<int>> ret;
 			//= numIslands(graph1);
 			for (size_t i = 0; i < ret.size(); i++)
