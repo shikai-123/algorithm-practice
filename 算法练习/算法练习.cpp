@@ -7965,7 +7965,7 @@ namespace TULUN
 		*/
 
 		//grid图 visited图上哪个点被访问过 xy 要访问的点的坐标
-		void numIslands_dfs(vector<vector<char>>& grid, vector<vector<bool>>& visited, int x, int y)
+		void numIslands_bfs(vector<vector<char>>& grid, vector<vector<bool>>& visited, int x, int y)
 		{
 			int dir[4][2] = { {1,0},{-1,0},{0,1},{0,-1} };
 			queue<pair<int, int>> que;
@@ -8007,7 +8007,7 @@ namespace TULUN
 					if (!visited[i][l] && grid[i][l] == '1')
 					{
 						ret++;
-						numIslands_dfs(grid, visited, i, l);
+						numIslands_bfs(grid, visited, i, l);
 						//在这个函数功能：找到xy所在岛屿的所有的坐标，并标记visited[i][l]=true;
 						//所以这个if每进来一次，就说明出现了的新的“没有标记的”。
 						//这就是新的岛屿，所以ret++;
@@ -8031,19 +8031,76 @@ namespace TULUN
 		参考：
 			https://www.programmercarl.com/0695.%E5%B2%9B%E5%B1%BF%E7%9A%84%E6%9C%80%E5%A4%A7%E9%9D%A2%E7%A7%AF.html
 		思路：
-
+			感觉和“200、岛屿数量”题目非常相似。
+			最大的面积的，就是算出各个面积，然后用max比较最大的。
+			每次调用这个函数的时候，就是一个新的岛屿，然后返回面积。
 		*/
+
+		int maxAreaOfIsland_bfs(vector<vector<int>>& grid, vector<vector<bool>>& visited, int x, int y)
+		{
+			int are = 1;//只有当前这点没有遍历过，并且是陆地，才能进这个函数
+			int dir[4][2] = { {1,0},{-1,0},{0,1},{0,-1} };
+			queue<pair<int, int>> que;
+			que.push({ x, y });//访问到了谁，待会就遍历他的四个方向。
+			visited[x][y] = true;//访问到了谁，visited赋值true
+			while (!que.empty())//只要是队列不空，那就是要接着遍历这个元素的四周
+			{
+				//每次从队列中都要拿出新的，遍历新的四个方向。
+				pair<int, int> cur = que.front();
+				que.pop();//!这个别忘了！
+				int curX = cur.first;
+				int curY = cur.second;
+				for (size_t i = 0; i < 4; i++)
+				{
+					int nextX = curX + dir[i][0];
+					int nextY = curY + dir[i][1];
+					//判断数组是否越界
+					if (0 <= nextX && nextX < grid.size() && 0 <= nextY && nextY < grid[0].size())
+					{
+						//判断这个点4个方向都是陆地的点，然后不断的加到队列中，这样就能找到与一开始提供的xy是同一块岛屿的所有坐标。
+						if (!visited[nextX][nextY] && grid[nextX][nextY] == 1)
+						{
+							are++;
+							que.push({ nextX, nextY });
+							visited[nextX][nextY] = true;
+						}
+					}
+				}
+			}
+
+			return are;
+		}
+
 		int maxAreaOfIsland(vector<vector<int>>& grid) {
 
+			vector<vector<bool>> visited(grid.size(), vector<bool>(grid[0].size(), false));
+			int ret = 0;
+			for (size_t i = 0; i < grid.size(); i++)
+			{
+				for (size_t l = 0; l < grid[0].size(); l++)//从图的左上角开始
+				{
+					if (!visited[i][l] && grid[i][l] == 1)
+					{
+						//ret++;
+						//maxAreaOfIsland_bfs(grid, visited, i, l);
+						ret = max(ret, maxAreaOfIsland_bfs(grid, visited, i, l));
+						//在这个函数功能：找到xy所在岛屿的所有的坐标，并标记visited[i][l]=true;
+						//所以这个if每进来一次，就说明出现了的新的“没有标记的”。
+						//这就是新的岛屿，所以ret++;
+					}
+				}
+			}
+			return ret;
 		}
 
 		void test()
 		{
 			string str = "bbbab";
-			vector<	vector<int> > graph{ {1,2},{3},{3},{} };
+			vector<	vector<int> > graph{ {0,0,1,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,1,1,0,1,0,0,0,0,0,0,0,0},{0,1,0,0,1,1,0,0,1,0,1,0,0},
+			{0,1,0,0,1,1,0,0,1,1,1,0,0},{0,0,0,0,0,0,0,0,0,0,1,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,0,0,0,0,0,0,1,1,0,0,0,0} };
 			vector<	vector<char> > graph1{ {'1','1','1','1','0'},{'1','1','0','1','0'},{'1','1','0','0','0'},{'0','0','0','0','0'} };
 			vector<int> dp1{ 1,3,4,2 };
-			cout << numIslands(graph1) << endl;
+			cout << maxAreaOfIsland(graph) << endl;
 			vector<vector<int>> ret;
 			//= numIslands(graph1);
 			for (size_t i = 0; i < ret.size(); i++)
