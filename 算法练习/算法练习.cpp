@@ -8223,6 +8223,8 @@ namespace TULUN
 		当然也可以放在里面，也就是访问哪个点，哪个点就赋值。具体看链接中的代码。
 		另外，上面的所有的代码，都符合这个逻辑。
 		后面的代码，我尽量都放在里面，这样写代码的时候不容易出错。
+
+		 在总结这个和上面这两个题目。如果牵扯到把图中的元素改变了，那么可以不用visited
 		*/
 		void solve(vector<vector<char>>& board) {
 			int m = board.size();
@@ -8230,7 +8232,6 @@ namespace TULUN
 			//下面两个for是用来把矩阵边上的0以及和他接触的岛屿，变成a
 			for (size_t i = 0; i < m; i++)
 			{
-
 				if (board[i][0] == 'O') {
 					board[i][0] = 'A';//！！这个放在函数内也可以
 					solve_dfs(board, i, 0);//矩阵的左边
@@ -8267,13 +8268,157 @@ namespace TULUN
 
 
 
+		/*
+		417. 太平洋大西洋水流问题
+		参考：
+			https://www.programmercarl.com/0417.%E5%A4%AA%E5%B9%B3%E6%B4%8B%E5%A4%A7%E8%A5%BF%E6%B4%8B%E6%B0%B4%E6%B5%81%E9%97%AE%E9%A2%98.html#%E6%80%9D%E8%B7%AF
+		思路：
+			这个题目比较复杂，简单来说就是，图上的哪些点可以同时流向太平洋和大西洋
+			遍历这个图中的每个元素，然后检查这个元素能不能“同时”走到大西洋和太平洋
+			怎么判断呢？
+			从头开始遍历元素，从这个元素开始，4个方向发散，走到哪就用visited标记。
+			4个方向走的规则，是下个元素《=当前元素的值。
+			直到4个方向的遍历结束。
+			这个时候再遍历4条边，如果4条边出现了同时到了走到大西洋和太平洋。这个点就满足，否则不满足。
+
+
+			这个超时了，换下面的思路。
+
+		void pacificAtlantic_dfs(vector<vector<int>>& heights, vector<vector<bool>>&visited, int x, int y)
+		{
+			visited[x][y] = true;//遍历谁，就把谁加标识！
+			int dir[4][2] = { {1,0},{-1,0},{0,1},{0,-1} };//下 上 右 左
+			for (size_t i = 0; i < 4; i++)
+			{
+				int nextX = x + dir[i][0];
+				int nextY = y + dir[i][1];
+				//判断数组是否越界
+				if (0 <= nextX && nextX < heights.size() && 0 <= nextY && nextY < heights[0].size())
+				{
+					//!!别忘了，遍历过的就别遍历。
+					//如果下个元素《=当前元素的值,说明可以流下去，说明有往下遍历的必要
+					if (!visited[nextX][nextY] && heights[nextX][nextY] <= heights[x][y])
+					{
+						pacificAtlantic_dfs(heights, visited, nextX, nextY);
+					}
+				}
+			}
+		}
+		bool pacificAtlantic_result(vector<vector<int>>& heights, int x, int y)
+		{
+			vector<vector<bool>>visited(heights.size(), vector<bool>(heights[0].size(), false));
+			pacificAtlantic_dfs(heights, visited, x, y);
+			bool isPacific = false;
+			bool isAtlantic = false;
+			//下面两个for是用来检测矩阵边上是否有被标记的点，如果有，则说明到了其中一个洋。如果两个都到的话，返回ture
+			for (size_t i = 0; i < visited.size(); i++)
+			{
+				if (visited[i][0] == true)//矩阵的左边
+					isPacific = true;
+				if (visited[i][visited[0].size() - 1] == true)
+					isAtlantic = true;//矩阵的右边
+			}
+			for (size_t i = 0; i < visited[0].size(); i++)
+			{
+				if (visited[0][i] == true)
+					isPacific = true;//矩阵的上边
+				if (visited[visited.size() - 1][i] == true)
+					isAtlantic = true;//矩阵的下边
+			}
+			return isAtlantic && isPacific;
+		}
+		vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {
+			vector<vector<int>> ret;
+			for (int i = 0; i < heights.size(); i++)
+			{
+				for (int l = 0; l < heights[0].size(); l++)
+				{
+					if (pacificAtlantic_result(heights, i, l))
+						ret.push_back({ i, l });
+				}
+			}
+			return ret;
+		}
+		*/
+		/*
+		417. 太平洋大西洋水流问题
+		参考：
+			https://www.programmercarl.com/0417.%E5%A4%AA%E5%B9%B3%E6%B4%8B%E5%A4%A7%E8%A5%BF%E6%B4%8B%E6%B0%B4%E6%B5%81%E9%97%AE%E9%A2%98.html#%E6%80%9D%E8%B7%AF
+		思路：
+			这个题目比较复杂，简单来说就是，图上的哪些点可以同时流向太平洋和大西洋;
+			上面的思路，可以，但是时间复杂度太高了。
+			改成，从四个边往内部走。
+			从大西洋往里面走的，标记一下。
+			从太平洋往里面走的，标记一下。
+			然后检查每个点的标记，哪个点有两个表计，就说明满足条件。
+
+			我这个为了省时间，我基本上都是抄他的。
+		*/
+
+		// 从低向高遍历，注意这里visited是引用，即可以改变传入的pacific和atlantic的值
+		void pacificAtlantic_dfs(vector<vector<int>>& heights, vector<vector<bool>>& visited, int x, int y) {
+			int dir[4][2] = { {1,0},{-1,0},{0,1},{0,-1} };//下 上 右 左
+			if (visited[x][y]) return;
+
+			visited[x][y] = true;
+			for (int i = 0; i < 4; i++) { // 向四个方向遍历
+				int nextx = x + dir[i][0];
+				int nexty = y + dir[i][1];
+				// 超过边界
+				if (nextx < 0 || nextx >= heights.size() || nexty < 0 || nexty >= heights[0].size()) continue;
+				//！！ 高度不合适，注意这里是从低向高判断——下个高度应该》=当前高度才ok。
+				if (heights[x][y] > heights[nextx][nexty]) continue;
+				pacificAtlantic_dfs(heights, visited, nextx, nexty);
+			}
+			return;
+
+		}
+
+		vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {
+			vector<vector<int>> result;
+			int n = heights.size();
+			int m = heights[0].size(); // 这里不用担心空指针，题目要求说了长宽都大于1
+
+			 // 记录从太平洋边出发，可以遍历的节点
+			vector<vector<bool>> pacific = vector<vector<bool>>(n, vector<bool>(m, false));
+
+			// 记录从大西洋出发，可以遍历的节点
+			vector<vector<bool>> atlantic = vector<vector<bool>>(n, vector<bool>(m, false));
+
+
+			// 从最上最下行的节点出发，向高处遍历
+			for (int i = 0; i < n; i++) {
+				pacificAtlantic_dfs(heights, pacific, i, 0); // 遍历最左列，接触太平洋 
+				pacificAtlantic_dfs(heights, atlantic, i, m - 1); // 遍历最右列，接触大西 
+			}
+			// 从最左最右列的节点出发，向高处遍历
+			for (int j = 0; j < m; j++) {
+				pacificAtlantic_dfs(heights, pacific, 0, j); // 遍历最上行，接触太平洋
+				pacificAtlantic_dfs(heights, atlantic, n - 1, j); // 遍历最下行，接触大西洋
+			}
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					// 如果这个节点，从太平洋和大西洋出发都遍历过，就是结果
+					if (pacific[i][j] && atlantic[i][j]) result.push_back({ i, j });
+				}
+			}
+			return result;
+		}
+
+
+
+
+
+
+
 		void test()
 		{
 			string str = "bbbab";
 			vector<	vector<int> > graph{ {0,0,1,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,1,1,0,1,0,0,0,0,0,0,0,0},{0,1,0,0,1,1,0,0,1,0,1,0,0} };
 			vector<	vector<char> > graphc{ {'X','X','X','X'},{'X','O','O','X'},{'X','X','O','X'},{'X','O','X','X'} };
 			vector<	vector<int> > graph1{ {0,0,0,0},{1,0,1,0},{0,1,1,0},{0,0,0,0} };
-			vector<	vector<int> > graph2{ {0, 0, 0, 1, 1, 1, 0, 1, 0, 0}, {1, 1, 0, 0, 0, 1, 0, 1, 1, 1}, {0, 0, 0, 1, 1, 1, 0, 1, 0, 0}, {0, 1, 1, 0, 0, 0, 1, 0, 1, 0}, {0, 1, 1, 1, 1, 1, 0, 0, 1, 0}, {0, 0, 1, 0, 1, 1, 1, 1, 0, 1}, {0, 1, 1, 0, 0, 0, 1, 1, 1, 1}, {0, 0, 1, 0, 0, 1, 0, 1, 0, 1}, {1, 0, 1, 0, 1, 1, 0, 0, 0, 0}, {0, 0, 0, 0, 1, 1, 0, 0, 0, 1} };
+			vector<	vector<int> > graph2{ {1,2,2,3,5}, {3,2,3,4,4}, {2,4,5,3,1},
+			{6,7,1,4,5}, {5,1,1,2,4} };
 			vector<int> dp1{ 1,3,4,2 };
 			int Start = GetTickCount();
 			//cout << numEnclaves(graph1) << endl;
@@ -8284,13 +8429,13 @@ namespace TULUN
 
 
 
-			vector<vector<int>> ret;
+			vector<vector<int>> ret = pacificAtlantic(graph2);
 			//= numIslands(graph1);
-			for (size_t i = 0; i < graphc.size(); i++)
+			for (size_t i = 0; i < ret.size(); i++)
 			{
-				for (size_t l = 0; l < graphc[i].size(); l++)
+				for (size_t l = 0; l < ret[i].size(); l++)
 				{
-					cout << graphc[i][l] << "->";
+					cout << ret[i][l] << " ";
 				}
 				cout << endl;
 			}
