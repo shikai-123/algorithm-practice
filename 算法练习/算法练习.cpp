@@ -8116,7 +8116,7 @@ namespace TULUN
 			这样，飞地就在地图上剩下来了。
 			最后再来一遍深搜，记录深搜次数，这个次数就是最终的飞地的数量。
 			他这个代码中，没有visited[i][l]，是怎么知道哪些元素被访问了？
-			其实核心还是有的，只不过他把陆地变成海洋，下次开始的位置，一定和陆地和visited[i][l]本质一样。
+			其实核心还是有的，只不过他把陆地变成海洋。下次开始的位置，一定是陆地和visited[i][l]本质一样。
 
 			我的思路——，每个岛屿都遍历，如果发现该岛屿中有地块和边界接触，则说明该岛屿不是飞地，则返回0
 			是非地的，返回飞地数量。
@@ -8181,16 +8181,103 @@ namespace TULUN
 		}
 
 
+		/*
+		130. 被围绕的区域
+		参考：
+			https://www.programmercarl.com/0130.%E8%A2%AB%E5%9B%B4%E7%BB%95%E7%9A%84%E5%8C%BA%E5%9F%9F.html#%E6%80%9D%E8%B7%AF
+		思路：
+			这个题目和“1020. 飞地的数量”非常相似。代码上和这个题目基本上共用。
+			但是我的题目中，没有使用卡子哥的思路。
+			所以在这个题目，我尝试使用他的思路
+
+			题目要求是返回“填充后”的矩阵，要填充的是中间被围起来的岛屿。
+			1、先把靠边的岛屿，全部从0（岛屿）变成a，这个时候图上就只剩下“被围起来的小岛屿”
+			2、这个时候把剩下的岛屿，从0变成x，也就是从陆地变成水，这个时候图上就只用“水”和之前的靠边陆地“a”
+			3、最后把靠边的陆地“a”变成0，然后返回矩阵即可
+			4、本身是x的一直没动。
+		注意：
+			要注意的地方，看注释吧
+		*/
+
+		void solve_dfs(vector<vector<char>>& graph, int x, int y)
+		{
+			int dir[4][2] = { {1,0},{-1,0},{0,1},{0,-1} };//下 上 右 左
+			for (size_t i = 0; i < 4; i++)
+			{
+				int nextX = x + dir[i][0];
+				int nextY = y + dir[i][1];
+				//判断数组是否越界
+				if (0 <= nextX && nextX < graph.size() && 0 <= nextY && nextY < graph[0].size())
+				{
+					//如果下一个接触的岛屿是0，就变成a
+					if (graph[nextX][nextY] == 'O')
+					{
+						graph[nextX][nextY] = 'A';
+						solve_dfs(graph, nextX, nextY);
+					}
+				}
+			}
+		}
+		/*
+		！！solve_dfs 这个函数的功能，是遍历从下表x和下标y开始，但是不包括xy，所以需要在调用函数前赋值
+		当然也可以放在里面，也就是访问哪个点，哪个点就赋值。具体看链接中的代码。
+		另外，上面的所有的代码，都符合这个逻辑。
+		后面的代码，我尽量都放在里面，这样写代码的时候不容易出错。
+		*/
+		void solve(vector<vector<char>>& board) {
+			int m = board.size();
+			int n = board[0].size();
+			//下面两个for是用来把矩阵边上的0以及和他接触的岛屿，变成a
+			for (size_t i = 0; i < m; i++)
+			{
+
+				if (board[i][0] == 'O') {
+					board[i][0] = 'A';//！！这个放在函数内也可以
+					solve_dfs(board, i, 0);//矩阵的左边
+				}
+				if (board[i][board[0].size() - 1] == 'O') {
+					board[i][board[0].size() - 1] = 'A';
+					solve_dfs(board, i, board[0].size() - 1);//矩阵的右边
+				}
+			}
+			for (size_t i = 0; i < n; i++)
+			{
+				if (board[0][i] == 'O') {
+					board[0][i] = 'A';
+					solve_dfs(board, 0, i);//矩阵的上边
+				}
+				if (board[board.size() - 1][i] == 'O') {
+					board[board.size() - 1][i] = 'A';
+					solve_dfs(board, board.size() - 1, i);//矩阵的下边
+				}
+			}
+			//这个for遍历整个图
+			for (size_t i = 0; i < m; i++)
+			{
+				for (size_t l = 0; l < n; l++)
+				{
+					if (board[i][l] == 'O')
+						board[i][l] = 'X';
+					if (board[i][l] == 'A')//这两个不能颠倒，要不然这个刚赋值成O，下面就会变成X
+						board[i][l] = 'O';
+				}
+			}
+			return;
+		}
+
+
+
 		void test()
 		{
 			string str = "bbbab";
-			vector<	vector<int> > graph{ {0,0,1,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,1,1,0,1,0,0,0,0,0,0,0,0},{0,1,0,0,1,1,0,0,1,0,1,0,0},
-			{0,1,0,0,1,1,0,0,1,1,1,0,0},{0,0,0,0,0,0,0,0,0,0,1,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,0,0,0,0,0,0,1,1,0,0,0,0} };
+			vector<	vector<int> > graph{ {0,0,1,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,1,1,0,1,0,0,0,0,0,0,0,0},{0,1,0,0,1,1,0,0,1,0,1,0,0} };
+			vector<	vector<char> > graphc{ {'X','X','X','X'},{'X','O','O','X'},{'X','X','O','X'},{'X','O','X','X'} };
 			vector<	vector<int> > graph1{ {0,0,0,0},{1,0,1,0},{0,1,1,0},{0,0,0,0} };
 			vector<	vector<int> > graph2{ {0, 0, 0, 1, 1, 1, 0, 1, 0, 0}, {1, 1, 0, 0, 0, 1, 0, 1, 1, 1}, {0, 0, 0, 1, 1, 1, 0, 1, 0, 0}, {0, 1, 1, 0, 0, 0, 1, 0, 1, 0}, {0, 1, 1, 1, 1, 1, 0, 0, 1, 0}, {0, 0, 1, 0, 1, 1, 1, 1, 0, 1}, {0, 1, 1, 0, 0, 0, 1, 1, 1, 1}, {0, 0, 1, 0, 0, 1, 0, 1, 0, 1}, {1, 0, 1, 0, 1, 1, 0, 0, 0, 0}, {0, 0, 0, 0, 1, 1, 0, 0, 0, 1} };
 			vector<int> dp1{ 1,3,4,2 };
 			int Start = GetTickCount();
-			cout << numEnclaves(graph1) << endl;
+			//cout << numEnclaves(graph1) << endl;
+			solve(graphc);
 			int Stop = GetTickCount();
 			cout << "消耗时间" << Stop - Start << endl;
 
@@ -8199,11 +8286,11 @@ namespace TULUN
 
 			vector<vector<int>> ret;
 			//= numIslands(graph1);
-			for (size_t i = 0; i < ret.size(); i++)
+			for (size_t i = 0; i < graphc.size(); i++)
 			{
-				for (size_t l = 0; l < ret[i].size(); l++)
+				for (size_t l = 0; l < graphc[i].size(); l++)
 				{
-					cout << ret[i][l] << "->";
+					cout << graphc[i][l] << "->";
 				}
 				cout << endl;
 			}
