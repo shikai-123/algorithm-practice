@@ -8423,6 +8423,7 @@ namespace TULUN
 
 			3、最后返回一个最大的面积就行。
 
+			我的具体实现和它的有点区别，具体看代码
 		*/
 		int largestIsland_bfs(vector<vector<int>>& grid, vector<vector<bool>>&visited, int mark, int x, int y)
 		{
