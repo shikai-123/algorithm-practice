@@ -8406,6 +8406,112 @@ namespace TULUN
 		}
 
 
+		/*
+		827.最大人工岛
+		参考：
+			https://www.programmercarl.com/0827.%E6%9C%80%E5%A4%A7%E4%BA%BA%E5%B7%A5%E5%B2%9B.html#%E6%80%9D%E8%B7%AF
+		思路：
+			思路也很简单。
+			1、先是遍历图，然后记录下每个岛屿的面积，
+			   为了方便记录不同岛屿的面积，用map容易。
+				多说一句，遍历图的时候，如果所有的元素都是1的话，那么就返回这个图的m*n。
+			2、接着遍历上面步骤中，没有遍历的部分。
+			   也就是把新的一块放到没有遍历的地方，也就是这个地方从0变成1；
+			   这个时候，遍历新1的四周，看看有几个岛屿接壤，
+			   (另外，一个新的1，,有可能和同一个岛屿有好几个接壤，所以需要记录下，避免重复加这块地的面积)
+			   把接壤的地方都加上，这就是新的岛屿的面积。
+
+			3、最后返回一个最大的面积就行。
+
+		*/
+		int largestIsland_bfs(vector<vector<int>>& grid, vector<vector<bool>>&visited, int mark, int x, int y)
+		{
+			grid[x][y] = mark;//给地图上不同的岛屿赋值标记
+			int are = 1;//只有当前这点没有遍历过，并且是陆地，才能进这个函数
+			int dir[4][2] = { {1,0},{-1,0},{0,1},{0,-1} };
+			queue<pair<int, int>> que;
+			que.push({ x, y });//访问到了谁，待会就遍历他的四个方向。
+			visited[x][y] = true;//访问到了谁，visited赋值true
+			while (!que.empty())//只要是队列不空，那就是要接着遍历这个元素的四周
+			{
+				//每次从队列中都要拿出新的，遍历新的四个方向。
+				pair<int, int> cur = que.front();
+				que.pop();//!这个别忘了！
+				int curX = cur.first;
+				int curY = cur.second;
+				for (size_t i = 0; i < 4; i++)
+				{
+					int nextX = curX + dir[i][0];
+					int nextY = curY + dir[i][1];
+					//判断数组是否越界
+					if (0 <= nextX && nextX < grid.size() && 0 <= nextY && nextY < grid[0].size())
+					{
+						//判断这个点4个方向都是陆地的点，然后不断的加到队列中，这样就能找到与一开始提供的xy是同一块岛屿的所有坐标。
+						if (!visited[nextX][nextY] && grid[nextX][nextY] == 1)
+						{
+							are++;
+							que.push({ nextX, nextY });
+							visited[nextX][nextY] = true;
+							grid[nextX][nextY] = mark;
+						}
+					}
+				}
+			}
+			return are;
+		}
+
+
+		int largestIsland(vector<vector<int>>& grid) {
+			int are = 0;//最后的面积
+			int n = grid.size(), m = grid[0].size();
+			vector<vector<bool>> visited = vector<vector<bool>>(n, vector<bool>(m, false));
+			int mark = 1;//!一定要从1
+			unordered_map<int, int>gridAre;//不同编号岛屿的面积
+			bool isAllGrid = true; // 标记是否整个地图都是陆地
+			//1、遍历图，然后记录下每个岛屿的面积，
+			for (size_t i = 0; i < n; i++)
+			{
+				for (size_t l = 0; l < m; l++)
+				{
+					if (grid[i][l] == 0) isAllGrid = false;
+					if (!visited[i][l] && grid[i][l] == 1) {
+						mark++;
+						gridAre[mark] = largestIsland_bfs(grid, visited, mark, i, l);
+					}
+				}
+			}
+			if (isAllGrid) return n * m; // 如果都是陆地，返回全面积
+			//遍历上面步骤中，没有遍历的部分。 把接壤的地方都加上，这就是新的岛屿的面积。
+			for (size_t i = 0; i < n; i++) {
+				for (size_t l = 0; l < m; l++) {
+					vector<bool> gridvisited(mark + 1, false);//！这个和题解不一样，这个更容易被想到
+					if (!visited[i][l] && grid[i][l] == 0) {
+						int temare = 1;//!别忘了初始是1!他自己本身的面积是1，别忘了加了
+						for (size_t j = 0; j < 4; j++)
+						{
+							int dir[4][2] = { {1,0},{-1,0},{0,1},{0,-1} };//下 上 右 左
+							int nextX = i + dir[j][0];
+							int nextY = l + dir[j][1];
+							//判断数组是否越界
+							if (0 <= nextX && nextX < grid.size() && 0 <= nextY && nextY < grid[0].size())
+							{
+								int mark = grid[nextX][nextY];
+								//如果新1，的下一个位置grid[nextX][nextX]的值是!=0 !=1 就是另一个岛屿.并且这个岛屿没有被加进去过。
+								if (grid[nextX][nextY] != 0 && grid[nextX][nextY] != 1 && gridvisited[mark] == false)
+								{
+									temare += gridAre[mark];
+									gridvisited[mark] = true;
+								}
+							}
+						}
+						are = max(are, temare);
+					}
+				}
+			}
+			return are;
+		}
+
+
 
 
 
@@ -8417,19 +8523,17 @@ namespace TULUN
 			vector<	vector<int> > graph{ {0,0,1,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,1,1,0,1,0,0,0,0,0,0,0,0},{0,1,0,0,1,1,0,0,1,0,1,0,0} };
 			vector<	vector<char> > graphc{ {'X','X','X','X'},{'X','O','O','X'},{'X','X','O','X'},{'X','O','X','X'} };
 			vector<	vector<int> > graph1{ {0,0,0,0},{1,0,1,0},{0,1,1,0},{0,0,0,0} };
-			vector<	vector<int> > graph2{ {1,2,2,3,5}, {3,2,3,4,4}, {2,4,5,3,1},
-			{6,7,1,4,5}, {5,1,1,2,4} };
+			vector<	vector<int> > graph2{ {1,1}, {1,0} };
 			vector<int> dp1{ 1,3,4,2 };
 			int Start = GetTickCount();
-			//cout << numEnclaves(graph1) << endl;
-			solve(graphc);
+			cout << largestIsland(graph2) << endl;
 			int Stop = GetTickCount();
 			cout << "消耗时间" << Stop - Start << endl;
 
 
 
 
-			vector<vector<int>> ret = pacificAtlantic(graph2);
+			vector<vector<int>> ret;// = pacificAtlantic(graph2);
 			//= numIslands(graph1);
 			for (size_t i = 0; i < ret.size(); i++)
 			{
