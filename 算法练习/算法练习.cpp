@@ -8513,6 +8513,56 @@ namespace TULUN
 		}
 
 
+		/*
+		127. 单词接龙
+		参考：
+			https://www.programmercarl.com/0127.%E5%8D%95%E8%AF%8D%E6%8E%A5%E9%BE%99.html#%E6%80%9D%E8%B7%AF
+		其他：
+			题目讲解，单词变化，每次只能变一个，每次从给的列表中去挑。
+			开始单词不一定在单词列表中，但是结束单词必须在结束列表中。
+		思路：
+			这里无向图求最短路，广搜最为合适，广搜只要搜到了终点，那么一定是最短的路径。
+			因为广搜就是以起点中心向四周扩散的搜索。
+			为什么深搜直接出来的不是，这个我没明白
+			？另外，他是如何保证是最短的距离的？
+		*/
+		int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+			//将单单词列表放到unordered_set中，是为了提高查找速度——这个单词有没有在wordList出现。
+			unordered_set<string>wordSet(wordList.begin(), wordList.end());
+			//如果结束单词没在结束列表中
+			if (wordSet.find(endWord) == wordSet.end()) return 0;
+			//为了保证每个单词只访问一次，也就是保证之前变化的就不再用了
+			unordered_map<string, int> visitMap;//key是单词，int是距离
+			 // 初始化visitMap
+			visitMap.insert(pair<string, int>(beginWord, 1));
+			queue<string> que;
+			que.push(beginWord);
+
+
+			while (!que.empty())
+			{
+				string word = que.front();
+				que.pop();
+				int pathLenth = visitMap[word];
+				//开始对当前遍历到的单词，做变化。
+				for (size_t i = 0; i < word.size(); i++)//对word的各个字符都做变化
+				{
+					string newWord = word;
+					for (size_t l = 0; l < 26; l++)//变化的范围就是26个英文字母
+					{
+						newWord[i] = l + 'a';//从a开始，一个一个往上加
+						if (newWord == endWord) return pathLenth + 1;//找到了结束单词，就该返回长度了
+						//如果新单词在列表中出现了。并且之前没有访问过。
+						if (wordSet.find(newWord) != wordSet.end() && visitMap.find(newWord) == visitMap.end())
+						{
+							visitMap.insert(pair<string, int>(newWord, pathLenth + 1));
+							que.push(newWord);
+						}
+					}
+				}
+			}
+			return 0;
+		}
 
 
 
