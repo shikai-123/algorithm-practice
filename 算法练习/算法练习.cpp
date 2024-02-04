@@ -8564,8 +8564,69 @@ namespace TULUN
 			return 0;
 		}
 
+		/*
+		841.钥匙和房间
+		参考：
+			https://www.programmercarl.com/0841.%E9%92%A5%E5%8C%99%E5%92%8C%E6%88%BF%E9%97%B4.html#%E6%80%9D%E8%B7%AF
+		注意：
+			!这个题目提示我们要注意就是：
+			你的递归函数，是处理当前的节点；还是处理当前点之后的点。
+			关于这个，我之前的题目中有注意到过。
+			总的来说：
+			1、在递归函数有专门结束递归的语句，就是处理的是当前的点
+			 if (visited[key])
+				return;
+			2、而这种，则是在遍历中去赋值；则是处理下个节点。
+			for (int key : keys) {
+				if (visited[key] == false) {
+					visited[key] = true;
+					dfs(rooms, key, visited);
+				}
+			}
+			！要注意的就是在调用的时候，如果是下面这种方式就要提前对结果++；
+				或者做类似的处理。
+		思路：
+			本题目可以看成是一个有向图。
+			从节点0出发，拿到所有的节点0的钥匙。
+			从拿到的钥匙中，去到其他的房间，然后再拿到所有的钥匙，
+			一直不断的往复。
+			最后遍历这个图，查看是不是都遍历了，一旦有每遍历到的，返回false
+		*/
 
+		bool canVisitAllRooms_bfs(vector<vector<int>>& rooms)
+		{
+			vector<bool> visited(rooms.size(), false);
+			visited[0] = true;
 
+			queue<int>que;
+			que.push(0);
+
+			while (!que.empty())
+			{
+				int index = que.front();//第一个房间的下表
+				que.pop();
+				vector<int> keys = rooms[index];
+				for (int key : keys)//遍历房间中的钥匙
+				{
+					if (!visited[key])
+					{
+						visited[key] = true;
+						que.push(key);//把拿到的钥匙——也就是能到的数组下标放到que中
+					}
+				}
+			}
+			for (int signalVisit : visited)//遍历房间
+			{
+				if (signalVisit == false)
+					return false;
+			}
+			return true;
+		}
+		bool canVisitAllRooms(vector<vector<int>>& rooms) {
+
+			return canVisitAllRooms_bfs(rooms);
+
+		}
 
 
 		void test()
