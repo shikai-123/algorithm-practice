@@ -8629,6 +8629,43 @@ namespace TULUN
 		}
 
 
+		/*
+		463. 岛屿的周长
+		参考：
+			https://www.programmercarl.com/0463.%E5%B2%9B%E5%B1%BF%E7%9A%84%E5%91%A8%E9%95%BF.html#%E6%80%9D%E8%B7%AF
+		思路：
+			不用dfs或者是bfs
+			就单纯的遍历图，然后遍历到陆地后，
+			遍历他的四周，如果满足条件，边数++
+		*/
+		int islandPerimeter(vector<vector<int>>& grid) {
+			int direc[4][2] = { 0, 1, 1, 0, -1, 0, 0, -1 };
+			int ret = 0;
+			for (size_t i = 0; i < grid.size(); i++)
+			{
+				for (size_t l = 0; l < grid[0].size(); l++)
+				{
+					if (grid[i][l] == 1)//是“陆地”
+					{
+						for (int k = 0; k < 4; k++) {       // 上下左右四个方向
+							int nextX = i + direc[k][0];
+							int nextY = l + direc[k][1];
+							// i在边界上,i在边界上, j在边界上,j在边界上, x,y位置是水域
+							if (nextX < 0 || nextX >= grid.size() \
+								|| nextY < 0 || nextY >= grid[0].size()\
+								|| grid[nextX][nextY] == 0)
+							{
+								ret++;
+							}
+						}
+					}
+
+				}
+			}
+			return ret;
+		}
+
+
 		void test()
 		{
 			string str = "bbbab";
