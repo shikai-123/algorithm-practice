@@ -8666,6 +8666,104 @@ namespace TULUN
 		}
 
 
+
+		/**-------------------以下是并查集--------------------------- */
+		/*
+		并查集可以解决什么问题呢？
+			并查集常用来解决连通性问题。
+			大白话就是当我们需要判断两个元素是否在同一个集合里的时候，我们就要想到用并查集。
+			并查集主要有两个功能：
+			将两个元素添加到一个集合中。
+			判断两个元素在不在同一个集合
+
+		并查集主要有三个功能。
+
+			寻找根节点，函数：find(int u)，也就是判断这个节点的祖先节点是哪个
+			将两个节点接入到同一个集合，函数：join(int u, int v)，将两个节点连在同一个根节点上
+			判断两个节点是否在同一个集合，函数：isSame(int u, int v)，就是判断两个节点是不是同一个根节点
+
+		我自己：
+			一般都是用在图的题目中。
+		*/
+
+		/*
+		1971. 寻找图中是否存在路径
+		参考：
+			https://www.programmercarl.com/1971.%E5%AF%BB%E6%89%BE%E5%9B%BE%E4%B8%AD%E6%98%AF%E5%90%A6%E5%AD%98%E5%9C%A8%E8%B7%AF%E5%BE%84.html#%E6%80%9D%E8%B7%AF
+		思路：
+
+			思路大概就是：
+			把有关联的数据通过“ father[v] = u;”这种方式联系起来。
+			也就是串成一串。
+			判断两个点在不在一个集合中——就是判断两个点的根节点是不是一样
+			把两个点弄成一块，就是用这个公式实现“ father[v] = u;”。
+		注意：
+			在合并两个点到一个集合的时候，是两个“根节点”在合并。
+			//father[vRoot] = uRoot;和father[uRoot] = vRoot;那种都行
+		*/
+
+		class Solution1 {//这里放这类，是为了防止函数冲突
+		private:
+			int n = 200005;
+			vector<int>father = vector<int>(n, 0);//里面存的是数组的下表
+
+			void init()//初始化，现在每个元素的都是保存的自己的坐标，这样就意味着他们只跟自己有关系。
+			{
+				for (size_t i = 0; i < n; i++)
+					father[i] = i;
+			}
+
+			int find(int u)//用递归找到u的“根”，并且 else可以压缩路径，使这个“树”的高度变成1
+			{
+				if (u == father[u])
+					return u;
+				else
+					return father[u] = find(father[u]);
+			}
+
+			bool isSame(int v, int u)
+			{
+				int vRoot = find(v);
+				int uRoot = find(u);
+				return vRoot == uRoot;
+			}
+			void join(int u, int v)
+			{
+				int vRoot = find(u);
+				int uRoot = find(v);
+				if (vRoot == uRoot)//如果两个要联系的节点，本来就是在一个“集合”中，就没有必要添加一块
+					return;
+				//father[v] = u;!!!这种写法是错的！！！！
+
+				//!!在合并两个点到一个集合的时候，是两个“根节点”在合并。
+				father[vRoot] = uRoot;//这样v和u就产生了关系，通过find(v)就能知道u是他的下一个点。随着不断的添加，这个“链条”也在慢慢的变化。
+				//father[uRoot] = vRoot;这样写也行
+			}
+		public:
+			bool validPath(int n, vector<vector<int>>& edges, int source, int destination) {
+				init();
+				for (size_t i = 0; i < edges.size(); i++)
+				{
+					join(edges[i][0], edges[i][1]);//对所有的点建立联系。
+				}
+				//建立所有的关系后，判断所给的点是不是有关系
+				return isSame(source, destination);
+			}
+		};
+
+
+
+		/*
+
+		*/
+		vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+
+		}
+
+
+
+
+
 		void test()
 		{
 			string str = "bbbab";
@@ -8673,12 +8771,16 @@ namespace TULUN
 			vector<	vector<char> > graphc{ {'X','X','X','X'},{'X','O','O','X'},{'X','X','O','X'},{'X','O','X','X'} };
 			vector<	vector<int> > graph1{ {0,0,0,0},{1,0,1,0},{0,1,1,0},{0,0,0,0} };
 			vector<	vector<int> > graph2{ {1,1}, {1,0} };
+			vector<	vector<int> > graph3{ {4,3},{1,4},{4,8},{1,7},{6,4},{4,2},{7,4},{4,0},{0,9},{5,4} };
+			vector<	vector<int> > graph4{ {0,7},{0,8},{6,1},{2,0},{0,4},{5,8},{4,7},{1,3},{3,5},{6,5} };
 			vector<int> dp1{ 1,3,4,2 };
 			int Start = GetTickCount();
-			cout << largestIsland(graph2) << endl;
+			//cout << largestIsland(graph2) << endl;
 			int Stop = GetTickCount();
 			cout << "消耗时间" << Stop - Start << endl;
+			Solution1 A;
 
+			cout << A.validPath(10, graph3, 5, 9) << endl;
 
 
 
