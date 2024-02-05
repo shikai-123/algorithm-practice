@@ -8703,7 +8703,7 @@ namespace TULUN
 		*/
 
 		class Solution1 {//这里放这类，是为了防止函数冲突
-		private:
+		public:
 			int n = 200005;
 			vector<int>father = vector<int>(n, 0);//里面存的是数组的下表
 
@@ -8749,16 +8749,46 @@ namespace TULUN
 				//建立所有的关系后，判断所给的点是不是有关系
 				return isSame(source, destination);
 			}
+
+
+
+			/*
+			684.冗余连接
+			参考：
+				https://www.programmercarl.com/0684.%E5%86%97%E4%BD%99%E8%BF%9E%E6%8E%A5.html#%E6%80%9D%E8%B7%AF
+			思路：
+				判断一条边的两个点是否在同一个集合中，
+				如果在同一个集合，说明已经形成了回环。
+				如果不在一个集合，说明这两个点在不同的集合，也就不会在这个集合中形成回环
+				至于遍历顺序，要根据题目要求来走。
+				本题目是要：“如果有多个答案，则返回数组 edges 中最后出现的那个”
+				所以就是“正序”。
+				比如abcd四条边形成了回环，遍历abc这三条边的时候，都没形成回环，
+				当遍历d的时候，就形成了回环，那么就该返回d。
+				反之“倒叙”，返回a。
+			题目：
+				如果有多个答案，则返回数组 edges 中最后出现的那个。
+				比如例题2，感觉切34可以，但是最后返回14，是因为14是最后一个满足条件的在edges数组中
+			其他：
+				这个题目中用到的函数都和上面的一样，只有主函数不一样。
+			*/
+			vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+				init();
+				for (size_t i = 0; i < edges.size(); i++)
+				{
+					//如果在同一个集合，说明已经形成了回环。 返回这两个点
+					if (isSame(edges[i][0], edges[i][1]))
+						return edges[i];
+					//如果不在一个集合，说明这两个点在不同的集合，就把这两个点加一块
+					join(edges[i][0], edges[i][1]);
+				}
+				return {};//没有环，就返回空
+			}
 		};
 
 
 
-		/*
 
-		*/
-		vector<int> findRedundantConnection(vector<vector<int>>& edges) {
-
-		}
 
 
 
