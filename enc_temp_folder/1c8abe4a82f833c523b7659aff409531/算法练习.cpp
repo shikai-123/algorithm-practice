@@ -92,6 +92,7 @@ namespace String_Array
 			如果中间的大于左边的就是left=mid+1;
 			如果中间的小于右边的就是right=mid-1;
 			直到nus[mid]==target;
+
 		*/
 		int search(vector<int>& nums, int target) {
 
@@ -99,8 +100,7 @@ namespace String_Array
 			int right = nums.size() - 1; // 定义target在左闭右闭的区间里，[left, right]; 假设012，既然是左闭右闭，right的下标就是size()-1
 			while (left <= right)
 			{
-				//int mid = (right - left) //如果是2 5则一直卡在这个循环中。
-				int mid = left + ((right - left) / 2);//换成这种咋不会
+				int mid = (right - left) / 2;
 				if (nums[mid] > target) {
 					right = mid - 1;
 				}
