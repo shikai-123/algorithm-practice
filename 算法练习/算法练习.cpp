@@ -114,6 +114,35 @@ namespace String_Array
 			return -1;
 		}
 
+
+		/*
+		27. 移除元素
+		参考：
+			https://www.programmercarl.com/0027.%E7%A7%BB%E9%99%A4%E5%85%83%E7%B4%A0.html#%E6%80%9D%E8%B7%AF
+		思路：
+			双指针——快慢指针
+			遍历数组，如果数组碰不到要删除的值，就一直往里面放，慢指针++
+			如果碰到了，就不放了。慢指针不动.
+		*/
+		int removeElement(vector<int>& nums, int val) {
+			int slow = 0;
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				if (nums[i] == val) {
+					continue;
+				}
+				nums[slow++] = nums[i];
+			}
+			return slow;
+		}
+
+
+
+
+		/*
+		https://leetcode.cn/problems/remove-duplicates-from-sorted-array/description/
+		留一个就行，没必要这么多
+		*/
 		int removeDuplicates(vector<int>& nums)
 		{
 			map<int, int>index_num;/*nums中每中元素的数量 key每种元素 value每种元素数量*/
