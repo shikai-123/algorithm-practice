@@ -8709,6 +8709,8 @@ namespace TULUN
 
 			void init()//初始化，现在每个元素的都是保存的自己的坐标，这样就意味着他们只跟自己有关系。
 			{
+				//!!!注意这个n，每个题目中别忘了初始化了。
+				//for (size_t i = 0; i < edges.size(); i++)最好改成这个
 				for (size_t i = 0; i < n; i++)
 					father[i] = i;
 			}
@@ -8739,7 +8741,6 @@ namespace TULUN
 				father[vRoot] = uRoot;//这样v和u就产生了关系，通过find(v)就能知道u是他的下一个点。随着不断的添加，这个“链条”也在慢慢的变化。
 				//father[uRoot] = vRoot;这样写也行
 			}
-		public:
 			bool validPath(int n, vector<vector<int>>& edges, int source, int destination) {
 				init();
 				for (size_t i = 0; i < edges.size(); i++)
@@ -8788,48 +8789,96 @@ namespace TULUN
 				//对一个树而言，添加一条边肯定是会形成回环。所以题目中所给的就一定是“回环”。
 				return {};//没有环，就返回空。
 			}
-		};
 
 
-		/*
-		685.冗余连接II
-		参考：
-			https://www.programmercarl.com/0685.%E5%86%97%E4%BD%99%E8%BF%9E%E6%8E%A5II.html#%E6%80%9D%E8%B7%AF
-		思路：
-			题目中给的图像，一定是回环图像。
-			因为他是额外的一条边，并且这个边的两点都在树上！
-			一切的前提是建立在“回环图像”的基础上,并且回环只有一个！上个题目也符合要求
-			既然是“回环图像”，并且只有一个回环。
-			对于“有向图”而言（这也是题目为什么用有向图），他一定有“入度”
-			从树上增加了一条边，
-			数这个结构，正常来入度只有1（根节点是0），增加了一条边入度最多是2，不能是3的，
-			有入度为1的情况，参考图片情况3.（从其他节点到根节点）（有可能有回环）
-			有入度为2的情况，参考图片情况1,2.（一定有回环）
-			有入度为3的情况吗？没有。（不存在这种情况）
+			/*
+			685.冗余连接II
+			参考：
+				https://www.programmercarl.com/0685.%E5%86%97%E4%BD%99%E8%BF%9E%E6%8E%A5II.html#%E6%80%9D%E8%B7%AF
+			思路：
+				题目中给的图像，一定是回环图像。
+				因为他是额外的一条边，并且这个边的两点都在树上！
+				一切的前提是建立在“回环图像”的基础上,并且回环只有一个！上个题目也符合要求
+				既然是“回环图像”，并且只有一个回环。
+				对于“有向图”而言（这也是题目为什么用有向图），他一定有“入度”
+				从树上增加了一条边，
+				数这个结构，正常来入度只有1（根节点是0），增加了一条边入度最多是2，不能是3的，
+				有入度为1的情况，参考图片情况3.（从其他节点到根节点）（有可能有回环）
+				有入度为2的情况，参考图片情况1,2.（一定有回环）
+				有入度为3的情况吗？没有。（不存在这种情况）
 
-			代码上的思路：
-			有个倒叙是必须的，有些图在入度为2的情况下，删除哪个都行，所有一定要倒叙，删除最后出现的那个。
-			上题，是正序是，因为遍历到最后环的最后最后一个边就行。没有什么删除
+				代码上的思路：
+				有个倒叙是必须的，有些图在入度为2的情况下，删除哪个都行，所有一定要倒叙，删除最后出现的那个。
+				上题，是正序是，因为遍历到最后环的最后最后一个边就行。没有什么删除
 
-			入度为1并且出现回环的情况下，删除那个边就行，也就是这边的两点在一个集合上。
-			也就是上题的情况
+				入度为1并且出现回环的情况下，删除那个边就行，也就是这边的两点在一个集合上。
+				也就是上题的情况
 
-		题目：
-			题目中给的图像，一定是回环图像。
-			因为他是额外的一条边，并且这个边的两点都在树上！
-		*/
-		vector<int> findRedundantDirectedConnection(vector<vector<int>>& edges) {
-			const int N = 1000;//???这样能过编译？是不是const和constexpr是不是等价了？还是编译器的事
-			vector<int>yxbNums;//有向边的数量
-			int InDegree[N];
-			for (size_t i = 0; i < edges.size(); i++)
+			题目：
+				题目中给的图像，一定是回环图像。
+				因为他是额外的一条边，并且这个边的两点都在树上！
+			*/
+			static const int N = 100;//!这里必须是静态常量，静态保证编译的时候出结果，常量保证能让N在编译的时候用来初始化数组。
+
+			//入度为1的时候，返回删除那条构成回环的边
+			vector<int> getRemoveEgde(vector<vector<int>>& edges)
 			{
-				if (edges[i][1]);
+				init();
+				for (size_t i = 0; i < edges.size(); i++)
+				{
+					if (isSame(edges[i][0], edges[i][1]))
+						return edges[i];
+					join(edges[i][0], edges[i][1]);
+				}
+				return {};//它的入度是1，一定不会走到这
 			}
 
 
-		}
+			//入度为2的时候，判断删除一条边后，是不是一个正确的树
+			bool isTreeAfterRemoveEdge(vector<vector<int>>& edges, int ruduEdgeIndex)
+			{
+				init();
+				for (size_t i = 0; i < edges.size(); i++)
+				{
+					if (i == ruduEdgeIndex)//当前遍历的入点为传进来的这个“入点”下标
+						continue;//就不往图里加
+					if (isSame(edges[i][0], edges[i][1]))
+						return false;
+					join(edges[i][0], edges[i][1]);
+				}
+				return true;
+			}
 
+			vector<int> findRedundantDirectedConnection(vector<vector<int>>& edges) {
+				n = edges.size(); // 边的数量!!!!这个别忘了，要不然init()函数中的for遍历次数不对。
+				int InDegree[N];//每个点的入度
+				for (size_t i = 0; i < edges.size(); i++)
+				{
+					InDegree[edges[i][1]]++;//下标是后面的点。
+				}
+				vector<int>rudu2EdgesIndex;//保存“入度”为2的!这个边的下标！！！！
+				//!!!!这个地方一定是倒叙！！！！
+				//核心是为了保证返回的是在二维数组中靠后的答案。
+				for (int i = edges.size() - 1; i >= 0; i--)
+				{
+					if (InDegree[edges[i][1]] == 2)
+						rudu2EdgesIndex.push_back(i);//!!虽然这样遍历，但是上面说过“入度”为2的只有一个
+				}
+				//如果有入度为2的情况出现，那么要删除的就是这个点的“入度”的两条边的其中一个。
+				//至于是删除前面的还是后面的不一定，所以要通过函数来测试。
+				if (rudu2EdgesIndex.size() > 0)
+				{
+					if (isTreeAfterRemoveEdge(edges, rudu2EdgesIndex[0]))
+						return edges[rudu2EdgesIndex[0]];
+					return edges[rudu2EdgesIndex[1]];
+				}
+
+				//剩下的情况就是入度为1的情况，这时候要删除的边就是
+				//哪个边构成了回环，就删除哪个。和上题的情况一样。
+				return getRemoveEgde(edges);
+			}
+
+		};
 
 
 
@@ -8854,16 +8903,17 @@ namespace TULUN
 
 
 
-			vector<vector<int>> ret;// = pacificAtlantic(graph2);
+			vector<int> ret = A.findRedundantDirectedConnection(graph4);
+			cout << ret[0] << endl;
 			//= numIslands(graph1);
-			for (size_t i = 0; i < ret.size(); i++)
+			/*for (size_t i = 0; i < ret.size(); i++)
 			{
 				for (size_t l = 0; l < ret[i].size(); l++)
 				{
 					cout << ret[i][l] << " ";
 				}
 				cout << endl;
-			}
+			}*/
 		}
 
 
