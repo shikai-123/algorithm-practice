@@ -137,6 +137,39 @@ namespace String_Array
 		}
 
 
+		/*
+		977.有序数组的平方
+		参考：
+			https://www.programmercarl.com/0977.%E6%9C%89%E5%BA%8F%E6%95%B0%E7%BB%84%E7%9A%84%E5%B9%B3%E6%96%B9.html
+		思路1：
+			暴力解法：
+			遍历数组，把每个元素的平方都算出来，然后用sort排序即可。时间复杂度是n+n*logn，挺好就是时间复杂度差点
+		思路2：
+			双指针；
+			因为数组是“非递减”，所以较大的数一定位于两端。
+			一个指针在前，一个在尾。
+			比较他们平方的大小，谁大谁往ret数组中放。
+		*/
+		vector<int> sortedSquares(vector<int>& nums) {
+			vector<int> ret(nums.size(), 0);
+			int k = nums.size() - 1;
+			int start = 0;
+			int end = k;
+			while (start <= end)//只有两个指针重合在一块的时候，才能把最后的元素放进去。
+			{
+				if (nums[start] * nums[start] > nums[end] * nums[end]) {
+					ret[k--] = nums[start] * nums[start];
+					start++;
+				}
+				else {
+					ret[k--] = nums[end] * nums[end];
+					end--;
+				}
+			}
+			return ret;
+		}
+
+
 
 
 		/*
