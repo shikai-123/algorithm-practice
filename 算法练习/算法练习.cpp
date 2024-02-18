@@ -21,7 +21,7 @@ struct ListNode {
 	int val;
 	ListNode *next;
 	ListNode() : val(0), next(nullptr) {}
-	ListNode(int x) : val(x), next(NULL) {}
+	ListNode(int x) : val(x), next(nullptr) {}
 	ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
 
@@ -3371,6 +3371,39 @@ namespace LinkedList
 			*/
 		};
 
+
+
+		/*
+		203.移除链表元素
+		参考：
+			https://www.programmercarl.com/0203.%E7%A7%BB%E9%99%A4%E9%93%BE%E8%A1%A8%E5%85%83%E7%B4%A0.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			删除链表的元素的方法，有两种，这里选择了“统一方法”。具体参考笔记。
+		*/
+		ListNode* removeElements(ListNode* head, int val) {
+			ListNode* dummyHead = new ListNode(0);//统一方法中的虚拟头节点
+			dummyHead->next = head;
+			ListNode* cur = dummyHead;//当前指针
+			while (cur->next != nullptr)
+			{
+				if (cur->next->val == val)
+				{
+					ListNode* tmp = cur->next;
+					cur->next = cur->next->next;
+					delete tmp;//!!!在我的编译器中，delete出现了崩溃。不知道为啥
+				}
+				else
+				{
+					cur = cur->next;//当前的指针往后移动
+				}
+			}
+			head = dummyHead->next;
+			delete dummyHead;//以上两部都是为了释放dummyHead内存
+			return head;
+		}
+
+
+
 		void test()
 		{
 			LinkedList::Solution a;
@@ -3393,7 +3426,7 @@ namespace LinkedList
 
 			//ret = reverse_link(&lb);
 			//ret = reverse(&lb);
-			ret = a.reverseKGroup(&lb, 2);
+			ret = a.removeElements(&lb, 5);
 			//ret = a.reverseBetween(&lb,1,2);
 
 			while (ret != nullptr)
@@ -9111,7 +9144,7 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 
-	String_Array::Solution tree;
+	LinkedList::Solution tree;
 	tree.test();
 
 
