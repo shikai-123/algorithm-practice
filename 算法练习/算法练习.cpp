@@ -73,7 +73,7 @@ struct CmpByValue {
 };
 
 
-
+//字符串和数组
 namespace String_Array
 {
 	class Solution {
@@ -168,8 +168,6 @@ namespace String_Array
 			}
 			return ret;
 		}
-
-
 
 
 		/*
@@ -759,15 +757,78 @@ namespace String_Array
 			return ans;
 		}
 
+
+		/*
+		59.螺旋矩阵II
+		参考：
+			https://www.programmercarl.com/0059.%E8%9E%BA%E6%97%8B%E7%9F%A9%E9%98%B5II.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			这道题目可以说在面试中出现频率较高的题目，本题并不涉及到什么算法，就是模拟过程，但却十分考察对代码的掌控能力。
+			重点就是：明确好是“左开右闭”，然后在下面的处理中，全部都是遵循这个规则。
+			在遍历每条边的时候，拐角处让给新的一条边来继续画，这也是坚持了每条边左闭右开的原则。
+		*/
+		vector<vector<int>> generateMatrix(int n) {
+			int loop = n / 2;//n的偶数正好能组成矩阵，奇数差一行，就在最后的处理一下
+			int start = 0;//每圈开始的坐标
+			int offset = 1;//每次遍历，“右”边界收缩1。保证“左开右闭”！.只有“从左到右”，“填充右行的从上到下”才使用这个
+			int count = 1;//矩阵中要填充的数
+			int i = 0, l = 0;//il代表在矩阵中的当前坐标
+
+			vector<vector<int>> ret(n, vector<int>(n, 0));
+
+			while (loop--)
+			{
+				//填充上行——从左到右
+				for (l = start; l < n - offset; l++)
+				{
+					ret[start][l] = count++;
+				}
+
+				//填充右行——从上到下
+				for (i = start; i < n - offset; i++)
+				{
+					ret[i][l] = count++;
+				}
+
+				//填充下行——从右到左
+				for (; l > start; l--)//不能是l >= start。会出现i=-1的情况
+				{
+					ret[i][l] = count++;
+				}
+
+				//填充左行——从下到上
+				for (; i > start; i--)
+				{
+					ret[i][l] = count++;
+				}
+				start++;//填充一圈后，开始坐标往右下角移动+1；
+				offset++;//填充一圈后，有边界收缩1
+			}
+			if (n % 2 == 1)ret[start][start] = count++;
+
+			return ret;
+		}
+
+
 		void test()
 		{
 			vector<int> nums = { -1,0,3,5,9,12 };
-			cout << search(nums, 9) << endl;
+			vector<vector<int>> retStr = generateMatrix(4);
+
+			for (auto i : retStr)
+			{
+				for (auto l : i)
+				{
+					cout << l << " ";
+				}
+				cout << endl;
+			}
 		}
 
 	};
 }
 
+//双指针
 namespace DoublePointer
 {
 	class Solution {
@@ -1006,6 +1067,7 @@ namespace DoublePointer
 	};
 }
 
+//滑动窗口
 namespace SlidingWindow
 {
 	class Solution {
