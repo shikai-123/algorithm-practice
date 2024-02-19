@@ -3402,7 +3402,96 @@ namespace LinkedList
 			return head;
 		}
 
+		/*
+		707.设计链表
+		参考：
+			https://www.programmercarl.com/0707.%E8%AE%BE%E8%AE%A1%E9%93%BE%E8%A1%A8.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			可以说这五个接口，已经覆盖了链表的常见操作，是练习链表操作非常好的一道题目
+			为了方便操作还是采用了虚拟头节点的方法。
+			如果要手撸代码的话，就画个图就好理解了。
+			定义_size变量，方便后面的处理
+		*/
+		// 定义链表节点结构体
+		struct LinkedNode {
+			int val;
+			LinkedNode* next;
+			LinkedNode(int val) :val(val), next(nullptr) {}
+		};
 
+		class MyLinkedList {
+		public:
+			MyLinkedList() {
+				_dummyHead = new LinkedNode(0);
+				_size = 0;
+			}
+
+			//获取链表第index个节点的数值.如果索引无效，则返回-1。
+			int get(int index) {
+				if (index > _size - 1 || index < 0)
+					return -1;
+				LinkedNode *cur = _dummyHead->next;
+				while (index--) {// 如果--index 就会陷入死循环!不知道为啥
+					cur = cur->next;
+				}
+				return cur->val;
+			}
+
+			//在链表的最前面插入一个节点.插入后，新节点将成为链表的第一个节点。
+			void addAtHead(int val) {
+				LinkedNode *newNode = new LinkedNode(val);
+				//_dummyHead->next = newNode;//_dummyHead->next本来就有东西，这么一加就把原来的替换了，不好
+				newNode->next = _dummyHead->next;//_dummyHead和newNode都接上了“真。头节点”
+				_dummyHead->next = newNode;//更改_dummyHead的位置到头节点
+				_size++;
+			}
+
+			//在链表的最后面插入一个节点。
+			void addAtTail(int val) {
+				LinkedNode *newNode = new LinkedNode(val);
+				LinkedNode *cur = _dummyHead;
+				while (cur->next != nullptr) {
+					cur = cur->next;
+				}
+				cur->next = newNode;
+				_size++;
+			}
+
+			//将一个值为 val 的节点插入到链表中下标为 index 的节点之前。
+			//如果 index 等于链表的长度，则该节点将附加到链表的末尾。
+			//如果 index 大于链表长度，则不会插入节点。
+			//如果index小于0，则在头部插入节点。
+			void addAtIndex(int index, int val) {
+				if (index > _size) return;
+				if (index < 0) index = 0;
+				LinkedNode *newNode = new LinkedNode(val);
+				LinkedNode *cur = _dummyHead;
+				while (index--) {
+					cur = cur->next;
+				}
+				//cur->next = newNode;//cur->next本来后面就有，这样就重复了。
+				newNode->next = cur->next;//newNode->next 和 cur->next都接同一个节点。
+				cur->next = newNode;//看不懂就画图
+				_size++;
+			}
+
+			//如果下标有效，则删除链表中下标为 index 的节点。
+			void deleteAtIndex(int index) {
+				if (index >= _size || index < 0) return;
+				LinkedNode *cur = _dummyHead;
+				while (index--) {
+					cur = cur->next;
+				}
+				LinkedNode *tmp = cur->next;//要删除的节点
+				cur->next = cur->next->next;
+				delete tmp;
+				_size--;
+			}
+
+		private:
+			int _size;//!!我感觉不用size来记录长度也是可以的。但是我写的代码不对，我也懒得调了。
+			LinkedNode *_dummyHead;
+		};
 
 		void test()
 		{
