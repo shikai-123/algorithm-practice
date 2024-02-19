@@ -3493,6 +3493,35 @@ namespace LinkedList
 			LinkedNode *_dummyHead;
 		};
 
+
+		/*
+		206.反转链表
+		参考：
+			https://www.programmercarl.com/0206.%E7%BF%BB%E8%BD%AC%E9%93%BE%E8%A1%A8.html#%E6%80%9D%E8%B7%AF
+		思路：
+			双指针。
+			一个pre，一个cur指针。
+			反转cur-》next指向，指向pre。(因为cur-》next有本来指向，所以要保存cur-》next的变量)
+			然后往后移动pre和cur指针。
+			直到cur为null，结束
+			！一画图就很明白
+		*/
+		ListNode* reverseList(ListNode* head) {
+			ListNode *cur = head;
+			ListNode *pre = nullptr;
+			while (cur)
+			{
+				ListNode *tmp = cur->next;//因为cur-》next有本来指向，所以要保存cur-》next的变量
+				cur->next = pre;//反转指向，当前“指向”前一个
+				pre = cur;//顺序别颠倒
+				cur = tmp;
+			}
+			return pre;
+		}
+
+
+
+
 		void test()
 		{
 			LinkedList::Solution a;
