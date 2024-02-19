@@ -3501,7 +3501,8 @@ namespace LinkedList
 		思路：
 			双指针。
 			一个pre，一个cur指针。
-			反转cur-》next指向，指向pre。(因为cur-》next有本来指向，所以要保存cur-》next的变量)
+			反转cur-》next指向，指向pre。
+			(因为cur-》next有本来指向，所以要保存cur-》next的变量)
 			然后往后移动pre和cur指针。
 			直到cur为null，结束
 			！一画图就很明白
@@ -3519,8 +3520,32 @@ namespace LinkedList
 			return pre;
 		}
 
+		/*
+		24. 两两交换链表中的节点
+		参考：
+			https://www.programmercarl.com/0024.%E4%B8%A4%E4%B8%A4%E4%BA%A4%E6%8D%A2%E9%93%BE%E8%A1%A8%E4%B8%AD%E7%9A%84%E8%8A%82%E7%82%B9.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			比如：x 1234，x先接2，然后接1；再接4，然后接3。
+			以12举例，x从指向1变成了指向2.没有临时变量的话，1就找不到了。
+			同理，2从指向3变成了1，没有临时变量的话，3就找不到了。
+			（和上体同理）
+		*/
+		ListNode* swapPairs(ListNode* head) {
+			ListNode *dummyHead = new ListNode(0);
+			dummyHead->next = head;
+			ListNode *cur = dummyHead;
+			while (cur->next != nullptr&&cur->next->next != nullptr)
+			{
+				ListNode *tmp = cur->next;//其实是“1”
+				ListNode *tmp1 = cur->next->next->next;//其实是“3”
 
-
+				cur->next = cur->next->next;//x接2
+				cur->next->next = tmp;//2接1
+				cur->next->next->next = tmp1;//1接3
+				cur = cur->next->next;
+			}
+			return dummyHead->next;
+		}
 
 		void test()
 		{
