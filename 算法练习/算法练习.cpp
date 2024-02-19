@@ -3542,7 +3542,7 @@ namespace LinkedList
 				cur->next = cur->next->next;//x接2
 				cur->next->next = tmp;//2接1
 				cur->next->next->next = tmp1;//1接3
-				cur = cur->next->next;
+				cur = cur->next->next;//cur每次要往后移动两次
 			}
 			return dummyHead->next;
 		}
