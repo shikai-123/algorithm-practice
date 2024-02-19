@@ -2921,16 +2921,16 @@ namespace LinkedList
 		/*
 		19. 删除链表的倒数第 N 个结点
 		参考：
-			https://leetcode.cn/problems/remove-nth-node-from-end-of-list/?envType=study-plan-v2&envId=top-interview-150
+			https://www.programmercarl.com/0019.%E5%88%A0%E9%99%A4%E9%93%BE%E8%A1%A8%E7%9A%84%E5%80%92%E6%95%B0%E7%AC%ACN%E4%B8%AA%E8%8A%82%E7%82%B9.html#%E6%80%9D%E8%B7%AF
 		思路：
 			双指针，这样就能遍历一遍的时候，直接拿到要删除节点的对应位置。
 			1、增加虚拟头结点。
 				这么做的好处是方便删除头节点；具体参考：https://mp.weixin.qq.com/s/L5aanfALdLEwVWGvyXPDqA
 			2、定义双指针，fast和low。
-				fast先走n+1。这样的目的是为了让low落在要删除的点的前面，这样的话，才能走链表删除的统一逻辑——要删除的节点，p->next=p->next->next;p是要被删除的节点前一个节点
-			3、然后移动双指针，知道fast到了最后的位置。
+				fast先走n+1。这样的目的是为了让low落在要删除的点的前面。（到时候fast和slow一块走，fast走到末尾的时候，slow就是在对应的位置）
+			3、然后移动双指针，直到fast到了最后的位置。
 			4、然后low->next=low->next->next删除对应的点
-			5、返回dummy->nest;
+			5、返回dummy->next;
 		*/
 		ListNode* removeNthFromEnd(ListNode* head, int n) {
 			ListNode* dummy = new ListNode(0);
@@ -2938,15 +2938,15 @@ namespace LinkedList
 			ListNode* fast = dummy, *slow = dummy;
 
 			// 让fast指针先走n+1步
-			for (int i = 0; i <= n; i++) {
+			for (int i = 0; i < n + 1; i++) {
 				fast = fast->next;
 			}
-
-			// 当fast指针到达末尾时，slow指针就指向了要删除节点的前一个节点
+			//往后移动双指针
 			while (fast != nullptr) {
 				fast = fast->next;
 				slow = slow->next;
 			}
+			// 当fast指针到达末尾时，slow指针就指向了要删除节点的前一个节点
 			//https://leetcode.cn/problems/remove-nth-node-from-end-of-list/solutions/655411/dai-ma-sui-xiang-lu-19-shan-chu-lian-bia-2hxt/comments/2172664
 			//delete low->next;//!!!!!!!!访问到这句就奔溃！！！
 			slow->next = slow->next->next;
