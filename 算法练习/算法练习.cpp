@@ -1690,16 +1690,17 @@ namespace Hash
 
 		/*
 		242. 有效的字母异位词
-
+		参考：
+			https://www.programmercarl.com/0242.%E6%9C%89%E6%95%88%E7%9A%84%E5%AD%97%E6%AF%8D%E5%BC%82%E4%BD%8D%E8%AF%8D.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
 			哈希表
-			三个for
-			前两个for分别遍历s、t的字符，相同的字符加进去.
-			最后就是判断各个字符出现的次数
+			我比他少一个数组，稍微更简单一些
+			1、遍历s字符，相同的字符，数组值++。
+			2、遍历t字符，相同的字符，数组值--。
+			2、最后，检查字符都减完了不
 		*/
 		bool isAnagram(string s, string t) {
 			int record1[26] = { 0 };//0-25代表26个英文字母 
-			int record2[26] = { 0 };//0-25代表26个英文字母 
 
 			for (size_t i = 0; i < s.size(); i++)
 			{
@@ -1707,12 +1708,12 @@ namespace Hash
 			}
 			for (size_t i = 0; i < t.size(); i++)
 			{
-				record2[t[i] - 'a']++;
+				record1[t[i] - 'a']--;
 			}
 
 			for (size_t i = 0; i < 26; i++)
 			{
-				if (record1[i] - record2[i] != 0)
+				if (record1[i] != 0)
 				{
 					return false;
 				}
@@ -1985,6 +1986,11 @@ namespace Hash
 			}
 			return maxLen;
 		}
+
+
+
+
+
 	};
 }
 
