@@ -1819,10 +1819,14 @@ namespace Hash
 
 		/*
 		202. 快乐数
+		参考：
+			https://www.programmercarl.com/0202.%E5%BF%AB%E4%B9%90%E6%95%B0.html#%E6%80%9D%E8%B7%AF
+			其实我没有参考它的思路，这个思路更好
 		思路：
 			哈希表-借助无序map，不是数组的形式
 			这个题目的难在的是这个题目的理解，理解这个数学题
-			最后的结果要不就是1返回true，而返回false的条件就是出现了之前出现过的值。
+			最后的结果sum是1返回true，
+			而返回false的条件就是出现了之前出现过的值。说明他会陷入循环中。
 			根据这个条件以及思路，代码就好做了
 		其他：
 			因为只需要键值，而不需要对应的value，所以用set容器是最好的
@@ -1834,23 +1838,16 @@ namespace Hash
 			unordered_set<unsigned long long > tempNums;//放计算的结果
 			while (1)
 			{
-				for (size_t i = 0; i < strNums.size(); i++)
-				{
+				for (size_t i = 0; i < strNums.size(); i++) {
 					int digit = strNums[i] - '0';
-					sum += digit * digit;
+					sum += digit * digit;//！！计算平方和
 				}
-				if (sum == 1)
-				{
-					return 1;
-				}
-				if (tempNums.find(sum) == tempNums.end())
-				{
+				if (sum == 1)//平方和是1，说明满足要求，返回true
+					return true;
+				if (tempNums.find(sum) == tempNums.end())//这个结果平方和，之前没有出现过，那么就放到set中，继续下一次循环
 					tempNums.insert(sum);
-				}
 				else//如果计算的结果之前就出现过，那么肯定是不行的。
-				{
-					return 0;
-				}
+					return false;
 				strNums = to_string(sum);
 				sum = 0;
 			}
