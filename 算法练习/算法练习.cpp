@@ -1832,7 +1832,6 @@ namespace Hash
 			因为只需要键值，而不需要对应的value，所以用set容器是最好的
 		*/
 		bool isHappy(int n) {
-
 			string strNums = to_string(n);
 			int sum = 0;
 			unordered_set<unsigned long long > tempNums;//放计算的结果
