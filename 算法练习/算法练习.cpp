@@ -3547,6 +3547,55 @@ namespace LinkedList
 			return dummyHead->next;
 		}
 
+		/*
+		面试题 02.07. 链表相交
+		参考：
+			https://www.programmercarl.com/%E9%9D%A2%E8%AF%95%E9%A2%9802.07.%E9%93%BE%E8%A1%A8%E7%9B%B8%E4%BA%A4.html#%E6%80%9D%E8%B7%AF
+		思路：
+			这个题目其实就是返回两个链表中元素相同的节点。
+			这两个节点不是光值相同，而且“位置”相同，也就是从后面数他们的位置相同
+
+			1、先判断哪个链表长度长。
+			2、为了方便处理，使用swap函数，使链表a始终是最长的。
+			3、然后长的链表移动到和短链表开头的位置。
+			4、判断两个链表中是否存在相同的元素，有的话就返回。
+		*/
+		ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+			ListNode *tmpa = headA;
+			ListNode *tmpb = headB;
+			int lena = 0, lenb = 0;
+			while (tmpa != nullptr) {
+				tmpa = tmpa->next;
+				lena++;
+			}
+			while (tmpb != nullptr) {
+				tmpb = tmpb->next;
+				lenb++;
+			}
+			tmpa = headA;
+			tmpb = headB;
+			if (lenb > lena) {//保证链表a是长的那个，后续的处理就不用分情况处理了。
+				swap(lena, lenb);
+				swap(tmpa, tmpb);
+			}
+
+			for (int i = 0; i < lena - lenb; i++)
+			{
+				tmpa = tmpa->next;
+			}
+
+			while (tmpa != nullptr)
+			{
+				//if (tmpa->val == tmpb->val)//！！这个题目判断的是指针相同，所以不能用值来判断。
+				if (tmpa == tmpb)
+					return tmpa;
+				tmpa = tmpa->next;
+				tmpb = tmpb->next;
+			}
+			return nullptr;
+		}
+
+
 		void test()
 		{
 			LinkedList::Solution a;
