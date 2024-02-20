@@ -1987,7 +1987,29 @@ namespace Hash
 			return maxLen;
 		}
 
+		/*
+		349. 两个数组的交集
+		参考：
+			https://www.programmercarl.com/0349.%E4%B8%A4%E4%B8%AA%E6%95%B0%E7%BB%84%E7%9A%84%E4%BA%A4%E9%9B%86.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			题意：给定两个数组，编写一个函数来计算它们的交集。
+			输出结果中的每个元素一定是 唯一 的。我们可以 不考虑输出结果的顺序 。
+			把其中一个数组，放到set中，然后遍历另外一个数组。
+			从set找这个数组的元素，找到了就是交集
+			最后返回这个交集
+		*/
+		vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
+			unordered_set<int> nums1_set(nums1.begin(), nums1.end());
+			unordered_set<int>ret;
 
+			for (auto num : nums2) {
+				if (nums1_set.find(num) != nums1_set.end()) {
+					//ret.push_back(num);//!这样会重复插入相同的数据，如果在从vector查找的话，时间复杂度就是n
+					ret.insert(num);
+				}
+			}
+			return vector<int>(ret.begin(), ret.end());
+		}
 
 
 
