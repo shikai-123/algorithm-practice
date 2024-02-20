@@ -3596,6 +3596,35 @@ namespace LinkedList
 		}
 
 
+		/*
+		142.环形链表II
+		参考：
+			https://www.programmercarl.com/0142.%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8II.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路1——双指针：
+			这个思路比较复杂，是卡子哥讲的那个思路。
+			其中的数学推导确实比较麻烦。
+			比下面的优势就是在空间复杂度上好点
+			自己是1，下面的是n
+		思路2——哈希表：
+			思路非常的简洁。而且好记忆.
+			遍历链表，放到set容器中。
+			如果遍历的元素之前出现过，则这个就是这个点。
+		*/
+		ListNode *detectCycle(ListNode *head) {
+			unordered_set<ListNode *> uset;
+			while (head != nullptr)
+			{
+				if (uset.count(head) == 1)
+					return head;
+				uset.insert(head);
+				head = head->next;
+			}
+			return nullptr;
+		}
+
+
+
+
 		void test()
 		{
 			LinkedList::Solution a;
