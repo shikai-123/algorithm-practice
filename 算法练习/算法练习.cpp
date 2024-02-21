@@ -1015,6 +1015,13 @@ namespace DoublePointer
 			}
 		}
 
+
+		/*
+		两数之和。
+		这个和letcode中的两数之和的题目不一样 ，这个是返回元素的值
+		题目要求返回的是坐标
+		还是看我哈希里面的那个解法
+		*/
 		vector<vector<int>> twoSumTarget(vector<int>& nums, int start, int target) {
 			// nums 数组必须有序
 			sort(nums.begin(), nums.end());
@@ -1040,12 +1047,12 @@ namespace DoublePointer
 
 		/*
 		15. 三数之和
+		双指针的方法，并且这个题解中，给出了2数 3数 4数 100数的通用方法
+		https://leetcode.cn/problems/3sum/solutions/328307/yi-ge-fang-fa-tuan-mie-by-labuladong/?envType=study-plan-v2&envId=top-interview-150
+		下面我也有用哈希的方法做了一个，
+		这个不成体系，还是用代码随想的哈希方法做吧
 		*/
 		vector<vector<int>> threeSum(vector<int>& nums) {
-			/*
-			双指针的方法，并且这个题解中，给出了2数 3数 4数 100数的通用方法
-			https://leetcode.cn/problems/3sum/solutions/328307/yi-ge-fang-fa-tuan-mie-by-labuladong/?envType=study-plan-v2&envId=top-interview-150
-			*/
 			sort(nums.begin(), nums.end());
 			int n = nums.size();
 			vector<vector<int>> res;
