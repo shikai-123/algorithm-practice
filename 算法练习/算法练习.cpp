@@ -1763,57 +1763,27 @@ namespace Hash
 
 		/*
 		1. 两数之和
-			这个题目和“167. 两数之和 II - 输入有序数组”很想。上面有twoSum2函数 就是他。
-			即使对数组排序了，这里不能直接用它的方法。
-
-			我要做时间复杂的n的
-
-		思路1：
-			结合个“167. 两数之和 II - 输入有序数组”中的双指针的方法，另外在加上哈希表的方法。
-			先排序，为了能用上双指针的方法。
-			然后做个哈希表。数组的值做key，下标做value
-			双指针遍历后，会得到新数组中符合条件的元素，然后从map中根据元素返回下表
-
-			!!这个方法解决不了。重复的元素问题
-			因为只存在一个有效答案，那么一旦出现重复的元素，则重复元素就是我们想要的值
+		参考：
+			https://www.programmercarl.com/0001.%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C.html#%E6%80%9D%E8%B7%AF
+		题目：
+			找到两个元素相加等于元素值，然后返回这两个元素的下标。
+		思路：
+			之前的那个解法比较复杂，现在换个简单的。
+			假设目标是9，拿到数组第一个元素为2，那么就要去找7.
+			为了提高查找的效率用unordered_map。
+			找到了就返回两者的下标，
+			找不到就把当前的数组元素放到unordered_map中。
 		*/
 		vector<int> twoSum(vector<int>& nums, int target) {
-
 			unordered_map<int, int> num;
-			int i = 0;
-			int l = nums.size() - 1;
-
 			for (int i = 0; i < nums.size(); i++)
 			{
-				if (num.count(nums[i]) == 0)//map中没找到这个元素
-				{
-					num[nums[i]] = i;
+				if (num.find(target - nums[i]) != num.end()) {//find是查找key，稍微注意下
+					return { i,num[target - nums[i]] };
 				}
-				else//找到了这个元素，把相同的元素的下标返回
-				{
-					if (nums[num[nums[i]]] + nums[i] == target)
-					{
-						return vector<int>{ num[nums[i]], i};
-					}
-				}
+				num.insert(pair<int, int>(nums[i], i));
 			}
-			sort(nums.begin(), nums.end());
-			while (1)
-			{
-				int sun = nums[i] + nums[l];
-				if (sun < target)
-				{
-					i++;
-				}
-				else if (sun > target)
-				{
-					l--;
-				}
-				else
-				{
-					return vector<int>{ num[nums[i]], num[nums[l]]};
-				}
-			}
+			return {};
 		}
 
 
