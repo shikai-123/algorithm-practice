@@ -1537,30 +1537,17 @@ namespace Hash
 {
 	class Solution {
 		/*
-	383. 赎金信
-	前言：
-		因为这是“哈希表”题目中第一题，所以就直接参考了题解
-
-	思路：
-		一开始想着用滑动窗口的方式，但是后来发现，他不是要求连续的，只要magazine能拿出一部分拼上就行，所以不哟个这个
-
-	参考思路1：
-		链接：
-		https://leetcode.cn/problems/ransom-note/solutions/948784/qiao-yong-stringrong-qi-de-cha-zhao-han-kao7r/?envType=study-plan-v2&envId=top-interview-150
-		利用find的方式，从magazine中找ransomNote字符。找到就从magazine消掉这个字符，避免像aa  ab的情况。这种是不对的
-		只要是找不到就说明不行。
-		这个方法不错，但是不是我想要的“哈希表”的方法。
-
-	参考思路2：
-		这个就是我想要的“哈希表”的方法。
-		链接：
-		https://leetcode.cn/problems/ransom-note/solutions/369114/383-shu-jin-xin-bao-li-jie-fa-zi-dian-ji-shu-fa-2/?envType=study-plan-v2&envId=top-interview-150
-		思路毕竟简单，时间复杂度上肯定是比思路1好很多，只是空间复杂度差点。
-		先是记录magazine各个字母出现的次数，然后在遍历ransomNote要是出现了对应的字符，就从record--
-		如果小于0，就说明ransomNote中的字母比magazine中的多，那么不符合要求
-
-
-	*/
+		383. 赎金信
+		参考：
+			https://www.programmercarl.com/0383.%E8%B5%8E%E9%87%91%E4%BF%A1.html#%E6%80%9D%E8%B7%AF
+		题目：
+			判断 ransomNote 是否有 magazine 中的的字符串组成，magazine中的字符只能使用一次。
+		思路：
+			链接：
+			先是记录magazine各个字母出现的次数，record++
+			然后在遍历ransomNote要是出现了对应的字符，就从record--
+			如果小于0，就说明ransomNote中的字母比magazine中的多，那么不符合要求
+		*/
 		bool canConstruct(string ransomNote, string magazine) {
 			int record[26] = { 0 };//0-25代表26个英文字母 
 			for (int i = 0; i < magazine.length(); i++) {
