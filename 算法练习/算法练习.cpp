@@ -1977,7 +1977,35 @@ namespace Hash
 			return vector<int>(ret.begin(), ret.end());
 		}
 
-
+		/*
+		第454题.四数相加II
+		参考：
+			https://www.programmercarl.com/0454.%E5%9B%9B%E6%95%B0%E7%9B%B8%E5%8A%A0II.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		题目：
+			给四个数组，从每个数组中挑选一个数，然后相加为0。
+			返回有几种组合。
+		思路：
+			先计算前两个数组的所有和，放在unordered_map中，和做key，和出现次数做value
+			然后用“target-两个后两个数组的所有和”得到差
+			用得到的这个差，在map查找。
+			如果找到了就把value的次数加上。
+		*/
+		int fourSumCount(vector<int>& nums1, vector<int>& nums2, vector<int>& nums3, vector<int>& nums4) {
+			int count = 0;
+			unordered_map<int, int> num;
+			for (auto n1 : nums1) {
+				for (auto n2 : nums2) {
+					num[n1 + n2]++;
+				}
+			}
+			for (auto n3 : nums3) {
+				for (auto n4 : nums4) {
+					if (num.find(0 - (n3 + n4)) != num.end())
+						count += num[0 - (n3 + n4)];
+				}
+			}
+			return count;
+		}
 
 	};
 }
