@@ -959,27 +959,6 @@ namespace DoublePointer
 				}
 			}
 		}
-		vector<int> twoSum1(vector<int>& numbers, int target)
-		{
-			int lo = 0, hi = numbers.size() - 1;
-			vector<int> ret;
-			for (size_t i = 0; i < numbers.size() - 1; i++)
-			{
-				int tempTarget = numbers[lo] + numbers[hi];
-				if (tempTarget > target)
-				{
-					hi--;
-				}
-				else if (tempTarget < target)
-				{
-					lo++;
-				}
-				else
-				{
-					return vector<int>{hi, lo};
-				}
-			}
-		}
 
 
 		/*
@@ -1016,60 +995,53 @@ namespace DoublePointer
 		}
 
 
-		/*
-		两数之和。
-		这个和letcode中的两数之和的题目不一样 ，这个是返回元素的值
-		题目要求返回的是坐标
-		还是看我哈希里面的那个解法
-		*/
-		vector<vector<int>> twoSumTarget(vector<int>& nums, int start, int target) {
-			// nums 数组必须有序
-			sort(nums.begin(), nums.end());
-			int lo = start, hi = nums.size() - 1;
-			vector<vector<int>> res;
-			while (lo < hi) {
-				int sum = nums[lo] + nums[hi];
-				int left = nums[lo], right = nums[hi];
-				if (sum < target) {
-					while (lo < hi && nums[lo] == left) lo++;
-				}
-				else if (sum > target) {
-					while (lo < hi && nums[hi] == right) hi--;
-				}
-				else {
-					res.push_back({ left, right });
-					while (lo < hi && nums[lo] == left) lo++;
-					while (lo < hi && nums[hi] == right) hi--;
-				}
-			}
-			return res;
-		}
 
 		/*
 		15. 三数之和
-		双指针的方法，并且这个题解中，给出了2数 3数 4数 100数的通用方法
-		https://leetcode.cn/problems/3sum/solutions/328307/yi-ge-fang-fa-tuan-mie-by-labuladong/?envType=study-plan-v2&envId=top-interview-150
-		下面我也有用哈希的方法做了一个，
-		这个不成体系，还是用代码随想的哈希方法做吧
+		参考：
+			https://www.programmercarl.com/0015.%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C.html#%E6%80%9D%E8%B7%AF
+		思路：
+			因为题目要求从数组中取出的数要保持不重复。所以哈希的方法不合适，具体看链接。
+			（他这个重复，包括同一个元素不能用两边，两个相同的元素也不能出现。即使有俩个-1；-101，-101这两个也不同，其实看代码编的题目，所以这个重复的规则才这么绕）
+			所以用双指针
+			其实是三指针，一个在最左边a，一个挨着最左边的右边b，一个在最右边c
+			在保持a不变的情况下，判断a+b+c的情况，分别移动b或c
+			b和c都移动完了，然后移动a
+			！！重点是去重，总之一句话概括。相同a相同的b相同的c，放了之后，后面的就跳过就完了。
 		*/
 		vector<vector<int>> threeSum(vector<int>& nums) {
 			sort(nums.begin(), nums.end());
-			int n = nums.size();
-			vector<vector<int>> res;
-			// 穷举 threeSum 的第一个数
-			for (int i = 0; i < n; i++) {
-				// 对 target - nums[i] 计算 twoSum
-				vector<vector<int>>
-					tuples = twoSumTarget(nums, i + 1, 0 - nums[i]);
-				// 如果存在满足条件的二元组，再加上 nums[i] 就是结果三元组
-				for (vector<int>& tuple : tuples) {
-					tuple.push_back(nums[i]);
-					res.push_back(tuple);
+			vector<vector<int>>ret;
+			int left = 0, right = 0;
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				if (nums[i] > 0) ret;//如果排序后一开始就大于0，说明整个数组就任何都大于0;
+				if (i > 0 && nums[i] == nums[i - 1]) continue;//对a去重。这样的两个数是相同的，结果是一样的，所以要去掉。
+
+				left = i + 1;
+				right = nums.size() - 1;
+				while (left < right)
+				{
+					if (nums[i] + nums[left] + nums[right] > 0)
+						right--;
+					else if (nums[i] + nums[left] + nums[right] < 0)
+						left++;
+					else {
+						ret.push_back(vector<int>{nums[i], nums[left], nums[right]});
+
+						//遇到了相同的元素，就不要再往结果中放了。直接往下走就行
+						//!!注意这里是left+1。是为了让后面的left++和right++ 能保证不出错，如果是left - 1就会造成left多移动一次
+						while (left < right&& nums[left] == nums[left + 1])
+							left++;
+						while (left < right&& nums[right] == nums[right - 1])
+							right--;
+						//别忘了，上面的left + 1就是为了匹配他俩
+						left++;
+						right--;
+					}
 				}
-				// 跳过第一个数字重复的情况，否则会出现重复结果
-				while (i < n - 1 && nums[i] == nums[i + 1]) i++;
 			}
-			return res;
+			return ret;
 		}
 	};
 }
@@ -1543,6 +1515,7 @@ namespace Matrix
 namespace Hash
 {
 	class Solution {
+	public:
 		/*
 		383. 赎金信
 		参考：
@@ -1762,6 +1735,8 @@ namespace Hash
 		题目：
 			找到两个元素相加等于元素值，然后返回这两个元素的下标。
 		思路：
+			这个不能用双指针的方法，这个题目要求返回的值数组下标。
+			双指针要用，就必须要排序，就不能返回正确的下标。
 			之前的那个解法比较复杂，现在换个简单的。
 			假设目标是9，拿到数组第一个元素为2，那么就要去找7.
 			为了提高查找的效率用unordered_map。
@@ -1779,6 +1754,8 @@ namespace Hash
 			}
 			return {};
 		}
+
+
 
 
 		/*
@@ -2001,6 +1978,12 @@ namespace Hash
 			return count;
 		}
 
+
+
+		void test() {
+			vector<int> nums{ -1,0,1,2,-1,-4 };
+
+		}
 	};
 }
 
@@ -9381,7 +9364,7 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 
-	LinkedList::Solution tree;
+	Hash::Solution tree;
 	tree.test();
 
 
