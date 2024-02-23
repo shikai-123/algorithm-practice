@@ -604,11 +604,16 @@ namespace String_Array
 
 		}
 
+		/*
+		151.翻转字符串里的单词
+		参考：
+			https://www.programmercarl.com/0151.%E7%BF%BB%E8%BD%AC%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%87%8C%E7%9A%84%E5%8D%95%E8%AF%8D.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		*/
 		string reverseWords(string s) {
 			string temp;
 			istringstream in(s);
 			string res;
-			while (in >> res) {
+			while (in >> res) {//istringstream 有<< >>两中操作符重载
 				temp.insert(0, res);
 				temp.insert(0, " ");
 			}
