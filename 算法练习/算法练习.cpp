@@ -621,19 +621,20 @@ namespace String_Array
 			return temp;
 		}
 
+		/*
+		28. 找出字符串中第一个匹配项的下标
+		参考：
+			https://www.programmercarl.com/0028.%E5%AE%9E%E7%8E%B0strStr.html#%E6%80%9D%E8%B7%AF
+		*/
 		int strStr(string haystack, string needle)
 		{
 			int lenth = haystack.size();
 			for (int i = 0; i < lenth; i++)
 			{
 				if (strncmp(haystack.c_str(), needle.c_str(), needle.size()) == 0)
-				{
 					return i;
-				}
 				else
-				{
-					haystack.erase(0, 1);
-				}
+					haystack.erase(0, 1);//删除头一个字符，上面每次比较的都是从头开始的
 			}
 			return -1;
 		}
@@ -873,6 +874,10 @@ namespace String_Array
 		}
 
 
+
+		/*
+
+		*/
 
 		void test()
 		{
