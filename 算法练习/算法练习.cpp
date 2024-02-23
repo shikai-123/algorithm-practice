@@ -876,14 +876,35 @@ namespace String_Array
 
 
 		/*
-
+		右旋字符串——力扣上没有的，在剑指offer上也有这个题目
+		参考：
+			https://www.programmercarl.com/kama55.%E5%8F%B3%E6%97%8B%E5%AD%97%E7%AC%A6%E4%B8%B2.html#%E6%80%9D%E8%B7%AF
+		题目解释：
+			abcdefg k=2 反转成 fgabcde
+		思路：
+			1、把整个字符串反转过来
+			2、从头到n反转
+			3、从n到头反转
+			最后得到的就是题目要求的
 		*/
+		void rightStr()
+		{
+			int n;
+			string s;
+			cin >> n;
+			cin >> s;
+
+			reverse(s.begin(), s.end());
+			reverse(s.begin(), s.begin() + n);
+			reverse(s.begin() + n, s.end());//虽然都是s.begin() + n。上面的不会反转s.begin() + n
+			cout << s << endl;
+		}
+
 
 		void test()
 		{
 			vector<int> nums = { -1,0,3,5,9,12 };
 			vector<vector<int>> retStr = generateMatrix(4);
-
 			for (auto i : retStr)
 			{
 				for (auto l : i)
