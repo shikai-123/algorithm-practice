@@ -844,6 +844,31 @@ namespace String_Array
 		}
 
 
+		/*
+		这个题目力扣中，没有
+		替换数字
+		参考：
+			https://www.programmercarl.com/kama54.%E6%9B%BF%E6%8D%A2%E6%95%B0%E5%AD%97.html#%E6%80%9D%E8%B7%AF
+		题目解释：
+			a1b2  就是要把数字12换成number
+		*/
+		void replcenum()
+		{
+			string str;
+			cin >> str;
+			string ret;
+			for (char s : str) {
+				if (s >= '0'&&s <= '9') {//遇到0或者9 就换成number
+					ret += "number";
+				}
+				else
+					ret += s;
+			}
+			cout << ret;
+		}
+
+
+
 		void test()
 		{
 			vector<int> nums = { -1,0,3,5,9,12 };
