@@ -824,6 +824,24 @@ namespace String_Array
 			}
 		}
 
+		/*
+		541. 反转字符串II
+		参考：
+			https://www.programmercarl.com/0541.%E5%8F%8D%E8%BD%AC%E5%AD%97%E7%AC%A6%E4%B8%B2II.html
+		思路：
+			在for中，每2k的步骤，开始反转k个字符
+
+		*/
+		string reverseStr(string s, int k) {
+			for (size_t i = 0; i < s.size(); i += (k * 2))
+			{
+				if (i + k < s.size())//剩余的待返转的字符没超出数组
+					reverse(s.begin() + i, s.begin() + i + k);//比如0-2 其实反转的是0-1 这是因为迭代器end()-1
+				else//剩余的待返转的字符“超出”数组，但有可能还有几个还在数组中，就反转这几个
+					reverse(s.begin() + i, s.end());
+			}
+			return s;
+		}
 
 
 		void test()
