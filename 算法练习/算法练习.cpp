@@ -810,6 +810,22 @@ namespace String_Array
 		}
 
 
+		/*
+		344.反转字符串
+		参考：
+			https://www.programmercarl.com/0344.%E5%8F%8D%E8%BD%AC%E5%AD%97%E7%AC%A6%E4%B8%B2.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			用reserve函数可以。但是没必要
+		*/
+		void reverseString(vector<char>& s) {
+			for (size_t i = 0, l = s.size() - 1; i < s.size() / 2; i++, l--)
+			{
+				swap(s[i], s[l]);
+			}
+		}
+
+
+
 		void test()
 		{
 			vector<int> nums = { -1,0,3,5,9,12 };
