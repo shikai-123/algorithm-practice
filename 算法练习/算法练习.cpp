@@ -832,6 +832,7 @@ namespace String_Array
 namespace DoublePointer
 {
 	class Solution {
+	public:
 
 		/*
 			125. 验证回文串
@@ -1015,7 +1016,7 @@ namespace DoublePointer
 			int left = 0, right = 0;
 			for (size_t i = 0; i < nums.size(); i++)
 			{
-				if (nums[i] > 0) ret;//如果排序后一开始就大于0，说明整个数组就任何都大于0;
+				if (nums[i] > 0) return ret;//如果排序后一开始就大于0，说明整个数组就任何都大于0;
 				if (i > 0 && nums[i] == nums[i - 1]) continue;//对a去重。这样的两个数是相同的，结果是一样的，所以要去掉。
 
 				left = i + 1;
@@ -1043,6 +1044,81 @@ namespace DoublePointer
 			}
 			return ret;
 		}
+
+
+
+		/*
+		第18题. 四数之和
+		参考：
+			https://www.programmercarl.com/0018.%E5%9B%9B%E6%95%B0%E4%B9%8B%E5%92%8C.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			总体和“于“15. 三数之和”思路非常的相似，相对多了一个for循环
+			思路还是外层确定一个组合，然后双指针在内层移动。
+			上题的外层只有一个for来控制，这个题目有两个for来控制。
+			要注意的是，因为target是不固定的，不能简单的用“nus[i]>target”来判断是否要剪枝。
+			比如-4-3-2-1 -4>-6 这里就不能剪枝。
+			！！必须是“nums[i]>=0”这个条件来判断。
+		*/
+		vector<vector<int>> fourSum(vector<int>& nums, int target) {
+			sort(nums.begin(), nums.end());
+			vector<vector<int>>ret;
+			int left = 0, right = 0;
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				//剪枝，具体看上面的注释
+				if (nums[i] > target&&  nums[i] >= 0) return ret;//最外面用 return ret是没问题的
+				if (i > 0 && nums[i] == nums[i - 1]) continue;//对a去重。这样的两个数是相同的，结果是一样的，所以要去掉。
+				for (size_t l = i + 1; l < nums.size(); l++)
+				{
+					//!!!二级剪枝！！ 这个别忘了。可以把这个二级剪枝看成一个数，就要对这个数剪枝
+					if (nums[i] + nums[l] > target&&  nums[i] + nums[l] >= 0) break;//！！！！这个地方用“ return ret”,会导致少结果，具体原因就是return导致外面的for少遍历了
+					if (l > i + 1 && nums[l] == nums[l - 1]) continue;//对a去重。这样的两个数是相同的，结果是一样的，所以要去掉。
+					//if (l > i + 1 && nums[i] + nums[l] == nums[i] + nums[l - 1]) continue;//这两个是一样的
+
+
+					left = l + 1;
+					right = nums.size() - 1;
+					while (left < right)
+					{
+						if ((long)nums[i] + nums[l] + nums[left] + nums[right] > target)//(long)!!有的数很大
+							right--;
+						else if ((long)nums[i] + nums[l] + nums[left] + nums[right] < target)
+							left++;
+						else {
+							ret.push_back(vector<int>{nums[i], nums[l], nums[left], nums[right]});//(long)!!有的数很大
+
+							//遇到了相同的元素，就不要再往结果中放了。直接往下走就行
+							//!!注意这里是left+1。是为了让后面的left++和right++ 能保证不出错，如果是left - 1就会造成left多移动一次
+							while (left < right&& nums[left] == nums[left + 1])
+								left++;
+							while (left < right&& nums[right] == nums[right - 1])
+								right--;
+							//别忘了，上面的left + 1就是为了匹配他俩
+							left++;
+							right--;
+						}
+					}
+				}
+
+			}
+			return ret;
+		}
+
+
+
+
+
+		void test()
+		{
+			vector<int> nums{ 2,2,2,2,2 };
+			vector<vector<int>>ret = fourSum(nums, 8);
+
+		}
+
+
+
+
+
 	};
 }
 
@@ -9364,7 +9440,7 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 
-	Hash::Solution tree;
+	DoublePointer::Solution tree;
 	tree.test();
 
 
