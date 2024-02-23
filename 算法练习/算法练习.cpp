@@ -900,10 +900,25 @@ namespace String_Array
 			cout << s << endl;
 		}
 
+		/*
+		459.重复的子字符串
+		参考：
+			https://www.programmercarl.com/0459.%E9%87%8D%E5%A4%8D%E7%9A%84%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			先把字符串s加上一份s，得到ss。然后从ss中查找s
+			比如abab，得到abab abab。那么find返回的位置一定不是后面s的起始位置。
+			因为abab是重复的，ab“abab”ab，会构成重复。
+			如果abcd这种，ss是abcdabcd。find返回的数据，一定是第二个“abcd”的位置
+			注意，find的起始位置从1开始，要不然就直接查找原来的s了，没有意义
+		*/
+		bool repeatedSubstringPattern(string s) {//没参考他的kmp方法
+			return (s + s).find(s, 1) != s.size();
+		}
 
 		void test()
 		{
 			vector<int> nums = { -1,0,3,5,9,12 };
+			repeatedSubstringPattern("abab");
 			vector<vector<int>> retStr = generateMatrix(4);
 			for (auto i : retStr)
 			{
@@ -9530,7 +9545,7 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 
-	DoublePointer::Solution tree;
+	String_Array::Solution tree;
 	tree.test();
 
 
