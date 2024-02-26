@@ -2393,8 +2393,8 @@ namespace Ranges
 	};
 }
 
-//栈
-namespace Stack {
+//栈和队列
+namespace StackandQueue {
 
 	/*
 	232.用栈实现队列
@@ -2443,6 +2443,51 @@ namespace Stack {
 
 
 	/*
+	225. 用队列实现栈
+	参考：
+		https://www.programmercarl.com/0225.%E7%94%A8%E9%98%9F%E5%88%97%E5%AE%9E%E7%8E%B0%E6%A0%88.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+	思考：
+		队列模拟栈，其实一个队列就够了。两个也行。
+		栈的特点，其实就是一端出入，先进后出。队列有两端出入，所以很好做
+		比如123 ，栈要返回1
+		每次在队列中插入数据，然后把队列中的n-1都从重新插到“尾巴； 变成231
+		这样最后剩的1，就拿出去：变成23
+	*/
+	class MyStack {
+	public:
+		queue<int> que;
+		MyStack() {
+
+		}
+
+		void push(int x) {
+			que.push(x);
+		}
+
+		int pop() {
+			int quesize = que.size();
+			quesize--;
+			while (quesize--)//从123 变成 231
+			{
+				que.push(que.front());
+				que.pop();
+			}
+			int ret = que.front();
+			que.pop();
+			return ret;
+		}
+
+		int top() {
+			return que.back();
+		}
+
+		bool empty() {
+			return que.empty();
+		}
+	};
+
+
+	/*
 	155. 最小栈
 	思路：
 		用multiset和和stack容器搭配使用即可
@@ -2477,46 +2522,39 @@ namespace Stack {
 	};
 	class Solution {
 	public:
+
 		/*
-20. 有效的括号
-前言：
-	这是“栈”思路的第一个题目，
-思路：
-	括号要一一匹配，这个是最适合用栈容器的。
-	遍历这个s，如果是括号的左边的就往栈里放，
-	拿的时候，不能像左边那样，直接就弄了。得有个判断条件
-	得判断你要拿的这个括号是不是和栈最上面的元素有对应关系。
-	如果有对应关系，那么就那，没有就直接返回false。
+		20. 有效的括号
+		参考：
+			https://www.programmercarl.com/0020.%E6%9C%89%E6%95%88%E7%9A%84%E6%8B%AC%E5%8F%B7.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+			我这个是自己的思路，不是参考它的，我的思路在下面了。
+		思路：
+			括号要一一匹配。
+			遍历这个s，如果是括号的左边的就往栈里放，
+			从栈里往外走的时候，得判断你要拿的这个括号是不是和栈最上面的元素有对应关系。
+			如果有对应关系，那么就拿，没有就直接返回false。
 
-	对应关系就是：(40  )41   [91 ]93      {123      }125
+			对应关系就是：(40  )41   [91 ]93      {123      }125
 
-	遍历结束后，如果栈里面被拿空了，那么说明整个字符串没有问题，只要不是空的，说明不行
-*/
+			遍历结束后，如果栈里面被拿空了，那么说明整个字符串没有问题，只要不是空的，说明不行
+		*/
 		bool isValid(string s) {
 			stack<char> stk;
-
 			for (const char& c : s)
 			{
-				if (c == '(' || c == '[' || c == '{' || stk.empty())
-				{
+				//!注意的“}”的情况， 所以当一开始就}的时候，stk.empty()保证能加进去
+				if (stk.empty() || c == '(' || c == '[' || c == '{')
 					stk.push(c);
-				}
 				else
 				{
 					if (stk.top() + 1 == c || stk.top() + 2 == c)
-					{
 						stk.pop();
-					}
 					else
-					{
 						return false;
-					}
 				}
 			}
 			if (stk.empty())
-			{
 				return true;
-			}
 			return false;
 		}
 
@@ -2690,6 +2728,27 @@ namespace Stack {
 				}
 			}
 
+			return ret;
+		}
+
+		/*
+		1047. 删除字符串中的所有相邻重复项
+		参考：
+			https://www.programmercarl.com/1047.%E5%88%A0%E9%99%A4%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E7%9A%84%E6%89%80%E6%9C%89%E7%9B%B8%E9%82%BB%E9%87%8D%E5%A4%8D%E9%A1%B9.html
+		思考：
+			这里使用了栈的思想，采用的string来处理的
+			如果当前遍历的c和ret中的尾巴不相等就放，相等就删除ret的尾巴。
+			当然，一开始的时候ret时候空的要放一个。
+		*/
+		string removeDuplicates(string s) {
+			string ret;
+			for (const char& c : s) {
+				if (ret.empty() || ret.back() != c) {
+					ret.push_back(c);
+				}
+				else
+					ret.pop_back();
+			}
 			return ret;
 		}
 	};
