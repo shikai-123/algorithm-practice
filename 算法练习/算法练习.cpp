@@ -2772,68 +2772,32 @@ namespace StackandQueue {
 			单调栈，为从头到尾为递减栈，也就是最大元素在栈头。
 
 			这不行的原因是因为 从栈里删除的时候，每次都删完删干净，不该删的也删了
+			用std:stack不行的原因，是因为stack只能在栈顶操作元素，举例 栈顶 1 2 ，新元素3.那么最后的结果就只剩3.
+			！所以，就得用deque这种两端都能操作的容器.！
 		*/
-
-
-
 		vector<int> maxSlidingWindow(vector<int>& nums, int k) {
 			vector<int> ret;
-			stack<int> stk;
-			for (size_t i = 0; i < k; i++) {
-				//如果站不为空，并且当前元素《=栈顶元素。就不要往栈里放了。
-				if (!stk.empty() && nums[i] <= stk.top()) {
-					continue;
-				}
-				else {
-					while (!stk.empty())
-						stk.pop();//如果发现当前的元素》栈顶元素，因为是单调栈，后面的元素肯定比栈顶小，所以最后的结果肯定是把栈里的元素都删完。
-					stk.push(nums[i]);
-				}
-
-			}
-			ret.push_back(stk.top());
-			//！！上下两端几乎很像，就是下面多了一个移动滑动窗口要删除最左边的数据的逻辑
-			for (int i = k; i < nums.size(); i++) {
-				//如果栈顶，并且这个栈顶是上次滑动窗口最左边的元素，则要删除他
-				//判断条件不能删除。假设栈顶元素，不是最左边的而是中间的，你要是把他删了，下个滑动窗口的最大值就不对了
-				if (stk.top() == nums[i - k])
-					stk.pop();
-				if (!stk.empty() && nums[i] <= stk.top()) {
-				}
-				else {
-					while (!stk.empty())
-						stk.pop();
-					stk.push(nums[i]);
-				}
-				ret.push_back(stk.top());
-			}
-			return ret;
-		}
-
-		//用deque的解法，为了保证和单调栈的思路保持统一，我用了stack，从栈头到栈尾单调递减。和上面的
-		vector<int> maxSlidingWindow_deque(vector<int>& nums, int k) {
-			vector<int> ret;
-			stack<int> stk;//这个不行，
+			deque<int> dque;//这个不行，
 			for (size_t i = 0; i < k; i++) {
 				//如果发现当前的元素》栈顶元素，就删除当前元素。因为是单调栈，后面的元素肯定比栈顶小，所以最后的结果肯定是把栈里的元素都删完
-				while (!stk.empty() && nums[i] > stk.top())
-					stk.pop();
-				stk.push(nums[i]);
+				while (!dque.empty() && nums[i] > dque.front())
+					dque.pop_front();
+				dque.push_back(nums[i]);
 			}
 			//ret[0] = stk.top();
-			ret.push_back(stk.top());
+			ret.push_back(dque.front());
 
 			//！@！上下两端几乎很像，就是下面多了一个移动滑动窗口要删除最左边的数据的逻辑
 			for (int i = k; i < nums.size(); i++) {
 				//如果栈顶，并且这个栈顶是上次滑动窗口最左边的元素，则要删除他
 				//判断条件不能删除。假设栈顶元素，不是最左边的而是中间的，你要是把他删了，下个滑动窗口的最大值就不对了
-				if (stk.top() == nums[i - k])
-					stk.pop();
-				while (!stk.empty() && nums[i] > stk.top())
-					stk.pop();
-				stk.push(nums[i]);
+				if (dque.front() == nums[i - k])
+					dque.pop_front();
+				while (!dque.empty() && nums[i] > dque.front())
+					dque.pop_front();
+				dque.push_back(nums[i]);
 				//ret[i - k + 1] = stk.top();
-				ret.push_back(stk.top());
+				ret.push_back(dque.front());
 			}
 			return ret;
 		}
