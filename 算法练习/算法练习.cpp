@@ -2780,8 +2780,11 @@ namespace StackandQueue {
 			deque<int> dque;//这个不行，
 			for (size_t i = 0; i < k; i++) {
 				//如果发现当前的元素》栈顶元素，就删除当前元素。因为是单调栈，后面的元素肯定比栈顶小，所以最后的结果肯定是把栈里的元素都删完
-				while (!dque.empty() && nums[i] > dque.front())
-					dque.pop_front();
+				//！！注意，这里是当前元素大于队列的尾巴，就要把尾巴踢掉！！
+				//！！这么做的目的是保持单调栈的单调递减！！！
+				//比如1312 第一个for处理后就是31 如果比较的是dque.front()就是312.很明显没有单调性
+				while (!dque.empty() && nums[i] > dque.back())
+					dque.pop_back();
 				dque.push_back(nums[i]);
 			}
 			//ret[0] = stk.top();
@@ -2793,13 +2796,23 @@ namespace StackandQueue {
 				//判断条件不能删除。假设栈顶元素，不是最左边的而是中间的，你要是把他删了，下个滑动窗口的最大值就不对了
 				if (dque.front() == nums[i - k])
 					dque.pop_front();
-				while (!dque.empty() && nums[i] > dque.front())
-					dque.pop_front();
+				while (!dque.empty() && nums[i] > dque.back())
+					dque.pop_back();
 				dque.push_back(nums[i]);
-				//ret[i - k + 1] = stk.top();
 				ret.push_back(dque.front());
 			}
 			return ret;
+		}
+
+		/*
+		347.前 K 个高频元素
+		参考：
+			https://www.programmercarl.com/0347.%E5%89%8DK%E4%B8%AA%E9%AB%98%E9%A2%91%E5%85%83%E7%B4%A0.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+
+		*/
+		vector<int> topKFrequent(vector<int>& nums, int k) {
+
 		}
 
 		void test()
