@@ -2624,12 +2624,17 @@ namespace StackandQueue {
 
 		/*
 		150. 逆波兰表达式求值
+		参考：
+			https://www.programmercarl.com/0150.%E9%80%86%E6%B3%A2%E5%85%B0%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC.html#%E6%80%9D%E8%B7%AF
+			思路只是参考，不一样
 		思路：
 			遍历tokens，到栈中，
 			遇到运算符的时候，就往前遍历两个元素，
 			然后根据这个运算符来计算结果，
 			算到的结果再次放到栈中。
 			知道结束，返回计算的结果。
+
+			中间用了switch，得知道四个ASCII码，现场写的话，还是用if判断吧 if (tokens[i] == "+")
 		*/
 		int evalRPN(vector<string>& tokens) {
 			if (tokens.size() < 2)
@@ -2642,9 +2647,9 @@ namespace StackandQueue {
 			{
 				if (token == "+" || token == "-" || token == "*" || token == "/")
 				{
-					int r = atoi(stk.top().c_str());
+					int r = stoi(stk.top());
 					stk.pop();
-					int l = atoi(stk.top().c_str());
+					int l = stoi(stk.top());
 					stk.pop();
 					switch (token[0])
 					{
