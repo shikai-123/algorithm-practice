@@ -2397,6 +2397,52 @@ namespace Ranges
 namespace Stack {
 
 	/*
+	232.用栈实现队列
+	参考：
+		https://www.programmercarl.com/0232.%E7%94%A8%E6%A0%88%E5%AE%9E%E7%8E%B0%E9%98%9F%E5%88%97.html
+	思路：
+		要用两个栈来实现，一个栈实现不了
+	*/
+	class MyQueue {
+	public:
+		stack<int> stkin;
+		stack<int> stkout;
+		MyQueue() {
+
+		}
+
+		void push(int x) {
+			stkin.push(x);
+		}
+
+		int pop() {
+			//！核心在这，队列出的时候，stkin全部到stkout中，最后是从stkout中出去
+			if (stkout.empty())
+			{
+				while (!stkin.empty())
+				{
+					stkout.push(stkin.top());
+					stkin.pop();
+				}
+			}
+			int ret = stkout.top();
+			stkout.pop();
+			return ret;
+		}
+		//返回第一个元素
+		int peek() {
+			int ret = pop();
+			stkout.push(ret);
+			return ret;//pop函数会导致stkout缺少一个，元素，所以要补回来
+		}
+
+		bool empty() {
+			return stkin.empty() && stkout.empty();
+		}
+	};
+
+
+	/*
 	155. 最小栈
 	思路：
 		用multiset和和stack容器搭配使用即可
@@ -2648,6 +2694,12 @@ namespace Stack {
 		}
 	};
 }
+
+//队列
+namespace Queue {
+
+};
+
 
 //链表
 namespace LinkedList
