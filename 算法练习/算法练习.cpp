@@ -2756,13 +2756,100 @@ namespace StackandQueue {
 			}
 			return ret;
 		}
+
+		/*
+		239. 滑动窗口最大值
+		参考：
+			https://www.programmercarl.com/0239.%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E6%9C%80%E5%A4%A7%E5%80%BC.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路：
+			单调栈的思路，没有完全按照链接中的思路去做的，他的思路确实麻烦点。
+			参考的新思路，也是单调栈的思路。
+			https://leetcode.cn/problems/sliding-window-maximum/solutions/2361228/239-hua-dong-chuang-kou-zui-da-zhi-dan-d-u6h0/
+			1、构建出滑动窗口，使用单调栈，拿到当前窗口的最大值，然后放到ret[0]
+			2、然后再到新的当前的滑动窗口中，因为滑动窗口移动了，首先要删除上次窗口中，最左边的部分-dequq.pop_front()
+			3、接着使用单调栈，删除小于当前nums[i]的数据
+			4、新的结果放到ret[i-k+1]
+			单调栈，为从头到尾为递减栈，也就是最大元素在栈头。
+
+			这不行的原因是因为 从栈里删除的时候，每次都删完删干净，不该删的也删了
+		*/
+
+
+
+		vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+			vector<int> ret;
+			stack<int> stk;
+			for (size_t i = 0; i < k; i++) {
+				//如果站不为空，并且当前元素《=栈顶元素。就不要往栈里放了。
+				if (!stk.empty() && nums[i] <= stk.top()) {
+					continue;
+				}
+				else {
+					while (!stk.empty())
+						stk.pop();//如果发现当前的元素》栈顶元素，因为是单调栈，后面的元素肯定比栈顶小，所以最后的结果肯定是把栈里的元素都删完。
+					stk.push(nums[i]);
+				}
+
+			}
+			ret.push_back(stk.top());
+			//！！上下两端几乎很像，就是下面多了一个移动滑动窗口要删除最左边的数据的逻辑
+			for (int i = k; i < nums.size(); i++) {
+				//如果栈顶，并且这个栈顶是上次滑动窗口最左边的元素，则要删除他
+				//判断条件不能删除。假设栈顶元素，不是最左边的而是中间的，你要是把他删了，下个滑动窗口的最大值就不对了
+				if (stk.top() == nums[i - k])
+					stk.pop();
+				if (!stk.empty() && nums[i] <= stk.top()) {
+				}
+				else {
+					while (!stk.empty())
+						stk.pop();
+					stk.push(nums[i]);
+				}
+				ret.push_back(stk.top());
+			}
+			return ret;
+		}
+
+		//用deque的解法，为了保证和单调栈的思路保持统一，我用了stack，从栈头到栈尾单调递减。和上面的
+		vector<int> maxSlidingWindow_deque(vector<int>& nums, int k) {
+			vector<int> ret;
+			stack<int> stk;//这个不行，
+			for (size_t i = 0; i < k; i++) {
+				//如果发现当前的元素》栈顶元素，就删除当前元素。因为是单调栈，后面的元素肯定比栈顶小，所以最后的结果肯定是把栈里的元素都删完
+				while (!stk.empty() && nums[i] > stk.top())
+					stk.pop();
+				stk.push(nums[i]);
+			}
+			//ret[0] = stk.top();
+			ret.push_back(stk.top());
+
+			//！@！上下两端几乎很像，就是下面多了一个移动滑动窗口要删除最左边的数据的逻辑
+			for (int i = k; i < nums.size(); i++) {
+				//如果栈顶，并且这个栈顶是上次滑动窗口最左边的元素，则要删除他
+				//判断条件不能删除。假设栈顶元素，不是最左边的而是中间的，你要是把他删了，下个滑动窗口的最大值就不对了
+				if (stk.top() == nums[i - k])
+					stk.pop();
+				while (!stk.empty() && nums[i] > stk.top())
+					stk.pop();
+				stk.push(nums[i]);
+				//ret[i - k + 1] = stk.top();
+				ret.push_back(stk.top());
+			}
+			return ret;
+		}
+
+		void test()
+		{
+			vector<int>nums{ 1,3,1,2,0,5 };
+
+			vector<int>ret = maxSlidingWindow(nums, 3);
+			for (auto c : ret)
+				cout << c << " ";
+		}
+
 	};
 }
 
-//队列
-namespace Queue {
-
-};
 
 
 //链表
@@ -8362,7 +8449,7 @@ namespace Dandiaozhan
 		参考：
 			https://www.programmercarl.com/0739.%E6%AF%8F%E6%97%A5%E6%B8%A9%E5%BA%A6.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
-			核心就是求右侧第一个大于钙元素的距离。
+			核心就是求右侧第一个大于该元素的距离。
 			当元素小于栈顶元素，进栈
 			当元素等于栈顶元素，进栈
 			当元素大于栈顶元素：
@@ -9661,7 +9748,7 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 
-	String_Array::Solution tree;
+	StackandQueue::Solution tree;
 	tree.test();
 
 
