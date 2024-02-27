@@ -2810,14 +2810,39 @@ namespace StackandQueue {
 			https://www.programmercarl.com/0347.%E5%89%8DK%E4%B8%AA%E9%AB%98%E9%A2%91%E5%85%83%E7%B4%A0.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
 			priority_queue（优先级队列），会自动排序，只能从尾巴插入，从头取数据
-
+			优先级队列，采用从头到尾，从小往大排列的，这样数据较小的就位于头部,较大的数据位于尾部。
+			一旦队列中的数量超过了k，从头部删除删除掉数据，最后剩下的就是高频数据。
+			最后把剩下的数据都放到vec中。
 		*/
+		class cm
+		{
+		public:
+			bool operator() (const pair<int, int>& l, const  pair<int, int> &r)
+			{
+				return l.second > r.second;
+			}
+		};
+
 		vector<int> topKFrequent(vector<int>& nums, int k) {
+			map<int, int> mp;
+			priority_queue<pair<int, int>, vector<pair<int, int>>, cm >pque;
 			//统计各个数据出现的频率
 			for (size_t i = 0; i < nums.size(); i++) {
-
+				mp[nums[i]]++;
 			}
 
+			for (pair<int, int> it : mp) {
+				pque.push(it);
+				if (pque.size() > k)//!!一旦这个队列中的元素数量超过了k，这个队列是自动排序的，说明头部的这个是频率最小的，给他删掉。
+					pque.pop();
+			}
+			vector<int>ret;
+			for (size_t i = 0; i < k; i++)
+			{
+				ret.push_back(pque.top().first);
+				pque.pop();
+			}
+			return ret;
 		}
 
 		void test()
