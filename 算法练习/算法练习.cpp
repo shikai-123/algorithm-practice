@@ -915,6 +915,38 @@ namespace String_Array
 			return (s + s).find(s, 1) != s.size();
 		}
 
+		/*
+		283. 移动零
+		参考：
+			咱没找到参考
+		思路：
+			关键是记录非零元素要放的“位置”——put_pos
+			遇到非0元素，要把这个元素放到put_pos位置,既然该位置放了元素，下个元素要放的位置要++
+			遇到0元素，啥也不用管。
+			最终，只放非零元素到前面，0自然就在后面了。
+
+			双指针，一个是i，一个是put_pos。
+			i代表当前遍历的元素，put_pos非零元素要放的“位置”
+		举例：
+			比如010312
+			遍历到0跳过，遍历到1非零，然后i=1，put_pos=0,变成100312。就是把非零的1，,放到put_pos的位置。
+			然后 put_pos++
+			然后再遍历，00跳过，到3，就把三放到放到put_pos，也就是1的位置。变成130012
+			。。。直到结束
+		*/
+		void moveZeroes(vector<int>& nums) {
+			int put_pos = 0;
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				if (nums[i] != 0) {
+					swap(nums[i], nums[put_pos]);
+					put_pos++;
+				}
+			}
+			return;
+		}
+
+
 		void test()
 		{
 			vector<int> nums = { -1,0,3,5,9,12 };
