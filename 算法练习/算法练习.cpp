@@ -946,6 +946,38 @@ namespace String_Array
 			return;
 		}
 
+		/*
+		560. 和为 K 的子数组
+		题目：
+			就是给的k，在nus中有几种组合方式，加一块=k;返回所有的组合次数
+		思路：
+			前缀和——看来我这个地方，学的不行
+			遍历数组，然后从头开始累加这个数组元素，得到sum。
+			用map记录每个sum出现的次数
+			用k-sum，就得到了“能和这个数组成k的数”，看看在map中有没有，
+			!也就是看看当前的元素和前面遍历过的元素能不能凑成想要的
+			有的话，组合次数机上对应的sum出现的次数。
+			最后，不管有没有，当前遍历周期中得到的sum要放到map中，map[sum]++;
+
+			要注意的是：一开始要初始化umap[0]=1;因为umap的含义是sum出现的次数
+			0默认就是有的，另外
+			考虑一个简单的情况，数组为 {7}，目标值 k 为 7。如果没有mp[0] = 1; 这行代码，那么在第一次循环时，pre 会等于 7，然后查找 mp[pre - k] 即 mp[0]，这个时候如果没有初始化 mp[0] 为 1，就会认为没有和为 7 的子数组，导致结果不准确。
+		*/
+		int subarraySum(vector<int>& nums, int k) {
+			unordered_map<int, int> umap;//key 从头到当前元素的累加和 value 出现的次数
+			umap[0] = 1;//和为0的情况，默认就是1个
+			int ret = 0;
+			int sum = 0;//
+			for (auto num : nums) {
+				sum += num;
+				if (umap.find(sum - k) != umap.end()) {//！！这个和下面的地方一定是sum - k，反过来纠错
+					ret += umap[sum - k];
+				}
+				umap[sum]++;
+			}
+			return ret;
+		}
+
 
 		void test()
 		{
