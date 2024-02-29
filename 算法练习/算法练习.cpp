@@ -1243,17 +1243,12 @@ namespace DoublePointer
 
 
 
-
-
 		void test()
 		{
 			vector<int> nums{ 2,2,2,2,2 };
 			vector<vector<int>>ret = fourSum(nums, 8);
 
 		}
-
-
-
 
 
 	};
@@ -1263,6 +1258,7 @@ namespace DoublePointer
 namespace SlidingWindow
 {
 	class Solution {
+	public:
 		/*209. 长度最小的子数组
 		思路
 			滑动窗口
@@ -1463,7 +1459,44 @@ namespace SlidingWindow
 			return res;
 		}
 
+		/*
+		438、找到字符串中所有字母异位词
+		题意：
+			两个字符串p,s;就是p可以在s中找到，并且p可以随便调换位置，能符合s中的一段就行。然后记录这个坐标。
+		参考：
+			没有什么参考
+		思路：
+			滑动窗口
+			滑动窗口大小为p的size，用数组记录下窗口每个字符出现次数。
+			当窗口移动的时候，减去出去的字符的次数，记上增加上的字符出现的数量。
+			如果滑动窗口中的各个字符的数量和p中的数量一样的话，把下标记上。
 
+		*/
+		vector<int> findAnagrams(string s, string p) {
+			vector<int> ret;
+			vector<int>vs(26, 0), vp(26, 0);//vp的长度也是26，跟p的长度无关，是根据26个字母来决定的
+			for (auto c : p)//统计p中各个字符出现的次数
+				vp[c - 'a']++;
+			for (size_t i = 0; i < s.size(); i++)
+			{
+				vs[s[i] - 'a']++;
+				if (i >= p.size())//滑动窗口开始往右移动的时候,窗口左边的元素数量--，右边的++
+					vs[s[i - p.size()] - 'a']--;
+				if (vs == vp)//!如果vs和vp相等，也就是当前滑动窗口中的各个字符出现的次数和p中的各个字符出现的字数完全一样，则满足条件
+					ret.push_back(i - p.size() + 1);
+			}
+			return ret;
+		}
+
+		void test()
+		{
+			string s = "cbaebabacd";
+			string p = "abc";
+			vector<int> ret = findAnagrams(s, p);
+			for (auto a : ret) {
+				cout << a << endl;
+			}
+		}
 	};
 }
 
@@ -9787,7 +9820,7 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 
-	StackandQueue::Solution tree;
+	SlidingWindow::Solution tree;
 	tree.test();
 
 
