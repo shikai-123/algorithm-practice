@@ -978,10 +978,46 @@ namespace String_Array
 			return ret;
 		}
 
+		/*
+		41. 缺失的第一个正数
+		参考：
+			没啥参考的，看我的思路吧
+		思路：
+			一切都是建立在“把元素nusm[i]放到下标nums[i]-1的位置，也就是3放到下标2的位置上，不满足的要调整。0和负数放在后面”，这个规则上的。这个规则没有啥意思，就是这么做好处理罢了
+			首先排序，让该有的位置，放到该有的位置上，这个规则是：1放到下标0；2放到下标1，以此类推；
+			0和负数，都放在后面。这是因为题目要求的是第一个缺失的“正数”。
+			所以，从1开始，准确说是从》0的数据开始，把这个数nusm[i]放到nums[i]-1的位置，假设是1，就是放到0.
+			!!另外也要判断 nums[i] <= nums.size()，假设数组长度为2，有个元素是7，这7要放在位置6，很明显不对！
+			让正数放在对应的位置上，然后遍历排序后的数组，发现谁没有在合适的位置上，说明这个位置的数据缺失了。
+			如果数组遍历结束，都没有发现缺失，那么缺失的元素就是尾巴元素后面的。比如123 缺失的就是4.
+			注意：调整数组顺序的时候，一定要用while，要不然调整不完全。正确的逻辑是，先用for遍历一个，也就是调整这一个数，用while使劲调，直到调到最后，才是满足条件的
+		易错点：
+
+		*/
+		int firstMissingPositive(vector<int>& nums) {
+			//对数组排序，不能用sort，时间复杂度从n到了nlogn。
+			//对数组排序，让数据放到该放的地方，比如1放到位置0。非正数放到后面
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				//nums[i] != nums[nums[i] - 1],很关键，就是判断“元素nusm[i]是不是放到下标nums[i]-1的位置”，相等就是放在对应的位置上，不想等就调整
+				while (nums[i] >= 1 && nums[i] <= nums.size() && nums[i] != nums[nums[i] - 1])
+				{
+					swap(nums[i], nums[nums[i] - 1]);
+				}
+			}
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				if (nums[i] != i + 1) {//假设元素1未放到位置0.返回0+1
+					return i + 1;
+				}
+			}
+			return  nums.size() + 1;//从头到尾啥也不缺，就是缺最后的元素的后一个
+		}
 
 		void test()
 		{
-			vector<int> nums = { -1,0,3,5,9,12 };
+			vector<int> nums = { 3,4,-1,1 };
+			firstMissingPositive(nums);
 			repeatedSubstringPattern("abab");
 			vector<vector<int>> retStr = generateMatrix(4);
 			for (auto i : retStr)
@@ -9852,7 +9888,7 @@ int main()
 	vector<vector<int>> board = { {1,4},{4,5} };
 	vector<int> newInterval{ 0,0 };
 
-	SlidingWindow::Solution tree;
+	String_Array::Solution tree;
 	tree.test();
 
 
