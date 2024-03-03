@@ -4099,7 +4099,7 @@ namespace LinkedList
 			https://www.programmercarl.com/%E9%9D%A2%E8%AF%95%E9%A2%9802.07.%E9%93%BE%E8%A1%A8%E7%9B%B8%E4%BA%A4.html#%E6%80%9D%E8%B7%AF
 		思路：
 			这个题目其实就是返回两个链表中元素相同的节点。
-			这两个节点不是光值相同，而且“位置”相同，也就是从后面数他们的位置相同
+			这两个节点不是光值相同，而且“位置”相同，也就是从后面数他们的位置相同。并且两个点的内存地址也是一样的。
 
 			1、先判断哪个链表长度长。
 			2、为了方便处理，使用swap函数，使链表a始终是最长的。
@@ -4168,8 +4168,31 @@ namespace LinkedList
 			return nullptr;
 		}
 
-
-
+		/*
+		160. 相交链表
+		参考：
+			无；这个题目和上面的题目-面试题 02.07. 链表相交。一样的。
+			不同的。这个代码比较简答，那个思路复杂点
+		思路：
+			核心。为什么当pa==pb的时候，只要不是nullprt，就是相交的点？
+		举例：
+			a长度7 前2不同，后5相同；b长度8，前3不同，后5相同。
+			因为代码中的一个核心是。a走完了，开始走b的。b也是一样
+			对a来说，先走a的2，再走a的5，然后走b的3.
+			对b来说，先走b的3，再走b的5，然后走a的2。
+			这就能看出，他们走到步数相同的时候，就是这俩交点的时候。
+			所以，根据题目要求就是返回交点的时候。
+		*/
+		ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+			if (headA == nullptr || headB == nullptr) return nullptr;
+			ListNode *pa = headA;
+			ListNode *pb = headB;
+			while (pa != pb) {
+				pa = (pa == nullptr) ? headB : pa->next;
+				pb = (pb == nullptr) ? headA : pb->next;
+			}
+			return pa;
+		}
 
 		void test()
 		{
