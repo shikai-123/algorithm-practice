@@ -4194,6 +4194,29 @@ namespace LinkedList
 			return pa;
 		}
 
+		/*
+		234. 回文链表
+		参考：
+			无
+		思路：
+			进阶：你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
+			题解中，有这个思路，我没用。！后期还是要弄下，现在先用简单的。
+			把链表放到数组中，然后用双指针就很方便了。
+		*/
+		bool isPalindrome(ListNode* head) {
+			vector<int> vec;
+			while (head != nullptr) {
+				vec.push_back(head->val);
+				head = head->next;
+			}
+
+			for (int s = 0, e = vec.size() - 1; s <= e; s++, e--)
+			{
+				if (vec[s] != vec[e]) return false;
+			}
+			return true;
+		}
+
 		void test()
 		{
 			LinkedList::Solution a;
