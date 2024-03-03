@@ -1822,6 +1822,29 @@ namespace Matrix
 				}
 			}
 		}
+
+		/*
+		240. 搜索二维矩阵 II
+		参考：
+			无
+		思路：
+			定位到每一行的最后一个元素，如果这个元素大于目标元素，说明这一行都不行，要往下走
+			直到走到了，这一行的最后一个元素》当前元素，然后x坐标--。如果有的话就有了，没有的话就返回false
+		*/
+		bool searchMatrix(vector<vector<int>>& matrix, int target) {
+			int x = 0;
+			int y = matrix[0].size() - 1;
+			while (x < matrix.size() && y >= 0) {
+				if (matrix[x][y] == target)
+					return true;
+				else if (matrix[x][y] < target)
+					x++;
+				else
+					y--;
+			}
+			return false;
+		}
+
 	};
 }
 
