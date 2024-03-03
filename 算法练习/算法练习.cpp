@@ -4106,7 +4106,7 @@ namespace LinkedList
 			3、然后长的链表移动到和短链表开头的位置。
 			4、判断两个链表中是否存在相同的元素，有的话就返回。
 		*/
-		ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+		ListNode *getIntersectionNode_mianshiti(ListNode *headA, ListNode *headB) {
 			ListNode *tmpa = headA;
 			ListNode *tmpb = headB;
 			int lena = 0, lenb = 0;
@@ -4215,6 +4215,89 @@ namespace LinkedList
 				if (vec[s] != vec[e]) return false;
 			}
 			return true;
+		}
+
+
+		/*
+		148. 排序链表
+		题目参考：
+			https://leetcode.cn/problems/sort-list/?envType=study-plan-v2&envId=top-100-liked
+			https://leetcode.cn/problems/sort-list/solutions/2665699/lian-biao-bing-gui-pai-xu-by-zheng-zai-j-lqnn/
+		并归排序参考：
+			https://www.cnblogs.com/chengxiao/p/6194356.html
+		思路：
+			并归查找。
+			先把每个元素分开，然后从分开的元素中，每两个部分各自拿出元素一一对比，然后从小到大排序放到新的一部分中。
+			得到的新的一部分和另外一个新的部分，再重复这个过程，然后又得到一个新的部分。。
+			直到最后，就只剩了一个新的部分。
+			这个新的部分，就是最后想要的排序。
+			1、通过双指针，拿到链表的中心。
+			2、然后截取链表，截成左右两部分。
+			3、通过递归不断不断的截取，截到只剩一个点
+			4、然后开始合并这些点，根据大小排序来和。
+			5、最后得到的就是题目要求的。
+		*/
+
+		ListNode* sortList(ListNode* head) {
+			//1、如果题目中的给的链表的长度为1，或者为1，直接返回
+			//2、这个函数本质就是分割链表的，所以当传进来的长度为 1的时候，没必要再分了。
+			if (head == nullptr || head->next == nullptr) return head;
+			ListNode *fast = head->next;
+			ListNode *slow = head;
+			while (fast != nullptr && fast->next != nullptr)//别忘了fast != nullptr，如果fast=null,后面的判断fast->next会出问题
+			{
+				fast = fast->next->next;//!!别忘了快指针，每次走两步
+				slow = slow->next;
+			}
+			ListNode *rhead = slow->next;// 链表第二部分的头节点
+			slow->next = nullptr;// 切断链表
+			ListNode* left = sortList(head);
+			ListNode* right = sortList(rhead);
+			merge(left, right);
+			return head;
+		}
+		//合并传进来的链表，按照从小到大的顺序
+		ListNode* merge(ListNode *left, ListNode *right) {
+			if (left == nullptr || right == nullptr) return nullptr;
+			ListNode * dummyNode = new ListNode(-1);
+			ListNode * p = dummyNode;
+			//当发现左链表或者是右链表的“当前节点”中，有一个出现了空节点。
+			//这个时候，已经没有办法继续再while判断节点的元素的值大小了，要在while外面单独处理
+			while (left != nullptr && right != nullptr)
+			{
+				if (left->val > right->val) {
+					p->next = right;//接上较小的那个点
+					right = right->next;//较小的那个点，被接上了，下次如果还接的话，就是它的下个点。
+				}
+				else//包括了小于和等于的情况
+				{
+					p->next = left;//接上较小的那个点
+					left = left->next;//较小的那个点，被接上了，下次如果还接的话，就是它的下个点。
+				}
+				p = p->next;//p也要往下走，然后来接后面的点。
+			}
+			//上面去接这个节点的时候，一定出现一个先被接完的，也就是该链表被遍历到nullptr。
+			//while里已经不能再对他进行处理了。
+			//下面，也就是谁当前不是nullptr的时候，就要把他接上
+			if (left != nullptr)
+				p->next = left;
+			else if (right != nullptr)
+				p->next = right;
+			ListNode * tmp = dummyNode->next;
+			delete dummyNode;
+			return tmp;
+		}
+
+
+		ListNode* sortList_easy(ListNode* head) {//先来个简单的，到手万一想不起来了，还有这个保底。
+			multiset<int> worker;
+			auto sub = head;
+			while (sub) worker.insert(sub->val),
+				sub = sub->next;
+			sub = head;
+			for (auto &i : worker)
+				sub->val = i, sub = sub->next;
+			return head;
 		}
 
 		void test()
