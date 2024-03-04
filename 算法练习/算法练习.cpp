@@ -5843,6 +5843,33 @@ namespace Tree {
 		}
 
 
+		/*
+		543. 二叉树的直径
+		参考：
+			https://leetcode.cn/problems/diameter-of-binary-tree/?envType=study-plan-v2&envId=top-100-liked
+			我的代码，和他的有些区别，但是是一样的思路，他的ppt做的很好
+		思路：
+			后序遍历二叉树，
+			记录每个节点的左子树和右子树的和，也就是每个节点的“直径”，
+			通过max保存一个最大直径，然后返回这个直径就行
+			同过递归，每次递归返回当前的节点的直径+1；
+		*/
+		int diameterOfBinaryTree_ret = 0;
+
+		int diameterOfBinaryTree_traversal(TreeNode* node)
+		{
+			if (node == nullptr) return 0;
+			int L = diameterOfBinaryTree_traversal(node->left);//得到左侧节点的深度
+			int R = diameterOfBinaryTree_traversal(node->right);//得到右侧节点的深度
+			diameterOfBinaryTree_ret = max(diameterOfBinaryTree_ret, L + R);//从当前的已知的最大直径ans，和当前节点的“L+R”得到的新直径中，拿到当前点的左子树和右子树的最大直径。
+			return max(L, R) + 1;//返回当前节点的最大深度。+1是因为放回上一层，也就是返回到他的父节点的时候，深度要+1
+		}
+
+		int diameterOfBinaryTree(TreeNode* root) {
+			diameterOfBinaryTree_traversal(root);
+			return diameterOfBinaryTree_ret;
+		}
+
 		void test()
 		{
 			cout << "测试树结构" << endl;
