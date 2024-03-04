@@ -949,6 +949,8 @@ namespace String_Array
 		/*
 		560. 和为 K 的子数组
 		题目：
+			前缀和要不是明白，看我的笔记。
+			这个题目和437. 路径总和 III非常相似，要对着看
 			就是给的k，在nus中有几种组合方式，加一块=k;返回所有的组合次数
 		思路：
 			前缀和——看来我这个地方，学的不行
@@ -970,7 +972,7 @@ namespace String_Array
 			int sum = 0;//
 			for (auto num : nums) {
 				sum += num;
-				if (umap.find(sum - k) != umap.end()) {//！！这个和下面的地方一定是sum - k，反过来纠错
+				if (umap.find(sum - k) != umap.end()) {//！！这个和下面的地方一定是sum - k，反过来就错
 					ret += umap[sum - k];
 				}
 				umap[sum]++;
@@ -5894,6 +5896,49 @@ namespace Tree {
 			kthSmallest(root, ret);
 			return ret[k - 1];
 		}
+
+		/*
+		437. 路径总和 III
+		参考：
+			https://leetcode.cn/problems/path-sum-iii/submissions/507657743/?envType=study-plan-v2&envId=top-100-liked
+			这个和560. 和为 K 的子数组很相似，多看看
+		思路：
+			假设当前从根节点 root 到节点 node的前缀和为 curr，则此时我们在已保存的前缀和中，查找是否存在某一个节点的前缀和刚好等于 curr−targetSum。
+			假设从根节点 root 到节点 node 的路径中存在节点 pi到根节点 root 的前缀和为 curr-targetSum，则节点 pi到 node的路径上所有节点的和一定为 targetSum。
+		举例：
+			假设targetSum=8
+					root---- other--- pi ----node
+			元素值  5		  6        5	   3
+			前缀和	5		 11       16      19
+			pi到node之间的元素的和，就是8.
+		核心：
+			从上图看出，pi到node的和就是8（targetSum）。这个时候就检查pi往前到root中有没有前缀和是11的。
+			有的话，就说明root到pi是存在路径的。比如5->6这个路径。
+			多说点，虽然看题目上，有些路径和根节点无关，但是遍历都是从根节点出发的，起始还是逃不了和根节点的关系
+		*/
+		unordered_map<long, long>pathSum_umap;//key是前缀和 value是该前缀和出现的次数
+
+		void pathSum_travarsel(TreeNode* node, int targetSum, long currSum, int &ret) {
+			if (node == nullptr)return;
+			currSum += node->val;
+			if (pathSum_umap.find(currSum - targetSum) != pathSum_umap.end()) {//当找到了对应的前缀和的时候，次数ret= ret+ pathSum_umap[currSum - targetSum]
+				ret = ret + pathSum_umap[currSum - targetSum];//！！这里不能是单纯的++。因为可能在这个d
+			}
+			pathSum_umap[currSum]++;
+			pathSum_travarsel(node->left, targetSum, currSum, ret);
+			pathSum_travarsel(node->right, targetSum, currSum, ret);
+			pathSum_umap[currSum]--;//！！回溯的时候，把这一层的前缀和再减去
+			return;
+		}
+		int pathSum(TreeNode* root, int targetSum) {
+			int ret = 0;
+			pathSum_umap[0] = 1;//前缀和为0，就是啥也没有，就是个空树。但是前缀和0的出现次数就是1
+			long currSum = 0;
+			pathSum_travarsel(root, targetSum, currSum, ret);
+			return ret;
+		}
+
+
 
 		void test()
 		{
