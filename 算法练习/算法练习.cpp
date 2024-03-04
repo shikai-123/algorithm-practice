@@ -3020,9 +3020,11 @@ namespace StackandQueue {
 			4、最后返回新链表就行。
 		*/
 		ListNode* mergeKLists(vector<ListNode*>& lists) {
-			ListNode *dummyNode = new ListNode(-1);
+			ListNode *dummyNode = new ListNode(-1);//！内存没释放哈
 			ListNode *preNode = dummyNode;
-			auto  cmp = [](const ListNode*newvalue, const ListNode*old) { return newvalue->val > old->val};
+			auto  cmp = [](const ListNode*newvalue, const ListNode*old) { return newvalue->val > old->val; };
+			//注意“decltype(&cmp)”这里的&字符。以及q实例化的时候，加上cmp
+			//第三个参数是需要传入类型，所以需要用decltype
 			priority_queue<ListNode*, vector<ListNode*>, decltype(cmp)> pque(cmp);
 			for (ListNode* list : lists)
 			{
@@ -3039,7 +3041,9 @@ namespace StackandQueue {
 					pque.push(pque.top()->next);
 				pque.pop();//删除节点
 			}
-			return dummyNode->next;
+			ListNode *tmp = dummyNode;
+			delete dummyNode;
+			return tmp->next;
 		}
 
 
@@ -10071,6 +10075,7 @@ namespace TULUN
 
 int main()
 {
+	//注意“decltype(&cmp)”这里的&字符,以及加上decltype，别忘了加。以及q实例化的时候，加上cmp
 	vector<int> nums{ 0,1,2,4,5,7 };
 	vector<int> num1{ };
 	vector<string> srtVec{ "2","1","+","3","*" };
