@@ -3001,6 +3001,48 @@ namespace StackandQueue {
 			return ret;
 		}
 
+
+
+		/*
+		23. 合并 K 个升序链表
+		参考：
+			无
+		思路：
+			优先级队列。
+			把链表放到优先队列中，排序方式是“按照每个链表的头元素的值，从小到大。”
+			然后遍历这个队列，队列的头部一定是最小的。
+			把这个在“优先队列”中当前最小的点，依次放到链表中。
+			最后得到的就是合并后的节点。
+			1、把链表中的点放到“优先队列”中。（有的链表是空的，注意判断，不要放）
+			2、遍历优先队列，把队列中最上面的点，也就是最小的点放到新的链表中，
+			3、每放完一个节点，就把该链表的下个节点放到队列中（如果下个节点存在，另外放下个节点，其实就是放从下个节点开始的链表），
+				因为优先队列会自动排序，所以最小的点还是在头部
+			4、最后返回新链表就行。
+		*/
+		ListNode* mergeKLists(vector<ListNode*>& lists) {
+			ListNode *dummyNode = new ListNode(-1);
+			ListNode *preNode = dummyNode;
+			auto  cmp = [](const ListNode*newvalue, const ListNode*old) { return newvalue->val > old->val};
+			priority_queue<ListNode*, vector<ListNode*>, decltype(cmp)> pque(cmp);
+			for (ListNode* list : lists)
+			{
+				//因为题目有给的是空列表
+				if (list != nullptr)
+					pque.push(list);//把vec中的链表放到优先队列中。根据自定义的比较函数可知，哪个链表的头元素最小，哪个靠前
+			}
+
+			while (!pque.empty())
+			{
+				preNode->next = pque.top();//head中放最小的节点
+				preNode = preNode->next;//节点后移
+				if (pque.top()->next != nullptr)//只要发现当前链表后面还有节点，那么就把当前节点加进去。！只要加到队列中，就会重新排序，
+					pque.push(pque.top()->next);
+				pque.pop();//删除节点
+			}
+			return dummyNode->next;
+		}
+
+
 		void test()
 		{
 			vector<int>nums{ 1,3,1,2,0,5 };
@@ -10026,8 +10068,6 @@ namespace TULUN
 
 	};
 }
-
-
 
 int main()
 {
