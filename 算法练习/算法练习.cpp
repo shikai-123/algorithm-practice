@@ -5870,6 +5870,31 @@ namespace Tree {
 			return diameterOfBinaryTree_ret;
 		}
 
+
+
+
+		/*
+		230. 二叉搜索树中第K小的元素
+		参考：
+			https://leetcode.cn/problems/kth-smallest-element-in-a-bst/solutions/1051273/fu-xue-ming-zhu-er-cha-shu-san-chong-bia-yn34/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			！看到二叉搜索树，就要想到中序遍历，中序遍历搜索二叉树，二叉树的值从小到大的。
+			中序遍历，把数值放到数组中，然后返回k-1的位置的元素。
+			这个题目，假设k=1，就要返回第一个位置的，也就是位置0的元素，具体看题目
+		*/
+		void kthSmallest(TreeNode* node, vector<int>& vec) {
+			if (node == nullptr) return;
+			kthSmallest(node->left, vec);
+			vec.push_back(node->val);
+			kthSmallest(node->right, vec);
+			return;
+		}
+		int kthSmallest(TreeNode* root, int k) {
+			vector<int> ret;
+			kthSmallest(root, ret);
+			return ret[k - 1];
+		}
+
 		void test()
 		{
 			cout << "测试树结构" << endl;
