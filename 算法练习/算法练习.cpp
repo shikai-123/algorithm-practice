@@ -10162,7 +10162,7 @@ namespace TULUN
 				{
 					pair<int, int> orangeDir = rotten.front();//拿到一个腐烂的橘子坐标
 					rotten.pop();
-					for (size_t l = 0; i < 4; l++)//在当前的腐烂的橘子四周上遍历
+					for (size_t l = 0; l < 4; l++)//在当前的腐烂的橘子四周上遍历
 					{
 						int newX = orangeDir.first + dirs[l].first;
 						int newY = orangeDir.second + dirs[l].second;
