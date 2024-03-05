@@ -5939,6 +5939,35 @@ namespace Tree {
 		}
 
 
+		/*
+		124. 二叉树中的最大路径和
+		参考：
+			https://leetcode.cn/problems/binary-tree-maximum-path-sum/solutions/18040/er-cha-shu-zhong-de-zui-da-lu-jing-he-by-ikaruga/?envType=study-plan-v2&envId=top-100-liked
+			思路是一样的，但是代码参考了评论区的“cheney”。
+		思路：
+			后序遍历，并不是后序遍历有什么特点才选用。后来的代码写完才发现是后续遍历。
+			遍历某一个节点的时候，确定左节点的最大值，右节点的最大值。
+			如果左或者右节点的值小于0.就没有必要留下来，这样只会拖累结果。《0就让他等0就行
+			然后当前节点+左+右。就得到目前节点的最大值，通过max不断的留下更大的值。
+			递归的返回，上层节点要的是左或右中较大的一个+当前的值。（为什么这么做呢？因为一条路径，从当前节点通过，只能到左或右）
+				上层（上层的路径：当前+左 或 当前+右）
+				当前（递归从这返回到上面）
+			左		右
+		*/
+
+		int maxPathSum_tarval(TreeNode* root, int &ret) {
+			if (root == nullptr)return 0;
+			int L = max(0, maxPathSum_tarval(root->left, ret));//当前节点的“左节点”的最大值
+			int R = max(0, maxPathSum_tarval(root->right, ret));//当前节点的“右节点”的最大值
+			ret = max(ret, root->val + L + R);//当前节点+左+右，也就是当前节点的路径的最大值。
+			return root->val + max(L, R);//返回当前节点父节点“通过当前节点”的路径的最大值，具体看上图
+
+		}
+		int maxPathSum(TreeNode* root) {
+			int ret = INT_MIN;//因为某些树的最大结果是个负值，所以你不能直接赋值0。要不然他的最大值就是0了
+			maxPathSum_tarval(root, ret);
+			return ret;
+		}
 
 		void test()
 		{
