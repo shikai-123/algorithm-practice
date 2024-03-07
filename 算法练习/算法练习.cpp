@@ -10211,6 +10211,55 @@ namespace TULUN
 		}
 
 
+		/*
+		207. 课程表
+		参考：
+			https://leetcode.cn/problems/course-schedule/solutions/18806/course-schedule-tuo-bu-pai-xu-bfsdfsliang-chong-fa/?envType=study-plan-v2&envId=top-100-liked
+			什么是拓扑排序：https://blog.csdn.net/lisonglisonglisong/article/details/45543451
+			什么是邻接表：https://zhuanlan.zhihu.com/p/618361957
+			要理解这两个题目，首先要明白下面这两个概念
+		思路：
+			拓扑排序就是就是用来解决依赖问题，所以这个题目这个思想。
+			如果按照拓扑排序删掉图中的“入度为0的点”，最后图中什么都不剩，就是“有向无环图”，就说明满足条件
+			整个题目核心其实就是“拓扑排序”
+		*/
+		bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+			vector<int> rudubiao(numCourses, 0);//入度表
+			vector<vector<int>> linjiebiao(numCourses, vector<int>());//邻接表
+			queue<int> q_rudu0;
+			//构建入度表和邻接表
+			for (size_t i = 0; i < prerequisites.size(); i++)//这里用numCourses不行，没有道理，
+			{
+				rudubiao[prerequisites[i][0]]++;//题目给的数组中10，方向是0-》1 所以入度是 prerequisites[1];
+				linjiebiao[prerequisites[i][1]].push_back(prerequisites[i][0]);//方向是0-》1.领接表的头就是0 往后接1
+			}
+
+			//搞一个队列，把入度为0的点都放进去，用来后面删除这些点
+			for (size_t i = 0; i < numCourses; i++)
+			{
+				if (rudubiao[i] == 0)
+					q_rudu0.push(i);
+				//!!!这个放的是下标，下面和上面都是放的的科目的名字，
+			   //这个有误解，我已经测出来，所有的科目名字都是0，从0-》numCourses都是科目名字
+			}
+
+			//开始拓扑排序，也就是删除入度为0的点
+			while (!q_rudu0.empty())
+			{
+				int kechengIndex = q_rudu0.front();//课程号
+				q_rudu0.pop();
+				numCourses--;//删掉一个点
+				//既然这个点删掉了，那么与这个点有关的点入度都要改变
+				for (size_t i = 0; i < linjiebiao[kechengIndex].size(); i++)
+				{
+					rudubiao[linjiebiao[kechengIndex][i]]--;
+					if (rudubiao[linjiebiao[kechengIndex][i]] == 0)//如果新出现了入度为0的点，那么就放到队列中。准备删掉他
+						q_rudu0.push(linjiebiao[kechengIndex][i]);
+				}
+			}
+			return numCourses == 0;//如果全删了，那么符合要求
+		}
+
 
 
 		void test()
@@ -10219,7 +10268,7 @@ namespace TULUN
 			vector<	vector<int> > graph{ {0,0,1,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,1,1,0,1,0,0,0,0,0,0,0,0},{0,1,0,0,1,1,0,0,1,0,1,0,0} };
 			vector<	vector<char> > graphc{ {'X','X','X','X'},{'X','O','O','X'},{'X','X','O','X'},{'X','O','X','X'} };
 			vector<	vector<int> > graph1{ {2,1,1},{1,1,0},{0,1,1} };
-			vector<	vector<int> > graph2{ {1,1}, {1,0} };
+			vector<	vector<int> > graph2{ {1,0} };
 			vector<	vector<int> > graph3{ {4,3},{1,4},{4,8},{1,7},{6,4},{4,2},{7,4},{4,0},{0,9},{5,4} };
 			vector<	vector<int> > graph4{ {0,7},{0,8},{6,1},{2,0},{0,4},{5,8},{4,7},{1,3},{3,5},{6,5} };
 			vector<int> dp1{ 1,3,4,2 };
@@ -10229,7 +10278,7 @@ namespace TULUN
 			cout << "消耗时间" << Stop - Start << endl;
 			Solution A;
 
-			cout << A.orangesRotting(graph1) << endl;
+			cout << A.canFinish(2, graph2) << endl;
 
 
 
