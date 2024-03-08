@@ -10260,26 +10260,80 @@ namespace TULUN
 			return numCourses == 0;//如果全删了，那么符合要求
 		}
 
+		/*
+		208. 实现 Trie (前缀树)
+		参考：
+			https://leetcode.cn/problems/implement-trie-prefix-tree/description/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			其实就是构建多叉树，有26个英文字母，26个叉。 然后构建就完了。
+		*/
+		class Trie {
+		private:
+			bool isEnd;
+			Trie* next[26] = { 0 };
+		public:
+			Trie() {
+				isEnd = false;
+			}
+			//插入数据
+			void insert(string word) {
+				Trie* currNode = this;// this可以理解为树的根节点。
+				for (char c : word) {
+					if (currNode->next[c - 'a'] == nullptr)// node的next数组中，是否有对应的字符
+						currNode->next[c - 'a'] = new Trie();// 没有的话，就增加行的节点
+					currNode = currNode->next[c - 'a'];// 有的话,当前节点就移动到该节点位置，
+				}
+				currNode->isEnd = true;// 遍历到当前节点，也就是字符串尾巴，这个节点的isEnd = true。来标志到了尾巴
+			}
 
+			//查找数据-完全匹配
+			bool search(string word) {
+				Trie* currNode = this;
+				for (char c : word) {
+					if (currNode->next[c - 'a'] == nullptr)
+						return false;
+					currNode = currNode->next[c - 'a'];
+				}
+				return currNode->isEnd;
+			}
+
+			//字符的部分匹配
+			bool startsWith(string prefix) {
+				Trie* currNode = this;
+				for (char c : prefix) {
+					if (currNode->next[c - 'a'] == nullptr)
+						return false;
+					currNode = currNode->next[c - 'a'];
+				}
+				return true;//部分匹配就是这样，只要在遍历完prefix后，中间没有在for中出现return false 就算ok
+			}
+		};
 
 		void test()
 		{
-			string str = "bbbab";
-			vector<	vector<int> > graph{ {0,0,1,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,1,1,0,1,0,0,0,0,0,0,0,0},{0,1,0,0,1,1,0,0,1,0,1,0,0} };
-			vector<	vector<char> > graphc{ {'X','X','X','X'},{'X','O','O','X'},{'X','X','O','X'},{'X','O','X','X'} };
-			vector<	vector<int> > graph1{ {2,1,1},{1,1,0},{0,1,1} };
-			vector<	vector<int> > graph2{ {1,0} };
-			vector<	vector<int> > graph3{ {4,3},{1,4},{4,8},{1,7},{6,4},{4,2},{7,4},{4,0},{0,9},{5,4} };
-			vector<	vector<int> > graph4{ {0,7},{0,8},{6,1},{2,0},{0,4},{5,8},{4,7},{1,3},{3,5},{6,5} };
-			vector<int> dp1{ 1,3,4,2 };
-			int Start = GetTickCount();
-			//cout << largestIsland(graph2) << endl;
-			int Stop = GetTickCount();
-			cout << "消耗时间" << Stop - Start << endl;
-			Solution A;
+			//string str = "bbbab";
+			//vector<	vector<int> > graph{ {0,0,1,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,1,1,0,1,0,0,0,0,0,0,0,0},{0,1,0,0,1,1,0,0,1,0,1,0,0} };
+			//vector<	vector<char> > graphc{ {'X','X','X','X'},{'X','O','O','X'},{'X','X','O','X'},{'X','O','X','X'} };
+			//vector<	vector<int> > graph1{ {2,1,1},{1,1,0},{0,1,1} };
+			//vector<	vector<int> > graph2{ {1,0} };
+			//vector<	vector<int> > graph3{ {4,3},{1,4},{4,8},{1,7},{6,4},{4,2},{7,4},{4,0},{0,9},{5,4} };
+			//vector<	vector<int> > graph4{ {0,7},{0,8},{6,1},{2,0},{0,4},{5,8},{4,7},{1,3},{3,5},{6,5} };
+			//vector<int> dp1{ 1,3,4,2 };
+			//int Start = GetTickCount();
+			////cout << largestIsland(graph2) << endl;
+			//int Stop = GetTickCount();
+			//cout << "消耗时间" << Stop - Start << endl;
+			//Solution A;
 
-			cout << A.canFinish(2, graph2) << endl;
+			//cout << A.canFinish(2, graph2) << endl;
 
+			Trie trie = Trie();
+			trie.insert("apple");
+			cout << trie.search("apple") << endl;   // 返回 True
+			cout << trie.search("app") << endl;     // 返回 False
+			cout << trie.startsWith("app") << endl; // 返回 True
+			trie.insert("app");
+			cout << trie.search("app") << endl;     // 返回 True
 
 
 			//vector<int> ret = A.findRedundantDirectedConnection(graph4);
@@ -10294,11 +10348,17 @@ namespace TULUN
 				cout << endl;
 			}*/
 		}
-
-
-
-
 	};
+
+
+
+
+
+
+
+
+
+
 }
 
 int main()
