@@ -10427,15 +10427,47 @@ namespace TULUN
 			}*/
 		}
 	};
+}
 
 
+namespace ERFENCAHZHAO {
+	class Solution {
+	public:
+		/*
+		35. 搜索插入位置
+		参考：
+			无，起始就是简单的二分查找的变种
+		思路：
+			二分查找只有left 》right才会跳出while；如果能找到，早就找到了。
+			left此时已经是更新后的位置了，这个位置如果存在对应的元素，上面肯定早就找到了，找不到就在这个位置插入！！！
+		*/
+		int searchInsert(vector<int>& nums, int target) {
+			int left = 0;
+			int right = nums.size() - 1;
+			int mid = left + (right - left) / 2;
+			while (left <= right)
+			{
+				mid = left + (right - left) / 2;
+				if (nums[mid] > target)
+					right = mid - 1;
+				else if (nums[mid] < target)
+					left = mid + 1;
+				else if (nums[mid] == target)
+					return mid;
+			}
+			//二分查找只有left 》right才会跳出while；如果能找到，早就找到了。
+			//left此时已经是更新后的位置了，这个位置如果存在对应的元素，上面肯定早就找到了，找不到就在这个位置插入！！！
+			return left;
+			//return right + 1; 哪个都行
+		}
 
+		void test()
+		{
+			vector<int> nums = { 1,3,5,6 };
+			searchInsert(nums, 5);
 
-
-
-
-
-
+		}
+	};
 
 }
 
@@ -10453,7 +10485,8 @@ int main()
 
 	//String_Array::Solution tree;
 	//TULUN::Solution tree;
-	BackTracking::Solution tree;
+	//BackTracking::Solution tree;
+	ERFENCAHZHAO::Solution tree;
 	tree.test();
 
 
