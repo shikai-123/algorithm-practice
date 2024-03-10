@@ -6721,15 +6721,93 @@ namespace BackTracking {
 		}
 
 
+		/*
+		22. 括号生成
+		参考：
+			https://leetcode.cn/problems/generate-parentheses/solutions/938191/shen-du-you-xian-bian-li-zui-jian-jie-yi-ypti/?envType=study-plan-v2&envId=top-100-liked
+			他的图话的话的很好，如果不明白，就看这个图
+			我这个和题解不太一样。但思路都是一样的，我这个更好理解和记忆
+		思路：
+			一串括号要想满足条件；1、左右括号的数量一致。2、左括号可以临时大于右括号
+			用递归的方法，
+			1、只要左括号不超括号数量，先添加左括号；
+			2、然后添加右括号数量。!添加右括号的时候，右括号的数量小于左括号的数量，才能再加右括号
+			3、直到左右括号数量都是n个的时候，就是把括号都用完了的时候。把结果保存下来。
+			4、最后返回结果
+			比如2对数量的时候，(->((->(()->(()) 这个时候记录结果 ，然后一直向上回溯到(->()->()(->()()
+		*/
+		//n括号数量 Ln左括号数量 Rn右括号数量  str要加的括号字符 ret 用来记录结果
+	public:
+		void generateParenthesis_bfs(int n, int Ln, int Rn, string str,
+			vector<string>& ret) {
+			if (Ln > n && Rn > n)
+				return;
+			if (Ln == n && Rn == n)
+				ret.push_back(str);
+			if (Ln < n || Rn < n) // 如果左括号或者右括号还没用完
+			{
+				if (Ln < n)//当左括号还没用完
+					generateParenthesis_bfs(n, Ln + 1, Rn, str + "(", ret);
+				if (Rn < Ln) // 右括号《左括号
+					generateParenthesis_bfs(n, Ln, Rn + 1, str + ")", ret);
+			}
+		}
+		vector<string> generateParenthesis(int n) {
+			vector<string> ret;
+			generateParenthesis_bfs(n, 0, 0, "", ret);
+			return ret;
+		}
+
+
+		/*
+		79. 单词搜索
+		参考：
+			https://leetcode.cn/problems/word-search/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			深度递归+剪枝
+			深度递归，检查4个不同的方向。如果单词不匹配，或者越界，返回false
+			别忘了剪枝——board[row][col] = ' ';和恢复board[row][col] = word[k];
+		*/
+		bool exist_dfs(vector<vector<char>>& board, string word, int row, int col, int k) {
+			if (row<0 || row>board.size() - 1 ||
+				col<0 || row>board[0].size() - 1 ||
+				board[row][col] != word[k])
+				return false;
+			//如果遍历到word的最后，说明符合条件了，返回true
+			if (k == word.size() - 1) return true;
+			//这个是一定的，假设abcb，这种带重复的就会出现问题，假设矩阵中只有一个b，abc都找到了，另外一个b实际上没有，但是你回溯的时候，如果你原先不清出，那么原先的b就会用上，就会满足条件。
+			board[row][col] = ' ';
+			//上下左右遍历,顺序无所谓
+			bool ret = exist_dfs(board, word, row, col + 1, k + 1) ||
+				exist_dfs(board, word, row, col - 1, k + 1) ||
+				exist_dfs(board, word, row - 1, col, k + 1) ||
+				exist_dfs(board, word, row + 1, col, k + 1);
+			board[row][col] = word[k];//清完一个要恢复过来，不恢复的话，万一第一次尝试不行，换条路的时候，发现路是缺失的
+			return ret;//上面是或，只要有一个true就可以
+		}
+		bool exist(vector<vector<char>>& board, string word) {
+			for (size_t i = 0; i < board.size(); i++)
+			{
+				for (size_t l = 0; l < board[0].size(); l++)
+				{
+					//如果true就是返回true，不行就返回false
+					if (exist_dfs(board, word, i, l, 0))return true;
+				}
+			}
+			return false;
+		}
+
+
 		void test()
 		{
 			//2.1、确定返回值和参数
 			//2.2、确定回溯函数结束条件
 			//2.3、确定单层搜索的过程——！！for负责横向遍历，递归负责纵向遍历。
-
-			string s = "112";
+			vector<	vector<char> > graph{ {'A','B','C','E'},
+			{'S','F','C','S'},{'A','D','E','E'} };
+			string s = "ABCCED";
 			vector<int> nums = { 1,1,2 };
-			subsetsWithDup(nums);
+			cout << exist(graph, s);
 
 			for (auto i : restoreIpAddresses_ret)
 			{
@@ -10374,7 +10452,8 @@ int main()
 	vector<int> newInterval{ 0,0 };
 
 	//String_Array::Solution tree;
-	TULUN::Solution tree;
+	//TULUN::Solution tree;
+	BackTracking::Solution tree;
 	tree.test();
 
 
