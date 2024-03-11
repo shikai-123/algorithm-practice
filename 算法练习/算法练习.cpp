@@ -10488,6 +10488,53 @@ namespace ERFENCAHZHAO {
 		}
 
 
+		/*
+		33. 搜索旋转排序数组
+		参考：
+			没什么能参考的，
+		思路：
+			（不包括nums[mid]）这个我不好解释，先记住吧！
+			到时候，如果做不出来，就用
+			int search1(vector<int>& nums, int target) {
+			for (int i = 0; i < nums.size(); ++i)
+				if (nums[i] == target) return i;
+			return -1;
+		}
+		*/
+		int search(vector<int>& nums, int target) {
+			int l = 0, r = nums.size() - 1;
+
+			while (l <= r) {
+				// 注意优先级，>>比+的优先级低，他是先算+就错了。等价(r - l)/2 + l;不用除法，为了节省性能。
+				int mid = ((r - l) >> 1) + l;
+				if (target == nums[mid])
+					return mid;
+				// 左边界《=中间节点的值时候，说明从l到mid中间都是升序的，也就是正常情况。转折点不在这。
+				// 既然l到mid是确定都是有序的，那么就在l和mid之间处理
+				if (nums[l] <= nums[mid]) {//!!!这里是《=
+					//target在l和mid中间，那么r就要更新mid-1（不包括nums[mid]）；这个和二分法的处理是一样。
+					if (nums[l] <= target && target < nums[mid])
+						r = mid - 1;
+					//target不在l和mid中间，那就是在mid和r之间。那么l就要更新mid+1；这个和二分法的处理是一样。
+					else
+						l = mid + 1;
+				}
+				// 左边界>中间节点的值的时候,说明mid到r是有序的，是升序。
+				else if (nums[l] > nums[mid]) {//!!!!这里只有》，没有等于
+					//target在mid和r之间。l更新成mid+1（不包括nums[mid]）；这个和二分法的处理是一样。
+					if (nums[mid] < target && target <= nums[r])
+						l = mid + 1;
+					else//target不在mid和r中间，那就是在l和mid之间。那么r就要更新mid-1；这个和二分法的处理是一样。
+						r = mid - 1;
+				}
+			}
+			return -1;
+		}
+
+
+
+
+
 		void test()
 		{
 			vector<int> nums = { 5,7,7,8,8,10 };
