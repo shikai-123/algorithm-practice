@@ -10431,7 +10431,7 @@ namespace TULUN
 	};
 }
 
-
+//二分查找法方法
 namespace ERFENCAHZHAO {
 	class Solution {
 	public:
@@ -10463,10 +10463,35 @@ namespace ERFENCAHZHAO {
 			//return right + 1; 哪个都行
 		}
 
+
+
+		/*
+		34. 在排序数组中查找元素的第一个和最后一个位置
+		参考：
+			https://blog.csdn.net/qq_37500516/article/details/116116926
+		思考：
+			lower_bound upper_bound，是利用二分法查找，满足题目要求
+		*/
+		vector<int> searchRange(vector<int>& nums, int target) {
+			vector<int> ret{ -1,-1 };
+			//返回第一个>=target的元素的迭代器
+			vector<int>::iterator it = lower_bound(nums.begin(), nums.end(), target);
+			//如果找不到元素，或者找到的元素不是想要的元素，说明找不到，返回-1-1即可
+			if (it == nums.end() || *it != target)
+				return ret;
+			//走到这，说明如果找到了并且还是等于target的元素
+			ret[0] = it - nums.begin();
+			//找到第一个大于target的位置
+			it = upper_bound(nums.begin(), nums.end(), target);
+			ret[1] = it - nums.begin() - 1;//-1是因为该位置的上个位置才是==target的位置
+			return ret;
+		}
+
+
 		void test()
 		{
-			vector<int> nums = { 1,3,5,6 };
-			searchInsert(nums, 5);
+			vector<int> nums = { 5,7,7,8,8,10 };
+			searchRange(nums, 8);
 
 		}
 	};
