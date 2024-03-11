@@ -10532,8 +10532,34 @@ namespace ERFENCAHZHAO {
 		}
 
 
-
-
+		/*
+		153. 寻找旋转排序数组中的最小值
+		参考：
+			https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/solutions/2680224/er-fen-cha-zhao-yu-feng-zhi-bi-jiao-by-w-kanl/?envType=study-plan-v2&envId=top-100-liked
+			https://www.programmercarl.com/0704.%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE.html#%E6%80%9D%E8%B7%AF
+			他用的是[)的区间，我给他改成[]区间了，代码能通过。关于区间可以看代码随想的写法
+		思路：
+			题目必要要用时间复杂度为 O(log n) 的算法解决此问题。如果没有这个条件，直接遍历得了，然后返回，只不过时间复杂度是n
+			整体上还是二分的思路，但是于nums[mid]比较的对象，换成了固定的nums的最右侧
+			不明白了，就看他的图
+		其他：
+			这个和上个都是旋转矩阵，能不能用这个思路解决上面的那个题目呢？我还没怎么试
+		*/
+		int findMin(vector<int>& nums) {
+			int left = 0, right = nums.size() - 1;
+			int p = nums[right];
+			while (left <= right)
+			{
+				int mid = left + ((right - left) >> 1);
+				if (nums[mid] > p)
+					left = mid + 1;
+				else
+				{
+					right = mid - 1;
+				}
+			}
+			return nums[left];//最后返回nums[left]
+		}
 
 		void test()
 		{
