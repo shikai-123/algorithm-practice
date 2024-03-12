@@ -3060,15 +3060,47 @@ namespace StackandQueue {
 			https://leetcode.cn/problems/decode-string/solutions/6274/ti-jie-czhan-by-youlookdeliciousc/?envType=study-plan-v2&envId=top-100-liked
 			评论区中的有一个栈的，麻烦点。两个栈的思路简单。
 		思路：
+			这个对我来说，有个思维误区，虽然用了栈，但是不是把遍历到的元素都一个个压栈，始终栈只有一层，每次都是头顶元素在累加元素strChar.top() += str;。
 			我记个和上面模一个题目很相似，这里我累了。我就不看了。
 			遍历这个字符串，遇到“[”才往栈内放；遇到“]”才出栈；其他情况，对栈都不需要操作。
-			如果是
-			比如2[ab]  先出栈b，
+		巧法：
+			方便记忆这个代码，用 2[ab] 这样的例子就很方便。如果用3[a2[c]]这样就理解起来，在最后else上理解起来，非常麻烦。
+
 		*/
 		string decodeString(string s) {
-
+			string str;//记录读取的字母
+			int num = 0;//记录读取的数字
+			stack<int>strNum;
+			stack<string>strChar;
+			for (char c : s) {
+				if ('0' <= c && c <= '9')
+					num = num * 10 + c - '0';//读到2.这里写的比较复杂是因为会有两位数的情况出现
+				else if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z')
+					str += c;//str读到了ab
+				else if ('[' == c)
+				{
+					strNum.push(num);//把读到的2放到栈中
+					num = 0;//num清空
+					//!没错，遍历到[, str是空的，仍旧往里面放
+					strChar.push(str);//将”当前层级收集的字母“压入栈中。
+					str = "";
+				}
+				else if (']' == c)
+				{
+					int times = strNum.top();//把2拿出来
+					strNum.pop();
+					for (size_t i = 0; i < times; i++)
+					{
+						//!!用栈顶的元素不断的累加!!
+						//因为栈只有一层，所以需要用栈顶元素不断的加。我担心的是多层的情况是不是还是我说的这个情况，就这么记忆把
+						strChar.top() += str;
+					}
+					str = strChar.top();
+					strChar.pop();
+				}
+			}
+			return str;
 		}
-
 
 
 		void test()
