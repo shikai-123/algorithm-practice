@@ -3054,6 +3054,22 @@ namespace StackandQueue {
 			return tmp->next;
 		}
 
+		/*
+		394. 字符串解码
+		参考：
+			https://leetcode.cn/problems/decode-string/solutions/6274/ti-jie-czhan-by-youlookdeliciousc/?envType=study-plan-v2&envId=top-100-liked
+			评论区中的有一个栈的，麻烦点。两个栈的思路简单。
+		思路：
+			我记个和上面模一个题目很相似，这里我累了。我就不看了。
+			遍历这个字符串，遇到“[”才往栈内放；遇到“]”才出栈；其他情况，对栈都不需要操作。
+			如果是
+			比如2[ab]  先出栈b，
+		*/
+		string decodeString(string s) {
+
+		}
+
+
 
 		void test()
 		{
@@ -10560,6 +10576,19 @@ namespace ERFENCAHZHAO {
 			}
 			return nums[left];//最后返回nums[left]
 		}
+
+
+		/*
+		4. 寻找两个正序数组的中位数
+		参考：
+
+		思考：
+			这个题目要求算法的时间复杂度应该为 O(log (m+n))，如果没有这个要求，直接暴力就能解决了。
+		*/
+		double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+
+		}
+
 
 		void test()
 		{
