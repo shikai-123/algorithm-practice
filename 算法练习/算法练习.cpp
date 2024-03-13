@@ -9012,7 +9012,7 @@ namespace DynamicPlanning
 	};
 }
 
-//单调站
+//单调栈
 namespace Dandiaozhan
 {
 	class Solution {
@@ -9267,6 +9267,10 @@ namespace Dandiaozhan
 			}
 			return ret;
 		}
+
+
+
+
 
 		/*
 		接雨水和最大矩形，两个题目我都是看了题解，做出来的，也基本上明白了。
@@ -10632,6 +10636,76 @@ namespace ERFENCAHZHAO {
 
 }
 
+
+//快排
+namespace KUAIPAI
+{
+	class Solution {
+	public:
+		/*
+			215. 数组中的第K个最大元素
+				就是返回第k大的元素,比如12344 第2大的元素是4，不是3。题目中有说明
+
+			参考：
+				https://leetcode.cn/problems/kth-largest-element-in-an-array/solutions/2361969/215-shu-zu-zhong-de-di-k-ge-zui-da-yuan-d786p/?envType=study-plan-v2&envId=top-100-liked
+			思路1：
+				时间复杂的 O(n log n)。这个很简单，还能过。题目中要求是这个
+				int findKthLargest(vector<int>& nums, int k) {
+					sort(nums.begin(), nums.end());
+					return nums[nums.size() - k];
+				}
+			思路2：
+				求第几大，很明显用单调栈的思路合适。
+				！！这么说是不对的，单调栈求解的思路是“找寻左边或者右边第一个比自己大或者小的元素的举例”。
+			思路3：
+				就这个思路时间复杂度是O(N)
+			思路4：
+				快排：时间复杂度平均是O (nlogn)。我对快排不是很了解，先用这。
+				首先，根据我现在的理解，他不是一个单纯的快排，因为最后并不是要排序，但是其中也确实用到了一些快排的思想，比如选基点之类的。
+				具体思路：先选择一个基点，为了保证算法的效率，随机选一个，选头部不一定是个好选择。
+				然后，遍历数组，根据》基点，==基点，《基点，放到3个数组中，
+				然后判断第k大的数据在上面3个数组中的哪个，既然第k大的元素在这，那么就在这个数组中继续寻找，也就是开始递归。
+				最后，直到不再递归了，也就是在随机找数的时候，找到了想要的那个数。
+
+
+			其他思路：
+				优先队列：时间复杂度平均是O(Nlog⁡K)O(N \log K)O(NlogK))。
+			*/
+
+		int findKthLargest_qucikSelect(vector<int>& nums, int k)
+		{
+			vector<int>big, sma, equal;//vs中small是个宏
+			int base = nums[rand() % nums.size()];//随机选一个元素
+
+			for (int num : nums) {
+				if (num > base)
+					big.push_back(num);
+				else if (num == base)
+					equal.push_back(num);
+				else
+					sma.push_back(num);
+			}
+
+			/*
+				3,2,1,5,6,"4" 第3大
+				《---------------------------K从右往左，K是逐渐的减小
+				small	   equal	    big
+				123			4			56
+
+			*/
+			if (k <= big.size())//如果k的大小不超big的范围，那么说明第k大的元素在big中
+				return	findKthLargest_qucikSelect(big, k);//继续递归，接着切割
+			else if (k > big.size() + equal.size())//如果k的大小超过了big+equal的范围，那么说明第k大的元素在small中
+				return findKthLargest_qucikSelect(sma, k - (big.size() + equal.size()));//第k大的元素，在small中，是第“k - (big.size() + equal.size())”大
+			return base;//不在切割了，就是最终想要的。
+		}
+
+
+		int findKthLargest(vector<int>& nums, int k) {
+			return findKthLargest_qucikSelect(nums, k);
+		}
+	};
+}
 int main()
 {
 	//注意“decltype(&cmp)”这里的&字符,以及加上decltype，别忘了加。以及q实例化的时候，加上cmp
