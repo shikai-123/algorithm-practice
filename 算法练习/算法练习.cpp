@@ -3103,8 +3103,54 @@ namespace StackandQueue {
 		}
 
 
+		/*
+		295. 数据流的中位数
+		参考：
+			https://leetcode.cn/problems/find-median-from-data-stream/solutions/2361972/295-shu-ju-liu-de-zhong-wei-shu-dui-qing-gmdo/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			相对于题目，这里做了更该，从!=改成了==。但原理都一样。返回中值的时候，从A.top()改成B.top()。
+			这个题目用到了两个“优先队列”，思路简单。关于优先队列，尤其是搭配less和greater的使用。
+			有两个优先队列，A保存小数据，所以得是大顶堆，B保存大数据，得是小顶堆。
+			两个尺寸一样的话，就先放到A中过滤，然后从A中挑个更大的到B。这个时候假设一开始是2个元素，1和2，现在新来了3.然后3先放到A，然后把2放到B，最后拿B的top返回即可。
+			尺寸不一样的话，比如A1 B23，现在来了4，那么直接放到B，然后跳出2放到A中，A12 B34 中值就是两个top/2
+		*/
+		class MedianFinder {
+		private:
+			priority_queue<int, vector<int>, less<int>> pqA;//用less，就是大顶堆。保存较小的数。
+			priority_queue<int, vector<int>, greater<int>> pqB;//用greater，就是小顶堆。保存较大的数。
+		public:
+			MedianFinder() {
+
+			}
+			void addNum(int num) {
+
+				if (pqA.size() == pqB.size()) {//当两个队列的大小相同的时候，先放A中放，因为A保存较小的数，放到A中过滤(小的话就放到A，大的话下面会放到B)
+					pqA.push(num);
+					pqB.push(pqA.top());
+					pqA.pop();//把A的最大，挪到B了，自然就删除。
+				}
+				else {
+					pqB.push(num);
+					pqA.push(pqB.top()); //把B中最小的元素给A
+					pqB.pop();
+				}
+			}
+			double findMedian() {
+				return pqA.size() != pqB.size() ? pqB.top() : (pqA.top() + pqB.top()) / 2.0;
+			}
+		};
+
+
+
 		void test()
 		{
+
+			MedianFinder medianFinder;
+			medianFinder.addNum(1);    // arr = [1]
+			medianFinder.addNum(2);    // arr = [1, 2]
+			medianFinder.findMedian(); // 返回 1.5 ((1 + 2) / 2)
+			medianFinder.addNum(3);    // arr[1, 2, 3]
+			medianFinder.findMedian(); // return 2.0
 			vector<int>nums{ 1,3,1,2,0,5 };
 
 			vector<int>ret = maxSlidingWindow(nums, 3);
@@ -10721,7 +10767,8 @@ int main()
 	//String_Array::Solution tree;
 	//TULUN::Solution tree;
 	//BackTracking::Solution tree;
-	ERFENCAHZHAO::Solution tree;
+	//ERFENCAHZHAO::Solution tree;
+	StackandQueue::Solution tree;
 	tree.test();
 
 
