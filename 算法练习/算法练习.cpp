@@ -9041,6 +9041,36 @@ namespace DynamicPlanning
 		}
 
 
+
+		/*
+		152. 乘积最大子数组
+		参考：
+			https://leetcode.cn/problems/maximum-product-subarray/solutions/7561/hua-jie-suan-fa-152-cheng-ji-zui-da-zi-xu-lie-by-g/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			动态规划——也就是这个状态是由上个状态推导出来。
+			看他的图吧，很清楚。
+			核心就是，当遍历到负数的时候，把最大值和最小值交换。
+			假设是 2和3,这么做
+			新最大值(2)*负数，得到的较大的负数，从某种意义上是相对最“大”值。
+			新最小值(3)*负数，得到的较小的负数，从某种意义上是相对最“小”值。
+			tmpMax，tmpMin都要初始化为1，要是0的话，假设数组只有一个-2，那么-2*0；就变成0是最大值了。
+		*/
+		int maxProduct(vector<int>& nums) {
+			int maxRet = INT_MIN, tmpMax = 1, tmpMin = 1;// 初始化tmpMax和tmpMin为1，因为任何数与1相乘都保持不变  
+			for (int num : nums) {
+				if (num < 0)
+					swap(tmpMax, tmpMin);
+				tmpMin = min(tmpMin*num, num);
+				tmpMax = max(tmpMax*num, num);
+				maxRet = max(maxRet, tmpMax);
+			}
+			return maxRet;
+		}
+
+
+
+
+
 		/*
 		回文子序列总结：
 		1、基本上都是二维数组，并且dp的定义都是i到l区间来决定怎么怎么样。
@@ -10666,6 +10696,7 @@ namespace ERFENCAHZHAO {
 
 		思考：
 			这个题目要求算法的时间复杂度应该为 O(log (m+n))，如果没有这个要求，直接暴力就能解决了。
+			两个都是有序数组。
 		*/
 		double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
 
