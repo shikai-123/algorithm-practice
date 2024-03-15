@@ -9040,6 +9040,35 @@ namespace DynamicPlanning
 			return dp[0][s.size() - 1];
 		}
 
+		/*
+		118. 杨辉三角
+		参考：
+			没什么参考的，看注释就明白
+		思路：
+			用三角不好理解，用下面的就好理解了
+			1
+			11
+			121//第2行，才可以计算
+			1321
+		*/
+		vector<vector<int>> generate(int numRows) {
+			vector<vector<int>>ret(numRows);
+
+			for (int i = 0; i < numRows; i++) {
+				ret[i].resize(i + 1);//调整每层的长度，满足三角形的形状
+
+				//两头放1
+				ret[i][0] = 1;
+				ret[i][ret[i].size() - 1] = 1;
+
+				//计算中间的部分,因为头部不放，起始位置就是1.
+				for (int l = 1; i > l; l++)//l最小是1.i也就是 2才能进，满足“第二行才能计算”的条件
+				{
+					ret[i][l] = ret[i - 1][l] + ret[i - 1][l - 1];
+				}
+			}
+			return ret;
+		}
 
 
 		/*
