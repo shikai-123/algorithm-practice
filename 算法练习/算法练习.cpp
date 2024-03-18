@@ -9163,21 +9163,54 @@ namespace DynamicPlanning
 		}
 
 		/*
-		回文子序列总结：
-		1、基本上都是二维数组，并且dp的定义都是i到l区间来决定怎么怎么样。
+		5. 最长回文子串
+		参考：
+			https://leetcode.cn/problems/longest-palindromic-substring/solutions/7600/5-zui-chang-hui-wen-zi-chuan-cc-by-bian-bian-xiong/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			中心扩展算法
+			扩展是有两种的方式，一种奇数的，满足aba这种；一种偶数的abba这种。
+			然后不断更新回文字符的长度，最后返回一个最长的。
 		*/
+		string longestPalindrome(string s) {
+			//别忘了这个
+			if (s.length() < 1) // 如果字符串长度小于1，则直接返回空字符串
+				return "";
+			int start = 0, end = 0;
+			for (int i = 0; i < s.size(); i++)
+			{
+				int len1 = longestPalindrome_expan(s, i, i);// 以当前字符为中心扩展
+				int len2 = longestPalindrome_expan(s, i, i + 1);// 以当前字符和下一个字符为中心扩展
+				int len = max(len1, len2);
+				if (len > end - start) {//如果新的回文字符串超过了上次的长度
+					start = i - (len - 1) / 2;//跟新回文子串的坐标
+					end = i + len / 2;
+					//abba i=1的时候，len1=1，len2=4. i现在是回文子串的终点，现在知道回文子串的长度，那么就len/2得到半径，然后确定回文子串的开始和结束的位置
+					//其实还是因为 数组的下标是从0开始的，然后在确定左边的时候，就得(len-1)/2 右边就是len/2
+				}
+			}
+			//参数截取位置， 和截取的数量。数量肯定是end-start +1)
+			return s.substr(start, end - start + 1);
+		}
 
 
+		int longestPalindrome_expan(string s, int L, int R) {
 
+			while (L >= 0 && R < s.size() && s[L] == s[R])// 向两边扩展，直到不是回文串为止
+			{
+				L--;
+				R++;
+			}
+			return R - L - 1;//不确定的时候 找个例子算算 比如aba 在遍历到b的时候i=1，第一次l=0 r=2，第二次i=-1，r=3. 这时候长度就是3- -1 =4 长度为4然后-1得到3
+		}
 
 
 		void test()
 		{
 			vector<vector<int>> grid{ {1, 3, 1}, {1, 5, 1}, {4, 2, 1}, {1, 2, 3}, {4, 5, 6} };
-			string str = "bbbab";
+			string str = "aba";
 			vector<int> dp{ -2,1,-3,4,-1,2,1,-5,4 };
 			vector<int> dp1{ 3,2,1,4,7 };
-			cout << minPathSum(grid);
+			cout << longestPalindrome(str);
 		}
 
 	};
