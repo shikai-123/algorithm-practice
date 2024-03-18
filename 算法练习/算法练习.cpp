@@ -9097,8 +9097,70 @@ namespace DynamicPlanning
 		}
 
 
+		/*
+		32. 最长有效括号
+		参考：
+			https://leetcode.cn/problems/longest-valid-parentheses/?envType=study-plan-v2&envId=top-100-liked
+			其实这个，我没怎么明白，我按着代码写了一些自己的注释，实在不行，到时候就换热门的题解。
+		思路：
+			看注释吧
+		*/
+		int longestValidParentheses(string s) {
+			int n = s.size();
+			// dp[i]定义为以s[i-1]结尾的子串中最长有效括号长度
+			vector<int> dp(n + 1, 0);
 
+			// 从第三个位置开始遍历，为什么呢？这是因为这个程序是从尾巴往前看，第三个位置才能看前两个能不能组成括号
+			for (int i = 2; i <= n; ++i) {
+				// 如果上个字符是右括号')'  。这个程序是从尾巴往前看，说明前面可能有（括号。
+				if (s[i - 1] == ')') {
+					// 尝试寻找与当前右括号匹配的左括号'(' 。 
+					int j = i - 2 - dp[i - 1];  //当前位置i-括号长度2- dp[i - 1](也就是这个元素前面的那个元素如果能组合成括号的话，直接到他最前面的位置，检查是不是(,能和后面的)匹配上)
+					// 如果找到了匹配的左括号  
+					if (j >= 0 && s[j] == '(') {
+						// 更新dp[i]，
+						// dp[j]是上面得到位置的，如果这个位置已经早就算出长度的话，就加上。 
+						// dp[i - 1]这个元素前面的那个元素最长有效子串长度， 如果这个位置已经早就算出长度的话，就加上。 
+						// 2是新增的有效括号对长度  
+						dp[i] = dp[j] + dp[i - 1] + 2;
+					}
+				}
+			}
 
+			// 返回dp数组中的最大值，即最长有效括号子串的长度  
+			// 注意这里是从dp[1]开始遍历到dp[n]，因为dp[0]没有实际意义  
+			return *max_element(dp.begin(), dp.end());
+			//return dp[n]; 这不是一个累加的，比如()())dp中的元素，()()这个时候是4，到)就变成0了。所以用上面的那种。
+		}
+
+		/*
+		64. 最小路径和
+		参考：
+			https://leetcode.cn/problems/minimum-path-sum/solutions/25943/zui-xiao-lu-jing-he-dong-tai-gui-hua-gui-fan-liu-c/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			动态规划。
+			dp[i][j]代表到了ij位置的最小路径。不用额外的dp数组。假设走到了某一个点，把这个点的值修改，下面再往下走的时候，路径会加新的元素值，之前的点就不会加了
+			核心：当前路径的长度= 当前点的值+ min（左路径，上路径）。
+			1、遇到左边界，
+			2、遇到上边界
+			3、遇到左边界和上边界
+			4、正常的点。
+			最后，返回右下角的值
+		*/
+		int minPathSum(vector<vector<int>>& grid) {
+			for (int i = 0; i < grid.size(); i++) {
+				for (int l = 0; l < grid[0].size(); l++) {
+					if (i == 0 && l == 0) continue;//把这个放到最前面，下面的不会越界。另外别忘了加else，要不然过不去
+					//靠着左边界
+					else if (l == 0) grid[i][l] = grid[i][l] + grid[i - 1][l];
+					//靠着上边界
+					else if (i == 0) grid[i][l] = grid[i][l] + grid[i][l - 1];
+					else
+						grid[i][l] = grid[i][l] + min(grid[i - 1][l], grid[i][l - 1]);
+				}
+			}
+			return grid[grid.size() - 1][grid[0].size() - 1];
+		}
 
 		/*
 		回文子序列总结：
@@ -9106,12 +9168,16 @@ namespace DynamicPlanning
 		*/
 
 
+
+
+
 		void test()
 		{
+			vector<vector<int>> grid{ {1, 3, 1}, {1, 5, 1}, {4, 2, 1}, {1, 2, 3}, {4, 5, 6} };
 			string str = "bbbab";
 			vector<int> dp{ -2,1,-3,4,-1,2,1,-5,4 };
 			vector<int> dp1{ 3,2,1,4,7 };
-			cout << longestPalindromeSubseq(str);
+			cout << minPathSum(grid);
 		}
 
 	};
@@ -10828,7 +10894,8 @@ int main()
 	//TULUN::Solution tree;
 	//BackTracking::Solution tree;
 	//ERFENCAHZHAO::Solution tree;
-	StackandQueue::Solution tree;
+	//StackandQueue::Solution tree;
+	DynamicPlanning::Solution tree;
 	tree.test();
 
 
