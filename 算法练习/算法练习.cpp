@@ -10933,6 +10933,28 @@ namespace {
 			}
 			return x;
 		}
+
+		/*
+		75. 颜色分类
+		参考:
+			https://leetcode.cn/problems/sort-colors/solutions/2651983/yi-kan-jiu-dong-de-dai-ma-by-bo-bo-t1-jlht/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			把0放在左边：某个数和0交换，0放在左边后，这个0不需要在移动了，所以i和left都要++
+			2放在右边：某个数和2交换，2放在右边后，right--，这个换过来的数还要再判断一次来确定位置。
+			剩下的1就在中间了：1就在中间，哪里都不要放，
+		*/
+		void sortColors(vector<int>& nums) {
+			int i = 0, left = 0, right = nums.size() - 1;
+			while (i <= right)
+			{
+				if (nums[i] == 0)
+					swap(nums[i++], nums[left++]);
+				else if (nums[i] == 2)
+					swap(nums[i], nums[right--]);
+				else
+					i++;
+			}
+		}
 	};
 }
 int main()
