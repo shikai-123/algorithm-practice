@@ -10911,6 +10911,30 @@ namespace KUAIPAI
 		}
 	};
 }
+
+
+//技巧
+namespace {
+
+	class Solution {
+	public:
+		/*
+		136. 只出现一次的数字
+		参考:
+			https://leetcode.cn/problems/single-number/solutions/2361995/136-zhi-chu-xian-yi-ci-de-shu-zi-wei-yun-iyd0/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			异或，相异为1，相同为0.
+			最后异或出来的数，就是那个孤独的数
+		*/
+		int singleNumber(vector<int>& nums) {
+			int x = 0;
+			for (int num : nums) {
+				x = x ^ num;
+			}
+			return x;
+		}
+	};
+}
 int main()
 {
 	//注意“decltype(&cmp)”这里的&字符,以及加上decltype，别忘了加。以及q实例化的时候，加上cmp
