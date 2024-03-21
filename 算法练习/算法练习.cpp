@@ -2088,7 +2088,7 @@ namespace Hash
 			找到了就返回两者的下标，
 			找不到就把当前的数组元素放到unordered_map中。
 		*/
-		vector<int> twoSum(vector<int>& nums, int target) {
+		vector<int> twoSum1(vector<int>& nums, int target) {
 			unordered_map<int, int> num;
 			for (int i = 0; i < nums.size(); i++)
 			{
@@ -2099,6 +2099,18 @@ namespace Hash
 			}
 			return {};
 		}
+		//二刷
+		vector<int> twoSum(vector<int>& nums, int target) {
+			unordered_map<int, int> umap;
+			for (int i = 0; i < nums.size(); i++) {
+				//!!不用单独用一遍for来填充数组，只有一个for一遍填充一边查找就行，比如9 27，一开始9-2找7找不到，会把2放进去，下面9-7的时候找2就能找到。
+				if (umap.find(target - nums[i]) != umap.end())
+					return { i,umap[target - nums[i]] };
+				umap.insert(pair<int, int>(nums[i], i));
+			}
+			return{};
+		}
+
 
 
 
