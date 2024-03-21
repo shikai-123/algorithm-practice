@@ -2037,27 +2037,29 @@ namespace Hash
 		/*
 		49. 字母异位词分组
 			首先需要理解字母异位词的含义，简单理解为：两字符串长度相同，字母相同，但顺序不同。
+			然后这些，字母相同，但顺序不同，放到一起。！！最后放进去的时候，要放原先顺序的！！
 			字母异位词简意为两字符串长度相同，字母相同，顺序不同。
-
 		参考：
 			https://leetcode.cn/problems/group-anagrams/solutions/84916/c-yin-ru-hashbiao-shi-jian-32ms-ji-bai-9948-nei-cu/?envType=study-plan-v2&envId=top-interview-150
 
 		思路：
-			对strs排序，这样的话，所谓的“字母异位词”就变成一样了。
-			然后用“字母异位词”做map的key，value和这个单词往二维的vec中的行号。
-
+			对strs排序，这样的话，所谓的“字母异位词”就变成一样了。这样就能知道哪些单词是“字母异位词”。
+			把这些单词放到一块去。放的时候放原本的顺序。
+			然后用“字母异位词”做map的key，单词在vec中的序号做value；
+			有个遍历i，来决定返回结果ret的行数，这个单词没有在map中出现过，i++；
+			先对每个单词排序，然后发现这个单词没有在map中出现过，就二维的vec中新开一行。
+			如果发现在map中出现过，在结果ret中的i行中，添加结果。添加的结果是原先的顺序。
+			那个单词要放在那个行，要用unordermap来记录，key是单词，value是行号。
 		*/
 		vector<vector<string>> groupAnagrams(vector<string>& strs) {
-
 			vector<vector<string>> ret;
-			map<string, int> words;
+			unordered_map<string, int> words;
 			string strTemp;
 			int i = 0;//二维的vec中的行号
-			for (string str : strs)
-			{
+			for (string str : strs) {
 				strTemp = str;
 				sort(str.begin(), str.end());
-				if (words.count(str) == 0)//找不到对应的key
+				if (words.find(str) != words.end())//找不到对应的key
 				{
 					vector<string> temp(1, strTemp);
 					ret.push_back(temp);
@@ -2071,6 +2073,26 @@ namespace Hash
 			}
 			return ret;
 		}
+		//二刷
+		vector<vector<string>> groupAnagrams2(vector<string>& strs) {
+			vector<vector<string>>ret;
+			int i = 0;//结果ret的行数
+			unordered_map<string, int>umap;//那个单词要放在那个行，要用unordermap来记录，key是单词，value是行号。
+			for (string str : strs) {
+				string rawStr = str;
+				sort(str.begin(), str.end());//先对每个单词排序，然后发现这个单词没有在map中出现过，就二维的vec中新开一行。
+				if (umap.find(str) == umap.end()) {
+					ret.push_back(vector<string>(1, rawStr));
+					umap[str] = i;
+					i++;
+				}
+				else {//如果发现在map中出现过，在结果ret中的i行中，添加结果。添加的结果是原先的顺序。
+					ret[umap[str]].push_back(rawStr);
+				}
+			}
+			return ret;
+		}
+
 
 
 		/*
@@ -2088,7 +2110,7 @@ namespace Hash
 			找到了就返回两者的下标，
 			找不到就把当前的数组元素放到unordered_map中。
 		*/
-		vector<int> twoSum1(vector<int>& nums, int target) {
+		vector<int> twoSum(vector<int>& nums, int target) {
 			unordered_map<int, int> num;
 			for (int i = 0; i < nums.size(); i++)
 			{
@@ -2100,7 +2122,7 @@ namespace Hash
 			return {};
 		}
 		//二刷
-		vector<int> twoSum(vector<int>& nums, int target) {
+		vector<int> twoSum2(vector<int>& nums, int target) {
 			unordered_map<int, int> umap;
 			for (int i = 0; i < nums.size(); i++) {
 				//!!不用单独用一遍for来填充数组，只有一个for一遍填充一边查找就行，比如9 27，一开始9-2找7找不到，会把2放进去，下面9-7的时候找2就能找到。
@@ -2110,8 +2132,6 @@ namespace Hash
 			}
 			return{};
 		}
-
-
 
 
 
