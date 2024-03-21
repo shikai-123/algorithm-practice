@@ -2270,13 +2270,13 @@ namespace Hash
 				为什么删掉，就是已经参与计算的数，哪怕是被其他的数拉来的，已经被完全计算了，所以可以删掉
 				出了循环之后，把两个位置的长度差记录下来，
 				然后遇到新的数，肯定是之前没有计算到数，然后再重新计算。
+
+				这个思路貌似是我自己想的，这个思路还行吧，时间复杂不错
 		*/
 		int longestConsecutive(vector<int>& nums) {
 			unordered_set<int>set;
 			for (int i = 0; i < nums.size(); i++)
-			{
 				set.insert(nums[i]);
-			}
 			int maxLen = 0;
 			int tempLen = 0;
 			int tempValue = 0;
@@ -2295,11 +2295,34 @@ namespace Hash
 				}
 				set.erase(BeginValue);
 				tempLen++;
-				maxLen = maxLen > tempLen ? maxLen : tempLen;
+				maxLen = max(maxLen, tempLen);
 				tempLen = 0;
 			}
 			return maxLen;
 		}
+
+		//二刷，我自己想的思路，为啥还不满意呢，已经超过75%了。可以了，还是不自信，但很正常
+		int longestConsecutive2(vector<int>& nums) {
+			unordered_set<int> uset;
+			for (int num : nums)
+				uset.insert(num);
+			int maxLen = 0;
+			while (!uset.empty()) {
+				int tempLen = 0;//临时长度
+				//以这个数为中心，向两边延伸
+				int tempValue = *uset.begin();
+				while (uset.erase(++tempValue) != 0)//unordered_set 的 erase如果传参迭代器，返回是迭代器，传参正数，返回正数，也就是删除的数量0或者1。每次只会删除一个c++23的时候会删除所有等于参数的值，我没细研究。
+					tempLen++;
+				tempValue = *uset.begin();//在换方向的时候，别忘了把tempValue回到初始位置
+				while (uset.erase(--tempValue) != 0)
+					tempLen++;
+				uset.erase(*uset.begin());//把中心的这个数也删掉，这样就实现了连续区间的数都删掉了，下次遍历就是遍历新的区间了，不会出现重复的情况。
+				tempLen++;//!!删除了中心元素后，别忘了++长度
+				maxLen = max(maxLen, tempLen);
+			}
+			return maxLen;
+		}
+
 
 		/*
 		349. 两个数组的交集
