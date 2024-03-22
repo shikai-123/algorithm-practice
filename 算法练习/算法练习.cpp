@@ -947,7 +947,7 @@ namespace String_Array
 		}
 
 		//二刷，我想把if的条件换成==0，但是我发现我调的代码过不去，就算了。还是老办法
-		void moveZeroes(vector<int>& nums) {
+		void moveZeroes2(vector<int>& nums) {
 			int putPos = 0;
 			for (size_t i = 0; i < nums.size(); i++) {
 				if (nums[i] != 0) {
@@ -1221,7 +1221,7 @@ namespace DoublePointer
 		}
 
 		//二刷
-		int maxArea(vector<int>& height) {
+		int maxArea2(vector<int>& height) {
 			int L = 0, R = height.size() - 1;
 			int maxAre = 0;
 			while (true)
@@ -1243,24 +1243,26 @@ namespace DoublePointer
 		15. 三数之和
 		参考：
 			https://www.programmercarl.com/0015.%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C.html#%E6%80%9D%E8%B7%AF
+		题意：
+			返回所有和为 0 且不重复的三元组。nums = [-1,0,1,2,-1,-4] 输出[[-1,-1,2],[-1,0,1]]。有两个-1，,可以重复
 		思路：
 			因为题目要求从数组中取出的数要保持不重复。所以哈希的方法不合适，具体看链接。
 			（他这个重复，包括同一个元素不能用两边，两个相同的元素也不能出现。即使有俩个-1；-101，-101这两个也不同，其实看代码编的题目，所以这个重复的规则才这么绕）
 			所以用双指针
+			!!先排序，方便后序处理。
 			其实是三指针，一个在最左边a，一个挨着最左边的右边b，一个在最右边c
 			在保持a不变的情况下，判断a+b+c的情况，分别移动b或c
 			b和c都移动完了，然后移动a
-			！！重点是去重，总之一句话概括。相同a相同的b相同的c，放了之后，后面的就跳过就完了。
+			！！重点是去重，总之一句话概括。
+			在遍历的时候，a后面的相同的数值，都要跳过；同理bc都是一样的，跳了之后，后面就是新数据，然后开始下一轮的判断
 		*/
 		vector<vector<int>> threeSum(vector<int>& nums) {
 			sort(nums.begin(), nums.end());
 			vector<vector<int>>ret;
 			int left = 0, right = 0;
-			for (size_t i = 0; i < nums.size(); i++)
-			{
-				if (nums[i] > 0) return ret;//如果排序后一开始就大于0，说明整个数组就任何都大于0;
+			for (size_t i = 0; i < nums.size(); i++) {
+				if (nums[i] > 0) return ret;//如果排序后一开始就大于0，说明i后面就都大于0;后面没有在遍历的必要！！！
 				if (i > 0 && nums[i] == nums[i - 1]) continue;//对a去重。这样的两个数是相同的，结果是一样的，所以要去掉。
-
 				left = i + 1;
 				right = nums.size() - 1;
 				while (left < right)
@@ -1273,12 +1275,12 @@ namespace DoublePointer
 						ret.push_back(vector<int>{nums[i], nums[left], nums[right]});
 
 						//遇到了相同的元素，就不要再往结果中放了。直接往下走就行
-						//!!注意这里是left+1。是为了让后面的left++和right++ 能保证不出错，如果是left - 1就会造成left多移动一次
+						//!!注意这里是left+1，right - 1。就是让左边的元素和它后面相比，如果相同不满足题意，往后再移动一位
 						while (left < right&& nums[left] == nums[left + 1])
 							left++;
 						while (left < right&& nums[right] == nums[right - 1])
 							right--;
-						//别忘了，上面的left + 1就是为了匹配他俩
+						//上面去重完毕后，比如112，现在去重到了最后的1，left++。才能到2开始新的一轮数据判断
 						left++;
 						right--;
 					}
@@ -1287,7 +1289,37 @@ namespace DoublePointer
 			return ret;
 		}
 
-
+		//二刷
+		vector<vector<int>> threeSum2(vector<int>& nums) {
+			if (nums.empty())return {};
+			vector<vector<int>>ret;
+			sort(nums.begin(), nums.end());
+			if (nums[0] > 0)return {};//排序后，第一个就大于0。肯定不行
+			for (size_t i = 0; i < nums.size(); i++) {
+				if (i > 0 && nums[i] == nums[i - 1]) continue;//对a去重。别忘了
+				int  left = i + 1, right = nums.size() - 1;
+				//上面确定了i的位置，下面b和c，用while循环
+				while (left < right) {
+					if (nums[i] + nums[left] + nums[right] > 0)//三数和大于0.右边的数最大，右边往里面移动
+						right--;
+					else if (nums[i] + nums[left] + nums[right] < 0)
+						left++;
+					else {//三数和==0.
+						ret.push_back({ nums[i] , nums[left] , nums[right] });
+						//去重,!!用while!!更重要的是，要在这个else中，不能放在外边！
+						//按照逻辑来说，这里就是三数和==0。b后面和c前面相同的元素都能使三数和==0，但是元素重复了，所以都跳过
+						while (left < right&&nums[left] == nums[left + 1])
+							left++;
+						while (left < right&&nums[right] == nums[right - 1])
+							right--;
+						//!这个地方容易忘记，去重完毕，比如112 ，left++，才能到新的数据2。
+						left++;
+						right--;
+					}
+				}
+			}
+			return ret;
+		}
 
 		/*
 		第18题. 四数之和
@@ -1350,9 +1382,8 @@ namespace DoublePointer
 
 		void test()
 		{
-			vector<int> nums{ 2,2,2,2,2 };
-			vector<vector<int>>ret = fourSum(nums, 8);
-
+			vector<int> nums{ 1,-1,-1,0 };
+			vector<vector<int>>ret = threeSum2(nums);
 		}
 
 
@@ -11135,28 +11166,10 @@ int main()
 	//BackTracking::Solution tree;
 	//ERFENCAHZHAO::Solution tree;
 	//StackandQueue::Solution tree;
-	DynamicPlanning::Solution tree;
+	//DynamicPlanning::Solution tree;
+	DoublePointer::Solution tree;
 	tree.test();
 
 
 
-	/*vector<vector<int>> retStr = a.merge(board);
-
-	for (auto i : retStr)
-	{
-		for (auto l : i)
-		{
-			cout << l << " ";
-		}
-		cout << endl;
-	}*/
-
-	/*for (size_t i = 0; i < retStr.size(); i++)
-	{
-		std::cout << retStr[i] << endl;
-	}*/
-	//std::cout << a.trap(nums) << endl;
-	//std::cout << a.isSubsequence("b", "abc") << endl;
-	//std::cout << a.hIndex(nums) << endl;
-	//std::cout << a.canCompleteCircuit(nums, num1) << endl;
 }
