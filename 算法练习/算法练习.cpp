@@ -946,6 +946,20 @@ namespace String_Array
 			return;
 		}
 
+		//二刷，我想把if的条件换成==0，但是我发现我调的代码过不去，就算了。还是老办法
+		void moveZeroes(vector<int>& nums) {
+			int putPos = 0;
+			for (size_t i = 0; i < nums.size(); i++) {
+				if (nums[i] != 0) {
+					swap(nums[i], nums[putPos]);
+					putPos++;
+				}
+			}
+			return;
+		}
+
+
+
 		/*
 		560. 和为 K 的子数组
 		题目：
@@ -1171,20 +1185,25 @@ namespace DoublePointer
 
 		/*
 		11. 盛最多水的容器
+		参考：
+			https://leetcode.cn/problems/container-with-most-water/solutions/11491/container-with-most-water-shuang-zhi-zhen-fa-yi-do/?envType=study-plan-v2&envId=top-interview-150
+		题意：
+			数组中的不同的元素代表容器的高度，两个元素的举例就是底的长度。然后求出“最大”的体积
+		思路：
+			 和“单调栈的接雨水”的题目，不一样，这个使用双指针来解决。
+			 首先，两个边分别在数组两边。然后向内移动。容器的两个边，决定体积的一定是较短的那个边。
+			 向内移动长边，遇到了更短的边，体积肯定减少。碰到了高边，短边还是那个高度，并且底还减小了，所以还是减小。
+			 向内移动短边，万一遇到长边，体积才有增大的可能。
+			 直到两个边相遇就退出
 		*/
 		int maxArea(vector<int>& height) {
-			/*
-			https://leetcode.cn/problems/container-with-most-water/solutions/11491/container-with-most-water-shuang-zhi-zhen-fa-yi-do/?envType=study-plan-v2&envId=top-interview-150
-			*/
 			int i = 0;
 			int l = height.size() - 1;
 			int maxAer = 0;
 			while (true)
 			{
 				if (i == l)
-				{
 					return  maxAer;
-				}
 				else if (height[i] < height[l])
 				{
 
@@ -1197,11 +1216,27 @@ namespace DoublePointer
 					if ((l - i)*height[l] > maxAer)
 						maxAer = (l - i)*height[l];
 					l--;
-
 				}
 			}
 		}
 
+		//二刷
+		int maxArea(vector<int>& height) {
+			int L = 0, R = height.size() - 1;
+			int maxAre = 0;
+			while (true)
+			{
+				maxAre = max(maxAre, (R - L)*min(height[L], height[R]));
+				if (L == R)
+					return maxAre;
+				else if (height[L] > height[R]) {//如果左边大于右边，移动右边
+					R--;
+				}
+				else if (true) {//如果右边大于左边，移动左边
+					L++;
+				}
+			}
+		}
 
 
 		/*
