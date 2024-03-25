@@ -9343,26 +9343,21 @@ namespace Dandiaozhan
 	class Solution {
 	public:
 		/*
-		 什么时候用单调栈呢？
+		单调栈时间复杂度：。时间复杂度为O(n)。
+
+		什么时候用单调栈呢？
 			通常是一维数组，
 			要寻找任一个元素的右边或者左边“第一个”比自己大或者小的元素的"距离"，
-			此时我们就要想到可以用单调栈了。时间复杂度为O(n)。
+			以单调递增栈为例，栈顶元素最小，新的元素大于这个栈顶，那么就知道右边第一个比它大的元素；
+			那么左边第一个比他大的元素也好理解。这是单调递增栈，左边第一个比他大的就是栈顶的下一个元素。
+			这样就知道左边和右边第一个比自己大的元素了。
+
 		单调栈里元素是递增呢？ 还是递减呢？
 			如果求一个元素右边第一个更大元素，单调栈就是递增的，
 			如果求一个元素右边第一个更小元素，单调栈就是递减的。
 
 		单调栈的顺序：
 			 从栈头到栈底，递增就是，单调递增栈。
-
-		没有求左边的？
-			“接雨水”这个题目 求了左边第一个第一个比他大的和右边第一个比比它大的。
-
-			“84.柱状图中最大的矩形”，这个题目同时检测了
-			元素左边第一个更小元素和元素右边第一个更小元素
-
-			综上两种情况来看，
-			接雨水——中间的这个元素是栈顶元素，左边的是下一个栈顶元素，右边的是当前遍历到的元素。
-			最大矩形——中间的这个元素是栈顶元素，左边的是正在遍历的元素，右边是下一个栈顶元素。
 		*/
 
 
@@ -9532,7 +9527,7 @@ namespace Dandiaozhan
 
 
 		//二刷
-		int trap(vector<int>& height) {
+		int trap2(vector<int>& height) {
 			stack<int> stk;
 			int ret = 0;
 			for (size_t i = 0; i < height.size(); i++)
@@ -9560,7 +9555,7 @@ namespace Dandiaozhan
 			为什么这么做呢？
 			从当前坐标的高度往左右延申，直到遇见左右第一个比它矮的矩形，
 			这个时候所得到的面积，就是当前遍历的下标对应的最大矩形的面积
-			然后，取其中最大的面积，就是当前数组种，也就是柱状图中最大的矩形。
+			然后，取其中最大的面积，就是当前数组中，也就是柱状图中最大的矩形。
 
 
 			既然要求所遇到的第一个“较小”的元素，单调栈从头到尾是单调递减的。
@@ -9570,14 +9565,46 @@ namespace Dandiaozhan
 				和“接雨水”题目一样，是需要当前遍历元素和两个栈顶元素。
 				hight=i mid=第一个栈顶元素 left=第二个栈顶元素（不明白就画个图）
 
-				wid = 左边的第一个小于当前元素的坐标-右边第一个小于当前元素的坐标 + 1；
+				wid = 右边的第一个小于当前元素的坐标-左边第一个小于当前元素的坐标 - 1；
 				wid = 当先遍历元素的下标 - 第二个栈顶元素-1；
 				wid = i - stk.top() - 1;
 			高度：
-				hig=当前遍历元素的值
+				hig=当前栈顶元素的值
+
+			举例：
+			以465为例，头尾加0；04650；
+			元素：0 4 6 5 0
+			下标：0 1 2 3 4
+					l m r
+			遍历到5的时候，出栈，这个mid=2； wid=(3-1-1)*6=6;
+			其实就是求，以num[mid]为高，宽是以mid为中心，遇到左右两方第一个小于num[mid]高度的元素。其实高度6的，左右两边都比他小是下标1，3，所以wid=1
+
+			元素：0 4 5 0
+			下标：0 1 3 4
+					l m r
+			遍历到0的时候，出栈，这个mid=3； wid=(4-1-1)*5=10
+			其实就是求，以num[mid]为高，宽是以mid为中心，遇到左右两方第一个小于num[mid]高度的元素。其实高度5的，左右两边都比他小是下标1，4，所以wid=2
+
+			元素：0 4 0
+			下标：0 1 4
+				  l m r
+			遍历到0的时候，出栈，这个mid=1； wid=(4-0-1)*4=12
+			其实就是求，以num[mid]为高，宽是以mid为中心，遇到左右两方第一个小于num[mid]高度的元素。其实高度4的，左右两边都比他小是下标0，4，所以wid=3
 
 			其他：
-				遍历的数组头和尾各加一个0。不明白就看链接种的解释。
+				遍历的数组头和尾各加一个0。
+				题目中用的是一个单调递减栈，假设给的数组是【1234】，那么在代码中是一直不出栈的，最后的结果就是0。
+				所以为了出栈，最后一定要有一个比所有矩形都小的值。题目中说了矩形的高度是》=1的。所以要设置一个0；
+
+				假设给你数组是【4321】.遍历到3的时候，因为3《4所以要出栈，出栈完毕后就是空，接着有个if判断栈是否为空，这个时候是就会进不去、
+				接着新的一次 for循环，栈加入新的坐标，
+				然后新的循环，因为新的元素总是更小，所以栈立马就会出栈，然后栈空了，下面if又是过不了，然后新的循环又开始了；
+				然后又重复上面的过程，最后结果还是0.
+				所以为了保证栈里面最少要有两个元素，第一个元素很好添加，第二个元素怎么保证一定比第一个大呢？题目中说了矩形的高度是》=1的。所以数组开头要设置一个0；
+
+			注意：
+				结果不是一个累加值，而是不断的更新最大值。
+
 		*/
 		int largestRectangleArea(vector<int>& heights) {
 			heights.push_back(0);
@@ -9603,7 +9630,31 @@ namespace Dandiaozhan
 			return ret;
 		}
 
+		//二刷
+		int largestRectangleArea2(vector<int>& heights) {
+			int ret = 0;
+			stack<int>stk;
+			heights.push_back(0);
+			heights.insert(heights.begin(), 0);
 
+			for (size_t i = 0; i < heights.size(); i++)
+			{
+				while (!stk.empty() && heights[i] < heights[stk.top()])
+				{
+					int mid = stk.top();//记录矩形中点的坐标
+					stk.pop();
+					if (!stk.empty()) {
+						int r = i;
+						int l = stk.top();
+
+						int wid = r - l - 1;
+						ret = max(ret, wid*heights[mid]);
+					}
+				}
+				stk.push(i);
+			}
+			return ret;
+		}
 
 
 
@@ -9615,7 +9666,7 @@ namespace Dandiaozhan
 		void test()
 		{
 			string str = "bbbab";
-			vector<int> dp{ 2,1,5,6,2,3 };
+			vector<int> dp{ 4,6,5 };
 			vector<int> dp1{ 1,3,4,2 };
 			cout << largestRectangleArea(dp) << endl;
 			/*vector<int> ret = nextGreaterElement(dp, dp1);
@@ -11177,7 +11228,8 @@ int main()
 	//ERFENCAHZHAO::Solution tree;
 	//StackandQueue::Solution tree;
 	//DynamicPlanning::Solution tree;
-	DoublePointer::Solution tree;
+	//DoublePointer::Solution tree;
+	Dandiaozhan::Solution tree;
 	tree.test();
 
 
