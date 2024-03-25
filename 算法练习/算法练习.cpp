@@ -9351,6 +9351,9 @@ namespace Dandiaozhan
 			如果求一个元素右边第一个更大元素，单调栈就是递增的，
 			如果求一个元素右边第一个更小元素，单调栈就是递减的。
 
+		单调栈的顺序：
+			 从栈头到栈底，递增就是，单调递增栈。
+
 		没有求左边的？
 			“接雨水”这个题目 求了左边第一个第一个比他大的和右边第一个比比它大的。
 
@@ -9368,6 +9371,8 @@ namespace Dandiaozhan
 		739. 每日温度
 		参考：
 			https://www.programmercarl.com/0739.%E6%AF%8F%E6%97%A5%E6%B8%A9%E5%BA%A6.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		题意：
+			求当天温度后面第几天出现大于该温度。出现了在该位置放入天数，没有出现就放入0；
 		思路：
 			核心就是求右侧第一个大于该元素的距离。
 			当元素小于栈顶元素，进栈
@@ -9378,32 +9383,14 @@ namespace Dandiaozhan
 
 			栈中放的元素是数组的下标
 			结果数组的含义：result[1]=2;在数组中下标1的元素，它的右侧第一个大于它的元素，与他的距离为2.
+
+			为什么单调递增栈符合条件？解释下。
+			从栈顶到栈尾递增，这样的话，假设下标5的元素10；放到底部了，这个时候只要没有10大（包括等于10），都会入栈放到10的上面，
+			如果新的元素比栈顶元素大，比如8吧，栈里就开始出栈，栈里存的是下标，用当前这个元素的下标-栈顶的下标，就能得到栈里这些元素和比它大的元素的距离。
+			但10肯定是除不了，这个时候8再进栈，后面遇到了遇到了大于10的数，比如11；
+			这个时候就开始出栈，用当前这个元素的下标-栈顶的下标。这样就能得到栈里8，10和11的距离。
 		*/
 		vector<int> dailyTemperatures(vector<int>& temperatures) {
-			vector<int> result(temperatures.size(), 0);
-			stack<int> stk;
-			stk.push(0);
-			for (size_t i = 1; i < temperatures.size(); i++)
-			{
-				if (temperatures[i] < temperatures[stk.top()])//当元素小于栈顶元素，进栈
-					stk.push(i);
-				else if (temperatures[i] == temperatures[stk.top()])//当元素等于栈顶元素，进栈;前两种情况可以合成一个，都已放到while下面，具体看下面的代码。
-					stk.push(i);
-				else
-				{
-					while (!stk.empty() && temperatures[i] > temperatures[stk.top()])//当元素大于栈顶元素：
-					{
-						result[stk.top()] = i - stk.top();
-						stk.pop();
-					}
-					stk.push(i);
-				}
-			}
-			return result;
-		}
-
-		//简化写法，但是思路没有上面的明确。
-		vector<int> dailyTemperatures1(vector<int>& temperatures) {
 			vector<int> result(temperatures.size(), 0);
 			stack<int> stk;
 			//stk.push(0);//!这个可以放在里面.当一次遍历，stk为空的时候，stk会插入0
@@ -9417,6 +9404,21 @@ namespace Dandiaozhan
 				stk.push(i);//当元素小于栈顶元素，进栈;当元素等于栈顶元素，进栈。都可以放到这。
 			}
 			return result;
+		}
+
+		//二刷，还是上面的这个简化写法，代码简单，也好理解
+		vector<int> dailyTemperatures2(vector<int>& temperatures) {
+			vector<int>ret(temperatures.size(), 0);
+			stack<int> stk;//要找的是右边第一个大于它的元素，用单调递增栈
+			for (size_t i = 0; i < temperatures.size(); i++)
+			{
+				while (!stk.empty() && temperatures[i] > temperatures[stk.top()]) {//单调递增栈就是当前元素大于栈顶元素，就出栈
+					ret[stk.top()] = i - stk.top();
+					stk.pop();
+				}
+				stk.push(i);
+			}
+			return ret;
 		}
 
 
