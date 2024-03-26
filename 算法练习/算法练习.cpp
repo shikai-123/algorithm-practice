@@ -1443,29 +1443,27 @@ namespace SlidingWindow
 
 		/*
 		3. 无重复字符的最长子串
+		参考：
+			https://leetcode.cn/problems/longest-substring-without-repeating-characters/solutions/2361797/3-wu-zhong-fu-zi-fu-de-zui-chang-zi-chua-26i5/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			滑动窗口+哈希表
+			用abba来举例最合适。
+			遍历到第一个b的是时候，ret = 1-（-1）=2；能够计算出准确的值，“ ”这样的也能计算出正确的值，“abc”这样也能计算出正确的值
+			遍历到第二个b的时候，左边界就是和右边界相同的字符的b的位置，也就是左边界坐标更新到1；ret=max（2,2-1）
+			遍历到最后一个a的时候，如果	l = umap[s[r]];肯定不行，这个时候左边界l就=0了，正常来说应该是l = max(l, umap[s[r]]);
 		*/
 		int lengthOfLongestSubstring(string s) {
-
-			string maxStr = "";
-			int len = 0;
-			for (size_t r = 0; r < s.size(); r++)
-			{
-				if (maxStr.find(s[r]) == maxStr.npos)
-				{
-					maxStr += s[r];
-				}
-				else//maxStr已经有了s[l]
-				{
-					do
-					{
-						maxStr.erase(maxStr.begin());
-					} while ((r < s.size()) && maxStr.find(s[r]) != maxStr.npos);//maxStr已经有了s[l]
-					maxStr += s[r];
-				}
-				//max是函数模板，左右两个参数的类型是同一类型才行，所有右侧参数需要转一下
-				len = max(len, (int)maxStr.size());
+			int ret = 0;
+			int l = -1;//滑动窗口的左边，初始化-1是因为s会是一个“ ”，带空格的字符。要求结果返回1
+			int r = 0;
+			unordered_map<char, int> umap;//umap中放元素和对应的下标。里面始终放不重复的子串
+			for (r; r < s.size(); r++) {
+				if (umap.find(s[r]) != umap.end())//如果umap中找到了已经存在的字符，说明滑动窗口的左边需要往前移动。
+					l = max(l, umap[s[r]]);//更新左边界的位置到
+				umap[s[r]] = r;//无论什么情况，右边界肯定要不断的移动，
+				ret = max(ret, r - l);//不用-1；理解1：看上面的思路中写的，理解2：左边界都是更新到和右边界相同的字符出，比如abca，左边界和右边界都是在a。那么长度就是3-0=3；
 			}
-			return len;
+			return ret;
 		}
 
 		/*
