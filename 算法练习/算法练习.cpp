@@ -7534,12 +7534,15 @@ namespace Greedy {
 		参考：
 			https://www.programmercarl.com/0056.%E5%90%88%E5%B9%B6%E5%8C%BA%E9%97%B4.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC
 			和他的思路一样的，但是代码不精简。！！！！
+		题意：
+			输入：intervals = [[1,3],[2,6],[8,10],[15,18]]。把其中不重复的区间合并就行了。
 		思路：
 			和上面的思路很是接近。
 			首先，对数组排序。方便后续处理
 			然后，遍历数组，先把第一个区间，放到结果中。
 			然后，如果当前的元素的右值“大于等于”下个元素的左值，就说明两个区间和重叠的。
-			然后，既然是重叠的，新结果中的区间右值用和下个区间元素的右值 被赋值 下个区间的右值和当前结果右值的最大值。
+			然后，既然是重叠的，新结果中的区间右值，看是当前区间右值大还是重叠的那个区间右值大，谁大用谁。
+			然后，区间合并，区间合并后，！！别忘了，在原先数组上，重叠的那个右区间的值要更新成新的右值。
 			如果，区间不重叠，那就把这个区间放到结果中。
 				注意，我是当前元素和下个元素比较，当不重叠的时候，要添加下个元素的区间ret.push_back(intervals[i+1]);
 			然后，接着遍历，如果重合就更新区间的右值。
@@ -7558,16 +7561,36 @@ namespace Greedy {
 				//如果当前的元素的右值“大于等于”下个元素的左值，就说明两个区间和重叠的。
 				if (intervals[i][1] >= intervals[i + 1][0])
 				{
-					ret.back()[1] = max(ret.back()[1], intervals[i + 1][1]);//既然是重叠的，新结果中的区间右值用和下个区间元素的右值 被赋值 下个区间的右值和当前结果右值的最大值。
-					intervals[i + 1][1] = max(ret.back()[1], intervals[i + 1][1]);//【1 10】 【5 6】 【8 9】 没有这个max就出问题
+					int newRvalue = max(ret.back()[1], intervals[i + 1][1]);//“结果中的右边界”和下个要合并的右边界，谁大要谁。
+					ret.back()[1] = newRvalue;//更新结果中的右边界
+					intervals[i + 1][1] = newRvalue;//，！！别忘了，在原先数组上，重叠的那个右区间的值要更新成新的右值。要是忘了.本来1,10就可以直接合完这三个，如果不更新intervals，后面还会再更新，就错了！
+					//【1 10】 【5 6】 【8 9】 没有这个max就出问题
 				}
 				else
-				{
 					ret.push_back(intervals[i + 1]);
-				}
 			}
 			return ret;
 		}
+
+		vector<vector<int>> merge2(vector<vector<int>>& intervals) {
+			if (intervals.size() == 1)return intervals;
+			sort(intervals.begin(), intervals.end(), [](vector<int>&a, vector<int>&b) {return a[0] < b[0]; });//对数组排序，按照每个小数组开头的元素大小
+			vector<vector<int>> ret;
+			ret.push_back(intervals[0]);
+			for (size_t i = 0; i < intervals.size() - 1; i++)
+			{
+				if (intervals[i][1] >= intervals[i + 1][0]) {//如果当前的右边界超过下个的左边界，那么就合并
+					int newRValue = max(ret.back()[1], intervals[i + 1][1]);//“结果中的右边界”和下个要合并的右边界，谁大要谁。
+					ret.back()[1] = newRValue;//更新结果中的右边界
+					intervals[i + 1][1] = newRValue;//更细数组中的右边界
+				}
+				else
+					ret.push_back(intervals[i + 1]);//注意这里！这是两个当前边界和下个边界不重复的时候，自然就是要放[i+1]的数据，不是[i]的。
+			}
+			return ret;
+		}
+
+
 		/*
 		738. 单调递增的数字
 		参考：
