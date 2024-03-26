@@ -238,27 +238,34 @@ namespace String_Array
 			return index_num.begin()->first;
 		}
 
+		/*
+		189. 轮转数组
+		题意：
+			[1,2,3,4,5,6,7], k = 3 轮转3次，输出: [5,6,7,1,2,3,4]
+		参考：
 
+		*/
 		void rotate(vector<int>& nums, int k) {
 			if (nums.size() == 1)
-			{
 				return;
-			}
 			if (nums.size() < k)
-			{
 				k = k % nums.size();
-			}
 			vector<int> nums1 = nums;
 			for (int i = 0; i < nums1.size() - k; i++)
-			{
 				nums[i + k] = nums1[i];
-			}
 			for (int i = 0; i < k; i++)
-			{
 				nums[i] = nums1[nums1.size() - k + i];
-			}
-
 		}
+
+		//二刷——唯一要注意的就是数组是往右转的，是把后面k个数据移动；所以k的用法都是从end()-k, 而不是begin()+k.这个是不对的。
+		void rotate(vector<int>& nums, int k) {
+			k = k % nums.size();
+			vector<int> tmp(nums.end() - k, nums.end());
+			tmp.insert(tmp.end(), nums.begin(), nums.end() - k);
+			nums = tmp;
+			return;
+		}
+
 
 		/*
 		122.买卖股票的最佳时机II
