@@ -7127,6 +7127,8 @@ namespace Greedy {
 		53. 最大子数组和
 		参考：
 			https://www.programmercarl.com/0053.%E6%9C%80%E5%A4%A7%E5%AD%90%E5%BA%8F%E5%92%8C.html#%E6%80%9D%E8%B7%AF
+		题意 ：
+			要从数组中，找到这些元素最大的累加和
 		思路：
 			要注意的就是，只有当连续和小于0的时候，cout才要赋值0.
 			因为只有当“和小于0了”，最后的数的相加是削减作用。
@@ -7137,7 +7139,6 @@ namespace Greedy {
 		{
 			int ret = INT32_MIN;//因为有可能最后的结果有多小不知道，弄个这个最好
 			int cout = 0;
-
 			for (size_t i = 0; i < nums.size(); i++)
 			{
 				cout += nums[i];
@@ -7145,6 +7146,20 @@ namespace Greedy {
 					ret = cout;
 				if (cout < 0)
 					cout = 0;
+			}
+			return ret;
+		}
+
+		//二刷还是用贪心，好理解
+		int maxSubArray2(vector<int>& nums) {
+			int ret = INT32_MIN;
+			int count = 0;
+			for (int num : nums) {
+				count += num;//从数组头开始，不断的累加。
+				if (count > ret)//数组其中一部分累加值已经大于了之前ret，就更新ret
+					ret = count;
+				if (count < 0)//累加和对最后的结果没用，累加和直接清0；
+					count = 0;
 			}
 			return ret;
 		}
