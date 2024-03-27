@@ -401,50 +401,31 @@ namespace String_Array
 			return h;
 		}
 
+		/*
+		238. 除自身以外数组的乘积
+		题意：
+			[1,2,3,4] ，返回num[i]之外的所有元素的乘机。不能使用除法。
+		参考：
+			https://leetcode.cn/problems/product-of-array-except-self/solutions/274152/cjian-ji-dai-ma-shuang-zhi-zhen-6xing-dai-ma-by-or/?envType=study-plan-v2&envId=top-100-liked
+			之前的方法复杂，现在换个的简单的。
+			利用双指针的思路
+		*/
 		vector<int> productExceptSelf(vector<int>& nums) {
-			vector<int>allValue(nums.size(), 0);
-			vector<int>zeroValue(nums.size(), 0);
+			int rightValue = 1, lightValue = 1;//数组左右元素左侧右侧的累乘积
+			vector<int>ret(nums.size(), 1);//存放结果的数组，
 
+			for (size_t l = 0, r = nums.size() - 1; l < nums.size(); l++, r--)
+			{
+				//先更新ret，ret的值，因为题目要求不能包含自身的值。
+				//所以ret[l]的值是ret[l]=rightValue*ret[l]
+				ret[l] = lightValue * ret[l];
+				ret[r] = rightValue * ret[r];
 
-			int tempNums = 1;
-			int zeroNums = 0;
-			int fristZeroIndex = 0;
-
-			for (int i = 0; i < nums.size(); i++)
-			{
-				if (nums[i] == 0)
-				{
-					++zeroNums;
-					if (zeroNums == 1)
-					{
-						fristZeroIndex = i;
-					}
-					if (zeroNums > 1)//如果有俩0，整个answer都是0
-					{
-						return zeroValue;
-					}
-				}
-				tempNums = tempNums * nums[i];
+				//上面的结果已经算完了，那么开始更新左右的累乘积
+				rightValue = rightValue * nums[r];
+				lightValue = lightValue * nums[l];
 			}
-			if (zeroNums == 1)//如果有一个0，除了这个位置，其他都是0
-			{
-				tempNums = 1;
-				for (size_t i = 0; i < nums.size(); i++)
-				{
-					if (i == fristZeroIndex)
-					{
-						continue;
-					}
-					tempNums = tempNums * nums[i];
-				}
-				zeroValue[fristZeroIndex] = tempNums;
-				return zeroValue;
-			}
-			for (int i = 0; i < nums.size(); i++)
-			{
-				allValue[i] = tempNums / nums[i];
-			}
-			return allValue;
+			return ret;
 		}
 
 		int canCompleteCircuit1(vector<int>& gas, vector<int>& cost) {
