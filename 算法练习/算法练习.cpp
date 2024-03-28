@@ -1810,7 +1810,7 @@ namespace Matrix
 		移动完毕后，在加上addr，至于是加还是减，到时候具体分析。
 		移动的顺序，要按照下面的顺序，也就是“逆时针”的方向
 		*/
-		void rotate(vector<vector<int>>& matrix) {
+		void rotate2(vector<vector<int>>& matrix) {
 			int pos1 = 0;
 			int pos2 = matrix.size() - 1;
 			while (pos1 < pos2) {
@@ -4452,7 +4452,7 @@ namespace LinkedList
 
 
 		//二刷
-		ListNode* reverseList(ListNode* head) {
+		ListNode* reverseList2(ListNode* head) {
 			ListNode*cur = head;
 			ListNode*pre = nullptr;
 			while (cur)
@@ -4619,6 +4619,48 @@ namespace LinkedList
 			}
 			return true;
 		}
+
+		/*
+		234. 回文链表
+		参考：
+			https://leetcode.cn/problems/palindrome-linked-list/solutions/41195/wo-de-kuai-man-zhi-zhen-du-cong-tou-kai-shi-gan-ju/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			通过快慢指针，快指针走到末尾，慢指针就会走到中间。
+			还有一个pre指针是跟在慢指针后面，还有一个prepre是和pre构建一个反转的链表。
+			比如1221：
+			fast走到尾巴(null)的时候，slow走到后面的2，pre走到前面的2.
+			slow往后走，pre往前走。不断的判断slow和pre的value知否相同，不相同就说名不是回文
+
+			比如121
+			fast走到尾巴(1)的时候，slow在2的位置，pre在1的位置。
+			因为链表的数量是奇数，通过fast！=null来判断，slow要都往前走一步。
+			最后和上面的是一样的：
+			slow往后走，pre往前走。不断的判断slow和pre的value知否相同，不相同就说名不是回文
+		*/
+		bool isPalindrome2(ListNode* head) {
+			ListNode* fast = head, *slow = head, *pre = head, *prepre = nullptr;
+			while (fast != nullptr&&fast->next != nullptr)
+			{
+				pre = slow;//per是跟在slow后面的指针，在这里先更新pre，后面slow接着就往后走了。这样就完成了pre在slow后面。
+				slow = slow->next;
+				fast = fast->next->next;
+
+				pre->next = prepre;//pre接反转的链表
+				prepre = pre;//prepre也在往前走。
+			}
+			if (fast != nullptr)//fast不是空说明链表是奇数个。
+				slow = slow->next;//slow还是要往后走一个
+
+			while (slow != nullptr&&pre != nullptr)
+			{
+				if (slow->val != pre->val)
+					return false;
+				slow = slow->next;
+				pre = pre->next;
+			}
+			return true;
+		}
+
 
 
 		/*
