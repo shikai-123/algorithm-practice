@@ -1772,15 +1772,16 @@ namespace Matrix
 
 		/*
 		73. 矩阵置零
-			思路：
+		参考：
+			https://leetcode.cn/problems/set-matrix-zeroes/?envType=study-plan-v2&envId=top-100-liked
+			这是空间复杂度为1的题解，也就是二刷的思路。
+		思路：
 			先确定0的点，然后在把这些位置对应的那些1赋值成0。时间复杂度n平方，空间复杂度m+n
-
-			总结：
-				这个方法还行。题目中让尝试1的空间复杂度，我看了看解法，就只能使用于本题目，没有普适性
-				而且我这个想法也不错，第一次做，就到这吧
+		总结：
+			这个方法还行。题目中让尝试1的空间复杂度，我看了看解法，就只能使用于本题目，没有普适性
+			而且我这个想法也不错，第一次做，就到这吧
 		*/
 		void setZeroes(vector<vector<int>>& matrix) {
-
 			vector<int> row(matrix.size());
 			vector<int> rol(matrix[0].size());
 
@@ -1817,6 +1818,72 @@ namespace Matrix
 
 		}
 
+		/*
+		二刷，换成空间复杂度为1的算法，代码长点思路很简单
+		题意：
+			矩阵中元素是0，所在的行和列都要被置0；
+		参考：
+			https://leetcode.cn/problems/set-matrix-zeroes/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			核心：矩阵中存在了一个0， 那么这个0所在的行、列的首行首列要置0，来记录这一行列要置0；
+			因为第一行列中的元素被置0了，所以你无法判断一开始的时候它是否存在0，所以你要单独记录它们是否存在0，然后后期单独对首行首列处理。
+			1、记录第一行列中是否有0
+		*/
+		void setZeroes2(vector<vector<int>>& matrix) {
+			bool row0 = false, col0 = false;//变量的意思：行0是不是要清零
+			int row = matrix.size();
+			int col = matrix[0].size();
+
+			//1、记录第一行列中是否有0
+			for (size_t i = 0; i < col; i++) {
+				if (matrix[0][i] == 0) {
+					row0 = true;
+					break;
+				}
+			}
+			for (size_t i = 0; i < row; i++) {
+				if (matrix[i][0] == 0) {
+					col0 = true;
+					break;
+				}
+			}
+
+			//2.1、判断非首行首列中，是否存在0，,并且在首行首列中标记
+			for (size_t i = 1; i < row; i++) {
+				for (size_t l = 1; l < col; l++) {
+					if (matrix[i][l] == 0) {
+						matrix[i][0] = matrix[0][l] = 0;
+					}
+				}
+			}
+			//2.2遍历首行，元素为0所在的列，赋值0；首行首例单独处理，这里不要处理，一旦处理了，
+			//假设上面处理后首行为0120.说明第12列不用置0；如果处理首行，那么这一行就都改了，然后成0000那么不该修改的也改了。
+			for (size_t i = 1; i < col; i++)
+			{
+				if (matrix[0][i] == 0) {
+					for (size_t l = 1; l < row; l++)
+						matrix[l][i] = 0;
+				}
+			}
+
+			//2.3遍历首列，元素为0所在的行，赋值0；
+			for (size_t i = 1; i < row; i++)
+			{
+				if (matrix[i][0] == 0) {
+					for (size_t l = 1; l < col; l++)
+						matrix[i][l] = 0;
+				}
+			}
+
+			//3、对首行首列赋值0
+			if (row0)
+				for (size_t i = 0; i < col; i++)
+					matrix[0][i] = 0;
+			if (col0)
+				for (size_t i = 0; i < row; i++)
+					matrix[i][0] = 0;
+			return;
+		}
 
 		/*
 		生命游戏
