@@ -4434,9 +4434,11 @@ namespace LinkedList
 			然后往后移动pre和cur指针。
 			直到cur为null，结束
 			！一画图就很明白
+			1-》  2-》  3-》   4
+			pre	  cur   tmp
 		*/
 		ListNode* reverseList(ListNode* head) {
-			ListNode *cur = head;
+			ListNode *cur = head;//一开始的时候，cur为头结点，pre为nullptr，头结点的next就是nullptr
 			ListNode *pre = nullptr;
 			while (cur)
 			{
@@ -4447,6 +4449,24 @@ namespace LinkedList
 			}
 			return pre;
 		}
+
+
+		//二刷
+		ListNode* reverseList(ListNode* head) {
+			ListNode*cur = head;
+			ListNode*pre = nullptr;
+			while (cur)
+			{
+				ListNode*tmp = cur->next;
+				cur->next = pre;
+				//移动cur和tmp指针，先移pre再移cur
+				pre = cur;
+				cur = tmp;
+			}
+			return pre;
+			//return cur->next; while出来的时候cur是nullptr，访问越界
+		}
+
 
 		/*
 		24. 两两交换链表中的节点
@@ -4584,6 +4604,7 @@ namespace LinkedList
 			进阶：你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
 			题解中，有这个思路，我没用。！后期还是要弄下，现在先用简单的。
 			把链表放到数组中，然后用双指针就很方便了。
+			！这个时间复杂度和空间复杂度不合要求，这个没有必要记住。但是简单，真想不起来，用这个。
 		*/
 		bool isPalindrome(ListNode* head) {
 			vector<int> vec;
