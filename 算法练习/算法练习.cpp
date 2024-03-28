@@ -258,7 +258,7 @@ namespace String_Array
 		}
 
 		//二刷——唯一要注意的就是数组是往右转的，是把后面k个数据移动；所以k的用法都是从end()-k, 而不是begin()+k.这个是不对的。
-		void rotate(vector<int>& nums, int k) {
+		void rotate2(vector<int>& nums, int k) {
 			k = k % nums.size();
 			vector<int> tmp(nums.end() - k, nums.end());
 			tmp.insert(tmp.end(), nums.begin(), nums.end() - k);
@@ -1691,15 +1691,17 @@ namespace Matrix
 
 		/*
 		54. 螺旋矩阵
-			参考：
+		题意：
+			请按照 顺时针螺旋顺序 ，返回矩阵中的所有元素。
+		参考：
 			https://leetcode.cn/problems/spiral-matrix/solutions/2362055/54-luo-xuan-ju-zhen-mo-ni-qing-xi-tu-jie-juvi/?envType=study-plan-v2&envId=top-interview-150
+		思路：
+			思路很简单，既然是“顺时针螺旋顺序”，那么就先从左到右，从上到下。。这么一圈绕，
+			比如先来一个“从左到右”，接着“从上到下”，这里要注意的就是上边界要先++再用。
+			因为从上往下走的时候，就要忽略第一个，所以加加
+			最后，两个边界已经不和常理了，就退出。比如左边界和右边界重合还没事，因为这个时候还能用这个重合的元素做边，当两个边界背离的时候，就不行了。
 
-			思路：
-			首先要明白一点的是：
-			这个答案中，所说的“判断边界是否相遇（是否打印完毕），若打印完毕则跳出。”要这么理解
-			对于只有一个元素的矩形，他的上下左右边界都是0。这种用“if (++t == b) ”来做判断的肯定不行。
-			t是上边界，b是下边界。两者相等的时候，是不能认为两者边界是相遇的。这个时候上下边界其实正好在一个元素的上下。
-			只有上边界大于下边界，或者是下边界大于上边界的时候，才是两个边界在一块的时候。
+
 		*/
 		vector<int> spiralOrder(vector<vector<int>>& matrix) {
 			if (matrix.empty()) return {};
@@ -1710,27 +1712,57 @@ namespace Matrix
 			vector<int> res;
 			while (true) {
 				for (int i = l; i <= r; i++)// left to right 也就是从左遍历到右，然后top往下走一个
-				{
 					res.push_back(matrix[t][i]);
-				}
-				if (++t > b) break;
+
+				if (++t > b) break;//！先++t在用，是因为上边界被从左到右用了，然后从上往下走的时候，就要忽略第一个，所以加加
 				for (int i = t; i <= b; i++) // top to bottom
-				{
 					res.push_back(matrix[i][r]);
-				}
+
 				if (l > --r) break;
 				for (int i = r; i >= l; i--) // right to left
-				{
 					res.push_back(matrix[b][i]);
-				}
+
 				if (t > --b) break;
 				for (int i = b; i >= t; i--)  // bottom to top
-				{
 					res.push_back(matrix[i][l]);
-				}
 				if (++l > r) break;
 			}
 			return res;
+		}
+
+		//二刷
+		vector<int> spiralOrder2(vector<vector<int>>& matrix) {
+			int top = 0;
+			int bottom = matrix.size() - 1;
+			int l = 0;
+			int r = matrix[0].size() - 1;
+			vector<int> ret;
+			while (true)
+			{
+				//从左到右
+				for (int i = l; i <= r; i++)
+					ret.push_back(matrix[top][i]);
+
+				//从上往下
+				if (++top > bottom)break;//!!!!注意所有的if都是先++或者——
+				for (int i = top; i <= bottom; i++)
+					ret.push_back(matrix[i][r]);
+
+				//从右往左
+				if (--r < l)break;
+				for (int i = r; i >= l; i--)
+					ret.push_back(matrix[bottom][i]);
+
+				//从下往上
+				if (--bottom < top)break;
+				for (int i = bottom; i >= top; i--)
+					ret.push_back(matrix[i][l]);
+
+				//！！别忘了从左到右
+				if (++l > r)break;
+
+			}
+			return ret;
 		}
 
 
