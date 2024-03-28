@@ -1768,10 +1768,12 @@ namespace Matrix
 
 		/*
 		48. 旋转图像
-			参考：
-				https://leetcode.cn/problems/rotate-image/solutions/274724/li-kou-48xiao-bai-du-neng-kan-dong-de-fang-fa-zhu-/?envType=study-plan-v2&envId=top-interview-150
-			思路：
-				采用分层来进行平移的方式，将矩阵的每一层都分开进行旋转
+		题意：
+			就是把一个“方形”矩阵，旋转90度
+		参考：
+			https://leetcode.cn/problems/rotate-image/solutions/274724/li-kou-48xiao-bai-du-neng-kan-dong-de-fang-fa-zhu-/?envType=study-plan-v2&envId=top-interview-150
+		思路：
+			采用分层来进行平移的方式，将矩阵的每一层都分开进行旋转
 		*/
 		void rotate(vector<vector<int>>& matrix)
 		{
@@ -1781,7 +1783,7 @@ namespace Matrix
 			int addr = 0;
 			int temp;
 			//判定整个矩阵是否旋转完成
-			while (pos1 < pos2)
+			while (pos1 < pos2)//pos1 < pos2这个时候说明还是可以的，pos1 == pos2的时候，说明已经到了矩阵的中点，这个时候就不需要移动了。
 			{
 				addr = 0;//每次进入新的圈子后，addr归零
 				//判断其中某一条圈是否旋转完成
@@ -1792,15 +1794,41 @@ namespace Matrix
 					matrix[pos1][pos1 + addr] = matrix[pos2 - addr][pos1];//左下角赋值给左上角
 					matrix[pos2 - addr][pos1] = matrix[pos2][pos2 - addr];//右下角赋值给左下角
 					matrix[pos2][pos2 - addr] = matrix[pos1 + addr][pos2];//右上角赋值给右下角
-					matrix[pos1 + addr][pos2] = temp;
+					matrix[pos1 + addr][pos2] = temp;//
 					addr++;
 				}
-				/*++pos1;
-				--pos2;*/
+				/*进入新的内圈就是pos1++,pos2--*/
 				pos1++;
 				pos2--;
 			}
 		}
+
+		//二刷
+		/*
+		这个题目写法是这样，先写边角4个点的移动，比如
+		matrix[pos1][pos1 ] = matrix[pos2][pos1];//左下到左上
+		移动完毕后，在加上addr，至于是加还是减，到时候具体分析。
+		移动的顺序，要按照下面的顺序，也就是“逆时针”的方向
+		*/
+		void rotate(vector<vector<int>>& matrix) {
+			int pos1 = 0;
+			int pos2 = matrix.size() - 1;
+			while (pos1 < pos2) {
+				int addr = 0;
+				while (pos1 + addr < pos2) {//pos1 + addr < pos2！别忘了这个条件了。
+					int tmp = matrix[pos1][pos1 + addr];
+					matrix[pos1][pos1 + addr] = matrix[pos2 - addr][pos1];//左下到左上
+					matrix[pos2 - addr][pos1] = matrix[pos2][pos2 - addr];//右下到左下
+					matrix[pos2][pos2 - addr] = matrix[pos1 + addr][pos2];//右上到右下
+					matrix[pos1 + addr][pos2] = tmp;//左上到右上
+					addr++;
+				}
+				pos1++; pos2--;
+			}
+			return;
+		}
+
+
 
 		/*
 		73. 矩阵置零
