@@ -3597,54 +3597,6 @@ namespace LinkedList
 			return note->next;
 		}
 
-		/*
-		21. 合并两个有序链表
-		我自己的方法，性能差点，思路还行，代码麻烦点
-		*/
-		ListNode* mergeTwoLists1(ListNode* list1, ListNode* list2) {
-
-			ListNode *note = new ListNode(0);
-			ListNode *end = note;
-
-			while (list1 != nullptr || list2 != nullptr)
-			{
-
-				int t = list1 != nullptr ? list1->val : 0;
-				int l = list2 != nullptr ? list2->val : 0;
-
-				if (t > l&&list2 != nullptr)
-				{
-					end->next = new ListNode(l);
-					end = end->next;
-					if (list2 != nullptr) list2 = list2->next;
-
-				}
-				else if (l > t&&list1 != nullptr)
-				{
-					end->next = new ListNode(t);
-					end = end->next;
-					if (list1 != nullptr) list1 = list1->next;
-				}
-				else
-				{
-
-					if (list1 != nullptr)
-					{
-						end->next = new ListNode(t);
-						end = end->next;
-						list1 = list1->next;
-					}
-					if (list2 != nullptr)
-					{
-						end->next = new ListNode(l);
-						end = end->next;
-						list2 = list2->next;
-					}
-
-				}
-			}
-			return note->next;
-		}
 
 
 		/*
@@ -3660,10 +3612,12 @@ namespace LinkedList
 			所以任意一个接完了，都退出while。
 			因为给的两个链表都是递增链表。
 			所以没接完的一定比现在的数都大。
-			所以直接接在后面就行
+			所以直接接在后面就行。
+		其他：
+			这个题目的稍微难理解的是二级指针。具体的代码中的注释吧。
+			下面有用auto来描述二级指针，我还是建议别用auto了。
 		*/
-		ListNode* mergeTwoLists2(ListNode* list1, ListNode* list2) {
-
+		ListNode* mergeTwoLists1(ListNode* list1, ListNode* list2) {
 			auto dummy = new ListNode(0);
 			auto cur = dummy;
 			while (list1 && list2) {
@@ -3678,41 +3632,26 @@ namespace LinkedList
 			return dummy->next;
 		}
 
-		ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+		ListNode* mergeTwoLists2(ListNode* list1, ListNode* list2) {
 			ListNode* note = new ListNode(0);
 			ListNode* end = note;
 			while (list1 != nullptr && list2 != nullptr)
 			{
 				/*
-				那个节点的数值小，就用谁的节点。
-				这里取指针的原因有两个。
-				1、用二级指针，来统一管理list1，list2，这两个变量。
-					这样做的好处，下面的代码中，不用在特意对list1和list2做两个判断来分别做处理。
-					直接用指针代替他俩，一处代码就能解决。
-				2、如果不用二级指针的话；
-					假设用一级指针的：
-					ListNode * cur = list1;
-					后面的代码
-					cur = (*cur)->next;
-					只能改变cur，而不能改变list1或者是list2。
-					指针的核心就是：
-					给变量去另外一个名字，然后去管理他。
-					ListNode * cur = list1;
-					cur=xx; 这种就是单纯的赋值，不会改变list1对应变量的值。
-
-					但是如果用二级指针的话。
-					ListNode ** cur = &list1;
-					*cur = xx;就是改变list1的值。
-
+				用二级指针，来统一管理list1，list2，这两个变量。
+				这样做的好处，下面的代码中，ListNode **cur = list1->val < list2->val ? &list1 : &list2;
+				二级指针cur统一管理了list1和list2。
+				在下面的代码中“*cur = (*cur)->next;”。该是list1还是list2移动，就该是谁。
+				直接用指针代替他俩，一处代码就能解决。
+				如果一级指针，
+				比如：“ListNode * cur = list1;”cur只是list1的值传递，cur = (cur)->next;移动的只会是cur而不是我们想要的list
 				*/
 				ListNode **cur = list1->val < list2->val ? &list1 : &list2;
 				/*把符合条件的节点，接到后面*/
 				end->next = *cur;
 				end = end->next;
-				/*然后，把谁接了，就完后移动节点
-				!这里要注意优先级的问题；
-				优先级依次是：
-				（） -》 *
+				/*然后，把谁接了，就完后移动节点!这里要注意优先级的问题；
+				优先级依次是：（） -》 *
 				如果是这种*cur = *(cur)->next;
 				就是先访问(cur)->next。这种就是错误的。
 				*/
@@ -3721,6 +3660,23 @@ namespace LinkedList
 			end->next = list1 == nullptr ? list2 : list1;
 			return note->next;
 		}
+
+		//应该是3刷了
+		ListNode* mergeTwoLists2(ListNode* list1, ListNode* list2) {
+			ListNode*note = new ListNode;
+			ListNode* end = note;
+			while (list1&&list2) {
+				ListNode** cur = list1->val > list2->val ? &list1 : &list2;//!!谁小先接谁，别接错了，哈哈。要不然代码超时
+				end->next = *cur;
+				end = end->next;
+				(*cur) = (*cur)->next;
+			}
+			end->next = list1 == nullptr ? list2 : list1;
+			return note->next;
+		}
+
+
+
 
 
 		class Node {
@@ -4619,7 +4575,7 @@ namespace LinkedList
 		！！相遇之后，快或者慢指针接着往后走，然后弄一个新的指针从头开始走，
 		直到两个指针再次相遇，这个相遇的位置，就是环的入口位置。
 		*/
-		ListNode *detectCycle(ListNode *head) {
+		ListNode *detectCycle2(ListNode *head) {
 			ListNode *fast = head;
 			ListNode *slow = head;
 			while (fast&&fast->next)
