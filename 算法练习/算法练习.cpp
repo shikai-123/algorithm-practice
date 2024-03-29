@@ -25,7 +25,18 @@ struct ListNode {
 	ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
 
+class Node {
+public:
+	int val;
+	Node* next;
+	Node* random;
 
+	Node(int _val) {
+		val = _val;
+		next = NULL;
+		random = NULL;
+	}
+};
 
 class RandomizedSet {
 public:
@@ -3403,51 +3414,49 @@ namespace LinkedList
 	class Solution {
 	public:
 		/*
-		链表笔记：
-		> 链表中通过循环结构，往后面插入数据（没看懂！！不知道当初是怎么写的）
-			ListNode * note = new ListNode(0);
-			ListNode *pre = note;
-			//最后返回
-			return note->next;
+			链表笔记：
+				> 链表中通过循环结构，往后面插入数据（没看懂！！不知道当初是怎么写的）
+					ListNode * note = new ListNode(0);
+					ListNode *pre = note;
+					//最后返回
+					return note->next;
 
-		>链表插入数据，两种方法：
-			 1、end->next=head； 接原来的节点。
-			 缺点：
-				但是要注意的是，这样会把原先整个的链表都接上。
-				在有些题目中，需要end->next =nullptr。从而保证逻辑上end后面都是nullptr。
-			 优点：
-				好处是省空间复杂度
-			 2、end->next = new ListNode(head->val); 接新的节点，数据和head的数据一样，
-			 优点：
-				不用在需要end->next =nullptr。每次插入新的end->next就是nullptr，否则看你的构造函数写的对不对。
-			缺点：
-				空间复杂度稍微差点。
-			 3、这部分的思想，参考82. 删除排序链表中的重复元素 II，是很好的例子
+			>链表插入数据，两种方法：
+				1、end->next=head； 接原来的节点。
+					缺点：
+					但是要注意的是，这样会把原先整个的链表都接上。
+					在有些题目中，需要end->next =nullptr。从而保证逻辑上end后面都是nullptr。
+					优点：
+					好处是省空间复杂度
+				2、end->next = new ListNode(head->val); 接新的节点，数据和head的数据一样，
+					优点：
+					不用在需要end->next =nullptr。每次插入新的end->next就是nullptr，否则看你的构造函数写的对不对。
+					缺点：
+					空间复杂度稍微差点。
+				3、这部分的思想，参考82. 删除排序链表中的重复元素 II，是很好的例子
 
-		> 链表删除元素，有两种方法：
-			 1、删除头部head
-				head=head->next;
-			 2、删除p后面的一个点：
-				p->next = p->next->next;
-			 3、删除slow后面的所有的点（这个不对吧，写这么复杂，应该是slow->next = nullptr;这么一句就行）
+			> 链表删除元素，有两种方法：
+				1、删除头部head
+					head=head->next;
+				2、删除p后面的一个点：
+					p->next = p->next->next;
+				3、链表删除元素，统一方法
+					置一个虚拟头结点在进行删除操作。
+					ListNode* dummyHead = new ListNode(0); // 设置一个虚拟头结点
+					dummyHead->next = head; // 将虚拟头结点指向head，这样方便后面做删除操作
+					参考：
+					https://www.programmercarl.com/0203.%E7%A7%BB%E9%99%A4%E9%93%BE%E8%A1%A8%E5%85%83%E7%B4%A0.html#%E6%80%9D%E8%B7%AF
+
+				4、删除slow后面的所有的点（上面123，都是删除一个点，这里删除多个点）
+					slow->next = nullptr;// slow以及slow前面的所有的点
+
+			> 链表的浅拷贝的思考
+				这个问题，对我而言是指针的浅拷贝，这样的话所有的指针都可以管理同一个指针。
+				贴一些关键的代码：
 				auto slow = head;
-				auto nHead = slow->next;//slow后面的所有的点
-				slow->next = nullptr;// slow以及slow前面的所有的点
-
-		> 链表删除元素，统一方法
-			设置一个虚拟头结点在进行删除操作。
-			  参考：
-			  https://www.programmercarl.com/0203.%E7%A7%BB%E9%99%A4%E9%93%BE%E8%A1%A8%E5%85%83%E7%B4%A0.html#%E6%80%9D%E8%B7%AF
-			  ListNode* dummyHead = new ListNode(0); // 设置一个虚拟头结点
-			  dummyHead->next = head; // 将虚拟头结点指向head，这样方便后面做删除操作
-
-		> 链表的浅拷贝的思考
-			这个问题，对我而言是指针的浅拷贝，这样的话所有的指针都可以管理同一个指针。
-			贴一些关键的代码：
-			auto slow = head;
-			//以下代码都会对head链表更改！但是具体的代码不太一样。
-			slow = slow->next;//这个也对更改了，特殊的是head每次被赋值的都是原来的值
-			slow->next =nullptr; // 这个会造成head后面的链表断开
+				//以下代码都会对head链表更改！但是具体的代码不太一样。
+				slow = slow->next;//这个也对更改了，特殊的是head每次被赋值的都是原来的值
+				slow->next =nullptr; // 这个会造成head后面的链表断开
 		*/
 
 		/*
@@ -3495,8 +3504,6 @@ namespace LinkedList
 			}
 			return false;
 		}
-
-
 
 
 		ListNode* insertData(ListNode* head, int data) {
@@ -3702,21 +3709,6 @@ namespace LinkedList
 
 
 
-
-		class Node {
-		public:
-			int val;
-			Node* next;
-			Node* random;
-
-			Node(int _val) {
-				val = _val;
-				next = NULL;
-				random = NULL;
-			}
-		};
-
-
 		/*
 		138. 随机链表的复制
 		思路：
@@ -3880,12 +3872,12 @@ namespace LinkedList
 			5、返回dummy->next;
 		*/
 		ListNode* removeNthFromEnd(ListNode* head, int n) {
-			ListNode* dummy = new ListNode(0);
+			ListNode* dummy = new ListNode(0);//为了统一删除方法，增加虚拟节点
 			dummy->next = head;
-			ListNode* fast = dummy, *slow = dummy;
-
-			// 让fast指针先走n+1步
-			for (int i = 0; i < n + 1; i++) {
+			ListNode* fast = dummy, *slow = dummy;//既然增加了虚拟点，快慢指针就要从这开始，要不然没有意义
+			// 让fast指针先走n+1步 假设12345 删除倒数2个，也就是4.先走3步，这个时候fast走到了4这。
+			//然后fast和slow一块走，fast走到尾巴也就是走了2步，slow走到3.3正好在4的前面，也就是再删除的元素前面。在它的前面就方便使用slow->next = slow->next->next;删除他
+			for (int i = 0; i < n + 1; i++) {//
 				fast = fast->next;
 			}
 			//往后移动双指针
@@ -3900,6 +3892,23 @@ namespace LinkedList
 			return dummy->next;
 		}
 
+		//二刷
+		ListNode* removeNthFromEnd2(ListNode* head, int n) {
+			ListNode* dummy = new ListNode;
+			dummy->next = head;
+			ListNode* fast = dummy;
+			ListNode* slow = dummy;
+
+			for (size_t i = 0; i < n + 1; i++)
+				fast = fast->next;
+			while (fast)
+			{
+				fast = fast->next;
+				slow = slow->next;
+			}
+			slow->next = slow->next->next;
+			return dummy->next;
+		}
 
 		/*
 		82. 删除排序链表中的重复元素 II
