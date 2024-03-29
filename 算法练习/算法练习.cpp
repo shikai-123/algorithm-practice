@@ -3403,62 +3403,101 @@ namespace LinkedList
 	class Solution {
 	public:
 		/*
+		链表笔记：
+		> 链表中通过循环结构，往后面插入数据（没看懂！！不知道当初是怎么写的）
+			ListNode * note = new ListNode(0);
+			ListNode *pre = note;
+			//最后返回
+			return note->next;
+
+		>链表插入数据，两种方法：
+			 1、end->next=head； 接原来的节点。
+			 缺点：
+				但是要注意的是，这样会把原先整个的链表都接上。
+				在有些题目中，需要end->next =nullptr。从而保证逻辑上end后面都是nullptr。
+			 优点：
+				好处是省空间复杂度
+			 2、end->next = new ListNode(head->val); 接新的节点，数据和head的数据一样，
+			 优点：
+				不用在需要end->next =nullptr。每次插入新的end->next就是nullptr，否则看你的构造函数写的对不对。
+			缺点：
+				空间复杂度稍微差点。
+			 3、这部分的思想，参考82. 删除排序链表中的重复元素 II，是很好的例子
+
+		> 链表删除元素，有两种方法：
+			 1、删除头部head
+				head=head->next;
+			 2、删除p后面的一个点：
+				p->next = p->next->next;
+			 3、删除slow后面的所有的点（这个不对吧，写这么复杂，应该是slow->next = nullptr;这么一句就行）
+				auto slow = head;
+				auto nHead = slow->next;//slow后面的所有的点
+				slow->next = nullptr;// slow以及slow前面的所有的点
+
+		> 链表删除元素，统一方法
+			设置一个虚拟头结点在进行删除操作。
+			  参考：
+			  https://www.programmercarl.com/0203.%E7%A7%BB%E9%99%A4%E9%93%BE%E8%A1%A8%E5%85%83%E7%B4%A0.html#%E6%80%9D%E8%B7%AF
+			  ListNode* dummyHead = new ListNode(0); // 设置一个虚拟头结点
+			  dummyHead->next = head; // 将虚拟头结点指向head，这样方便后面做删除操作
+
+		> 链表的浅拷贝的思考
+			这个问题，对我而言是指针的浅拷贝，这样的话所有的指针都可以管理同一个指针。
+			贴一些关键的代码：
+			auto slow = head;
+			//以下代码都会对head链表更改！但是具体的代码不太一样。
+			slow = slow->next;//这个也对更改了，特殊的是head每次被赋值的都是原来的值
+			slow->next =nullptr; // 这个会造成head后面的链表断开
+		*/
+
+		/*
 		141. 环形链表
-			哈希表方法
+		题意：
+			判断链表中是否有环，有环就返回true
+		哈希表方法
 			核心在于要把节点指针放进去，因为有可能出现节点数据val相同，但是数据指针不会相同的。
 			如果发现了重复的指针，那么就是同一个节点，
 			说明该链表出现了环。
 		*/
 		bool hasCycle1(ListNode *head) {
 			unordered_set<ListNode *> p;
-			while (head != nullptr)
-			{
-				if (p.find(head) == p.end())
-				{
+			while (head != nullptr) {
+				if (p.find(head) == p.end())//找不到就放到map中，
 					p.insert(head);
-				}
-				else
-				{
+				else//找到重复的就说明出现了重复的，
 					return true;
-				}
 				head = head->next;
 			}
-
-			if (p.size() == 1)
-			{
+			if (p.size() == 1)//只有一个点肯定没有环
 				return false;
-			}
 			return false;
 		}
+
 		/*
-		141. 环形链表
+		二刷
+		参考;
+			https://leetcode.cn/problems/linked-list-cycle/?envType=study-plan-v2&envId=top-100-liked
 		思路：
-			双指针
-			思路也很简单，主要是熟悉一下双指针用法。
-			性能和我上面差不多
-			一个快的，一个慢的。所谓快慢就是在一个循环中，快的走两个next慢的走一个next
-			如果有环，快的慢的，早晚会遇上
-		参考：
-			https://leetcode.cn/problems/linked-list-cycle/solutions/175734/yi-wen-gao-ding-chang-jian-de-lian-biao-wen-ti-h-2/?envType=study-plan-v2&envId=top-interview-150
+			快慢指针，快指针走两步，慢指针走一步，
+			如果有环就一定会出现快慢指针相遇的情况。
 		*/
-		bool hasCycle(ListNode *head) {
-			ListNode *fast = head, *low = head;
-			//链表有环的话，他的节点中，就不会有nullptr，如果出现了nullptr，就说明链表没有环
-			while (low != nullptr&&fast != nullptr&& low->next != nullptr&&fast->next != nullptr)
+		bool hasCycle2(ListNode *head) {
+			ListNode *fast = head;
+			ListNode *slow = head;
+
+			//如果快指针都走到nullptr了，也就是没有环
+			while (fast&&fast->next != nullptr)//!!别忘了也判断fast
 			{
-				fast = fast->next;
-				if (fast->next != nullptr)
-				{
-					fast = fast->next;
-				}
-				if (fast == low)
-				{
+				fast = fast->next->next;
+				slow = slow->next;
+				if (fast == slow)//如果有环while肯定出不去，快慢指针总会相遇，那么就返回true
 					return true;
-				}
-				low = low->next;
 			}
 			return false;
 		}
+
+
+
 
 		ListNode* insertData(ListNode* head, int data) {
 			ListNode* newNode = new ListNode(data); // 创建新节点
@@ -4546,8 +4585,11 @@ namespace LinkedList
 
 		/*
 		142.环形链表II
+		题意：
+			给定一个链表的头节点  head ，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
 		参考：
 			https://www.programmercarl.com/0142.%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8II.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+			题目进阶要求用1的空间复杂度，最终还是要用双指针思路
 		思路1——双指针：
 			这个思路比较复杂，是卡子哥讲的那个思路。
 			其中的数学推导确实比较麻烦。
@@ -4569,6 +4611,39 @@ namespace LinkedList
 			}
 			return nullptr;
 		}
+
+		/*
+		二刷用双指针思路，也就是上面链接中的思路；
+		不用管具体的数学公式推导，记录思路即可。
+		有快慢两个指针，如果有换的话，两个指针一定会相遇。
+		！！相遇之后，快或者慢指针接着往后走，然后弄一个新的指针从头开始走，
+		直到两个指针再次相遇，这个相遇的位置，就是环的入口位置。
+		*/
+		ListNode *detectCycle(ListNode *head) {
+			ListNode *fast = head;
+			ListNode *slow = head;
+			while (fast&&fast->next)
+			{
+				fast = fast->next->next;
+				slow = slow->next;
+				if (fast == slow) {
+					while (true) {
+						//!!!这个if一定要先判断！一定要在上面
+						//比如12这个环，到里层while的时候，fast和slow都在1上面，而1就是入口，这个时候不先判断，而是再往下走，返回的结果就是错的。
+						if (head == slow)
+							return head;
+						head = head->next;
+						slow = slow->next;
+						//fast = fast->next;//都一样我试了
+
+					}
+				}
+			}
+			return nullptr;
+		}
+
+
+
 
 		/*
 		160. 相交链表
