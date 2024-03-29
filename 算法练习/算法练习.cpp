@@ -3518,36 +3518,15 @@ namespace LinkedList
 			return head; // 返回更新后的头节点
 		}
 
-		/*
-		2. 两数相加
-			转成数字不行，有的数特别大，小点的数我这个代码没问题。
-		*/
-		ListNode* addTwoNumbers1(ListNode* l1, ListNode* l2) {
-			unsigned long long l = 0, r = 0, sum = 0;
-			int exponent = 0;//指数
-			ListNode* ret = nullptr;
-			while (l1 != nullptr)
-			{
-				l += l1->val*pow(10, exponent++);
-				l1 = l1->next;
-			}
-			exponent = 0;
-			while (l2 != nullptr)
-			{
-				r += l2->val*pow(10, exponent++);
-				l2 = l2->next;
-			}
-			sum = r + l;
-			string sumStr = to_string(sum);
-			for (int i = sumStr.size() - 1; i >= 0; i--)
-			{
-				ret = insertData(ret, stoi(string(1, sumStr[i])));
-			}
-			return ret;
-		}
 
 		/*
 		2. 两数相加
+		题意：
+			两个链表，
+				243
+				564
+			得到708。返回这个708。
+			他说他的矩阵是逆序存储，其实就一句话，进位要往后进。
 		参考：
 			https://leetcode.cn/problems/add-two-numbers/solutions/4375/liang-shu-xiang-jia-by-gpe3dbjds1/comments/1554952
 			他的代码是根据这个回答中改进的，思路是一样的，代码更简洁
@@ -3566,22 +3545,20 @@ namespace LinkedList
 
 			while (l1 != nullptr || l2 != nullptr)
 			{
-				int l = l1 != nullptr ? l1->val : 0;
-				int r = l2 != nullptr ? l2->val : 0;
-				sum = l + r + jinwei;
+				int t = l1 != nullptr ? l1->val : 0;//上面的链表
+				int b = l2 != nullptr ? l2->val : 0;//下面的链表
+				sum = t + b + jinwei;//本次结果加上次的进位
 				jinwei = sum / 10;
 
 				/*
-					!!通过循环结构，往后插数据的代码，
-					就是下面这两句，
-					非常的重要！
-					pre 我们理解为链表当前最后面的数据，
-					next就是我们要插入的数据
-				   然后，pre = pre->next;
-				   这样pre就又可以代表最后的数据了
-				   这样的话，就是需要两个ListNode变量。
-				   一个代表总的链表，也就是note
-				   一个就是代表最后的节点，也就是pre。
+				!通过循环结构，往后插数据的代码，就是下面这两句，非常的重要！
+				pre 我们理解为链表当前最后面的数据，
+				next就是我们要插入的数据
+				然后，pre = pre->next;
+				这样pre就又可以代表最后的数据了
+				这样的话，就是需要两个ListNode变量。
+				一个代表总的链表，也就是note
+				一个就是代表最后的节点，也就是pre。
 				 */
 				pre->next = new ListNode(sum % 10);
 				pre = pre->next;
@@ -3589,14 +3566,61 @@ namespace LinkedList
 				if (l1 != nullptr) l1 = l1->next;
 				if (l2 != nullptr) l2 = l2->next;
 			}
-			if (jinwei > 0)
-			{
+
+			if (jinwei > 0)//跳出循环后，有进位的话，就加上
 				pre->next = new ListNode(jinwei);
-			}
 
 			return note->next;
 		}
 
+		//二刷——这个是错的，我没删除，就是告诉你错在哪
+		ListNode* addTwoNumbers2(ListNode *l1, ListNode *l2) {
+			int jinwei = 0;
+			ListNode *node = new ListNode;
+			ListNode *end = node;
+			while (l1 || l2)//l1和l2的长度不一样，所以计算要到他们俩都到尾巴，才算结束
+			{
+				int top = l1 == nullptr ? 0 : l1->val;
+				int bottom = l2 == nullptr ? 0 : l2->val;
+				int sum = (top + bottom + jinwei) % 10;//如果sum大于10.因为要进位，所以需要保留余数
+				jinwei = (top + bottom + jinwei) / 10;
+				end->val = sum;//我这里是先放值，然后再申请新的空间，如果链表最后没有进位，那么就多了一个点。所以不如改成，先申请空间再赋值。
+				end->next = new ListNode;
+				end = end->next;
+				l1 = l1 == nullptr ? l1 : l1->next;//l1的next是空，就说走到了末尾，就赋值它本身，就不要走了往下。
+				l2 = l2 == nullptr ? l2 : l2->next;
+			}
+			if (jinwei > 0)
+				end->val = jinwei;
+			else {
+				delete end;//假设最后的结果是123，其实如果最后没有进位的话，end是没有作用的。那么你释放end，end虽然被释放了，但是123next被赋的值还是原来的值，那么就成了123+未知空间，力扣还是会访问到end，最后报错。
+				end = nullptr;
+			}
+			return node;
+		}
+
+		//这个是正确。就用这个
+		ListNode* addTwoNumbers3(ListNode *l1, ListNode *l2) {
+			int jinwei = 0;
+			ListNode *node = new ListNode;
+			ListNode *end = node;
+			while (l1 || l2)//l1和l2的长度不一样，所以计算要到他们俩都到尾巴，才算结束
+			{
+				int top = l1 == nullptr ? 0 : l1->val;
+				int bottom = l2 == nullptr ? 0 : l2->val;
+				int sum = (top + bottom + jinwei) % 10;//如果sum大于10.因为要进位，所以需要保留余数
+				jinwei = (top + bottom + jinwei) / 10;
+				end->next = new ListNode(sum);
+				end = end->next;
+				l1 = l1 == nullptr ? l1 : l1->next;//l1的next是空，就说走到了末尾，就赋值它本身，就不要走了往下。
+				l2 = l2 == nullptr ? l2 : l2->next;
+			}
+			if (jinwei > 0) {
+				end->next = new ListNode(jinwei);
+				end = end->next;
+			}
+			return node->next;
+		}
 
 
 		/*
@@ -3662,7 +3686,7 @@ namespace LinkedList
 		}
 
 		//应该是3刷了
-		ListNode* mergeTwoLists2(ListNode* list1, ListNode* list2) {
+		ListNode* mergeTwoLists3(ListNode* list1, ListNode* list2) {
 			ListNode*note = new ListNode;
 			ListNode* end = note;
 			while (list1&&list2) {
@@ -4779,26 +4803,30 @@ namespace LinkedList
 		void test()
 		{
 			LinkedList::Solution a;
-			ListNode lb(1);
-			ListNode lb1(2);
+			ListNode lb(2);
+			ListNode lb1(4);
 			ListNode lb2(3);
-			ListNode lb3(4);
-			ListNode lb4(5);
-			ListNode lb5(6);
+
+			ListNode lb3(5);
+			ListNode lb4(6);
+			ListNode lb5(4);
 			ListNode lb6(7);
 
 			ListNode* ret;
 
 			lb.next = &lb1;
 			lb1.next = &lb2;
-			lb2.next = &lb3;
-			lb3.next = &lb4;/*
+
+			lb3.next = &lb4;
+			lb4.next = &lb5;
+			/*lb2.next = &lb3;
+			lb3.next = &lb4;
 			lb4.next = &lb5;
 			lb5.next = &lb6;*/
 
 			//ret = reverse_link(&lb);
 			//ret = reverse(&lb);
-			ret = a.removeElements(&lb, 5);
+			ret = a.addTwoNumbers2(&lb, &lb3);
 			//ret = a.reverseBetween(&lb,1,2);
 
 			while (ret != nullptr)
@@ -11474,7 +11502,8 @@ int main()
 	//StackandQueue::Solution tree;
 	//DynamicPlanning::Solution tree;
 	//DoublePointer::Solution tree;
-	Dandiaozhan::Solution tree;
+	//Dandiaozhan::Solution tree;
+	LinkedList::Solution tree;
 	tree.test();
 
 
