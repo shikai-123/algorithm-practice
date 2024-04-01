@@ -4169,32 +4169,51 @@ namespace LinkedList
 
 
 		/*
-			25. K 个一组翻转链表
-			和92题对着看，在理解92的基础上，这个很简单。
-			思路：
-				用链表翻转中的中间点翻转
-				用while遍历，每k个开始调用函数。
-
+		25. K 个一组翻转链表
+		参考：
+			https://leetcode.cn/problems/reverse-nodes-in-k-group/?envType=study-plan-v2&envId=top-100-liked
+		思路：
+			 每次翻转k个节点，然后接上；然后再翻转再接上。
+			 比如12345 k=2
 		*/
-		ListNode* reverseKGroup(ListNode* head, int k) {
-
-			int index = 0;
-			int b = 1;
-
-			ListNode* oldHead = head;
-			while (head != nullptr)
-			{
-				head = head->next;
-				index++;
-				if (index % k == 0)
-				{
-					oldHead = reverseBetween(oldHead, b, b + k - 1);
-					b = b + k;
-				}
+		//左开右闭，比如传进来123，然后给你返回的21
+		ListNode* reverseKGroup_reverser(ListNode* head, ListNode* tail) {
+			ListNode* pre = nullptr;//要实现翻转，当前节点要接的上次节点。最一开始的时候，肯定是要接nullptr
+			ListNode* cur = head;
+			// !!这一部分和“206. 反转链表”很相似
+			while (cur != tail) {
+				ListNode*nextTmp = cur->next;
+				cur->next = pre;//cur-next指向前一个
+				pre = cur;//pre指针往前走
+				cur = nextTmp;//cur也往前走
 			}
-
-			return oldHead;
+			return pre;
 		}
+
+		ListNode* reverseKGroup(ListNode* head, int k) {
+			if (head == nullptr || head->next == nullptr)
+				return head;//如果链表中为空，或者只有1个点，那么就没有翻转的必要。
+
+			ListNode *tail = head;//初始化tail，tail后面会不断的往后移动，所以一开始在头部的位置。
+			for (size_t i = 0; i < k; i++)
+			{
+				if (tail == nullptr)//在移动尾巴的过程中，for还没完成，尾巴都移动到nullptr了，说明这一段不满足翻转要求，要返回head
+					return head;
+				tail = tail->next;
+			}
+			//已经知道了head和tail的位置，那就开始翻转
+			ListNode * newHead = reverseKGroup_reverser(head, tail);
+			//上面翻转完了之后，就开始处理剩余的节点
+			head->next = reverseKGroup(tail, k);
+
+			return head;//最后返回翻转后的节点
+		}
+
+
+
+
+
+
 
 		/*
 			68. 文本左右对齐
@@ -4525,7 +4544,7 @@ namespace LinkedList
 		}
 
 		//二刷
-		ListNode* swapPairs(ListNode* head) {
+		ListNode* swapPairs2(ListNode* head) {
 			ListNode* dummy = new ListNode;
 			dummy->next = head;
 			ListNode* cur = dummy;//cur在x这
