@@ -4501,6 +4501,7 @@ namespace LinkedList
 		参考：
 			https://www.programmercarl.com/0024.%E4%B8%A4%E4%B8%A4%E4%BA%A4%E6%8D%A2%E9%93%BE%E8%A1%A8%E4%B8%AD%E7%9A%84%E8%8A%82%E7%82%B9.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
+			核心就是每次只翻转一对，然后往后移动2个位置，然后再接着翻转一对。
 			比如：x 1234，x先接2，然后接1；再接4，然后接3。
 			以12举例，x从指向1变成了指向2.没有临时变量的话，1就找不到了。
 			同理，2从指向3变成了1，没有临时变量的话，3就找不到了。
@@ -4508,20 +4509,38 @@ namespace LinkedList
 		*/
 		ListNode* swapPairs(ListNode* head) {
 			ListNode *dummyHead = new ListNode(0);
-			dummyHead->next = head;
 			ListNode *cur = dummyHead;
+			dummyHead->next = head;
 			while (cur->next != nullptr&&cur->next->next != nullptr)
 			{
-				ListNode *tmp = cur->next;//其实是“1”
-				ListNode *tmp1 = cur->next->next->next;//其实是“3”
+				ListNode *tmp1 = cur->next;//其实是“1”
+				ListNode *tmp3 = cur->next->next->next;//其实是“3”
 
-				cur->next = cur->next->next;//x接2
-				cur->next->next = tmp;//2接1
-				cur->next->next->next = tmp1;//1接3
-				cur = cur->next->next;//cur每次要往后移动两次
+				cur->next = cur->next->next;//x接2。2把1的位置替代了，1找不到了，所以要用tmp1来保存1
+				cur->next->next = tmp1;//2后面的3“换成”1。达到2接1的效果。这样的话2后面的原来的3就丢了。所以上面要用tmp3来保存3
+				cur->next->next->next = tmp3;//1接3
+				cur = cur->next->next;//cur每次要往后移动两次.从x移动到2，也就是12的前面移动到34的前面
 			}
 			return dummyHead->next;
 		}
+
+		//二刷
+		ListNode* swapPairs(ListNode* head) {
+			ListNode* dummy = new ListNode;
+			dummy->next = head;
+			ListNode* cur = dummy;//cur在x这
+			while (cur->next&&cur->next->next) {
+				ListNode* tmp1 = cur->next;//节点1
+				ListNode* tmp3 = cur->next->next->next;//节点3
+				cur->next = cur->next->next;//x接2
+				cur->next->next = tmp1;//接1
+				cur->next->next->next = tmp3;//接3
+				cur = cur->next->next;
+			}
+			return dummy->next;
+		}
+
+
 
 		/*
 		面试题 02.07. 链表相交
