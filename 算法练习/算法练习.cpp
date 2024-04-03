@@ -3713,19 +3713,20 @@ namespace LinkedList
 		138. 随机链表的复制
 		题意：
 			这个题目的题意，看起来很难，其实就是复制链表。这个链表只不过特殊在这个链表是有个随机指针，指向一个随机的节点。就是因为它导致复制起来非常复杂的原因。
+			麻烦就麻烦在他的他随机指针指向的是链表的序号。
+			比如：head = [[7,null],[13,0],[11,4],[10,2],[1,0]]。后面的是随机指针，【13,0】中0它指向指的的链表中的第0个下标的节点。这种就比较难做。
 		思路：
 			这个题目，难度有2，一是理解题目，二是链表中的“random”指针的指向。
 			1、如果是空空链表，就返回空的。
 
-			2、构建无序map，然后用链表节点的指针做key，表节点的指针做key。这么做的原因1是方便找到链表，2是找链表的下一个节点的时候也好弄，把这个map按照链表的顺序加满。
-			这样的话，可以直接用链表的节点的指针地址，直接访问对应的链表节点。
+			2、构建无序map，然后用链表节点的地址做key，链表的节点做value。（有点想用map的特性做了一个指针）
 
-			3、通过链表节点的指针，遍历所有的map，顺便赋值。
-			通过指针，找到对应的节点数据，比如val就赋值同一个节点的map，next自然就是“下一个节点地址”，而下个节点的地址自然就是以下个节点地址为key的map；
-			同理，random也是同样的道理。
+
+			3、通过链表节点的指针，遍历map，顺便赋值。
 
 			4、最后返回的就是map的“map[head]”
-
+		总结：
+			代码乍一看还行，其实没怎么理解。就硬记吧
 		参考：
 			https://leetcode.cn/problems/copy-list-with-random-pointer/solutions/2361362/138-fu-zhi-dai-sui-ji-zhi-zhen-de-lian-b-6jeo/?envType=study-plan-v2&envId=top-interview-150
 			中的哈希表的方法
@@ -3733,9 +3734,9 @@ namespace LinkedList
 		Node* copyRandomList(Node* head) {
 			if (head == nullptr)
 				return head;
-			unordered_map<Node*, Node*>map;
+			unordered_map<Node*, Node*>map;//一定要用无序map 因为它的[]时间复杂的平均为1，坏的情况下才是n。比map的logn好多了
 			Node* cur = head;
-			Node* ret = nullptr;
+			//创建新的map节点
 			while (cur != nullptr)
 			{
 				map[cur] = new Node(0);
@@ -3745,12 +3746,34 @@ namespace LinkedList
 			while (cur != nullptr)
 			{
 				map[cur]->val = cur->val;
-				map[cur]->next = map[cur->next];
+				map[cur]->next = map[cur->next];//！！当赋值地址的时候，就要使用map了。
 				map[cur]->random = map[cur->random];
 				cur = cur->next;
 			}
 			return map[head];
+		}
 
+
+		//二刷
+		Node* copyRandomList2(Node* head) {
+			Node *cur = head;
+			Node *tmpHead = head;
+			unordered_map<Node*, Node*> umap;
+
+			while (cur)
+			{
+				umap[cur] = new Node(0);
+				cur = cur->next;
+			}
+			cur = tmpHead;
+			while (cur)
+			{
+				umap[cur]->val = cur->val;
+				umap[cur]->random = umap[cur->random];
+				umap[cur]->next = umap[cur->next];
+				cur = cur->next;
+			}
+			return umap[head];
 		}
 
 		/*
@@ -4857,6 +4880,7 @@ namespace LinkedList
 			ListNode lb6(7);
 
 			ListNode* ret;
+			Node* nret;
 
 			lb.next = &lb1;
 			lb1.next = &lb2;
@@ -4868,15 +4892,45 @@ namespace LinkedList
 			lb4.next = &lb5;
 			lb5.next = &lb6;*/
 
+
+			Node nb(7);
+			Node nb1(13);
+			Node nb2(11);
+
+			Node nb3(10);
+			Node nb4(1);
+			Node nb5(4);
+			Node nb6(7);
+
+
+			nb.next = &nb1;
+			nb.random = nullptr;
+
+			nb1.next = &nb2;
+			nb1.random = &nb;
+
+			nb2.next = &nb3;
+			nb2.random = &nb4;
+
+			nb3.next = &nb4;
+			nb3.random = &nb2;
+
+
+			nb4.next = nullptr;
+			nb4.random = &nb1;
+
+
+
+
 			//ret = reverse_link(&lb);
 			//ret = reverse(&lb);
-			ret = a.addTwoNumbers2(&lb, &lb3);
+			nret = a.copyRandomList(&nb);
 			//ret = a.reverseBetween(&lb,1,2);
 
-			while (ret != nullptr)
+			while (nret != nullptr)
 			{
-				cout << ret->val << endl;
-				ret = ret->next;
+				cout << nret->val << "  " << nret->random->val << endl;
+				nret = nret->next;
 			}
 		}
 		void testLRU()
