@@ -4286,27 +4286,30 @@ namespace LinkedList
 			}
 			return ans;
 		}
-		/*
-	146. LRU 缓存
-		要学会用两种方法去实现。
-		一种是标准std::list
-		一种手动创建双向链表
 
+		/*
+		146. LRU 缓存
+			！！这个题目常考！！
+		题意：
+			就是就是按照“使用时间”配列，最新访问的在上面，次新访问往下排，最后访问的在最下面。
+			假设最多放3，现在打开一个新的就要把最老的删掉，把刚打开放在最上面。
+			有点像手机多任务调度设计。
+			函数 get 和 put 必须以 O(1) 的平均时间复杂度运行。
 		参考：
-		思路：
-		https://leetcode.cn/problems/lru-cache/solutions/12711/lru-ce-lue-xiang-jie-he-shi-xian-by-labuladong/?envType=study-plan-v2&envId=top-interview-150
-		代码：
-		https://leetcode.cn/problems/lru-cache/solutions/12711/lru-ce-lue-xiang-jie-he-shi-xian-by-labuladong/comments/162138
+			思路：
+				https://leetcode.cn/problems/lru-cache/solutions/12711/lru-ce-lue-xiang-jie-he-shi-xian-by-labuladong/?envType=study-plan-v2&envId=top-interview-150
+			代码：
+				https://leetcode.cn/problems/lru-cache/solutions/12711/lru-ce-lue-xiang-jie-he-shi-xian-by-labuladong/comments/162138
 		这个代码中。链表最后的元素，是最老的元素。
 	*/
 		class LRUCache {
 		public:
 			LRUCache(int capacity) : cap(capacity) {
-
 			}
 			int get(int key)
 			{
-				if (map.find(key) == map.end()) return -1;
+				if (map.find(key) == map.end())
+					return -1;
 				auto key_value = *map[key];
 				cache.erase(map[key]);
 				cache.push_front(key_value);
