@@ -4294,48 +4294,108 @@ namespace LinkedList
 			就是就是按照“使用时间”配列，最新访问的在上面，次新访问往下排，最后访问的在最下面。
 			假设最多放3，现在打开一个新的就要把最老的删掉，把刚打开放在最上面。
 			有点像手机多任务调度设计。
-			函数 get 和 put 必须以 O(1) 的平均时间复杂度运行。
+			！！函数 get 和 put 必须以 O(1) 的平均时间复杂度运行。！！这个条件才导致了用到了uamp和list这两个容器
+			只有put的时候，list因为是链表，所以insert可以做到1的时间复杂度，但是get的时间复杂度却是n。
+			umap的get和put都可以做到时间复杂度为1，但是uamp无法做一个排序，我取数据的时候，没有办法去到最新的数据，所以需要他们结合。
+			！！！阅读代码的时候你会发现，查找数据的时候，用到的是umap;储存数据的时候，用到的是list。
+
 		参考：
 			思路：
 				https://leetcode.cn/problems/lru-cache/solutions/12711/lru-ce-lue-xiang-jie-he-shi-xian-by-labuladong/?envType=study-plan-v2&envId=top-interview-150
 			代码：
 				https://leetcode.cn/problems/lru-cache/solutions/12711/lru-ce-lue-xiang-jie-he-shi-xian-by-labuladong/comments/162138
-		这个代码中。链表最后的元素，是最老的元素。
+		其他：
+			这个代码中。最新的元素是放在list的头部。
+			list别记错，它是双向链表。
+			！！记忆点：lsit存key和value map存key和list的迭代器！！
 	*/
+	//三刷————推荐这个代码
+		class LRUCache3 {
+		public:
+			LRUCache3(int capacity) : cap(capacity) {
+			}
+
+			int get(int key) {
+				if (umap.find(key) == umap.end())
+					return -1;
+				//splice 翻译 移接
+				//listp.begin()：这是指定移动元素的目标位置，即将元素移到链表的头部。
+				//listp：表示目标链表，也就是 listp 自身。
+				//it->second：这是要移动的元素的迭代器，it->second 指向的是链表节点的值，即键值对中的值。
+				listp.splice(listp.begin(), listp, umap[key]);//通过spilce把指定的元素移动到头部
+				return listp.front().second;
+			}
+
+			void put(int key, int value) {
+				auto it = umap.find(key);
+				if (it == umap.end()) {//没找到数据，
+					if (listp.size() == cap) {//没找到数据，并且容量满了，删除旧数据，添加新数据
+						//listp.pop_back()
+						umap.erase(listp.back().first);//删除旧数据，谁是旧的就靠list来决定
+						listp.pop_back();
+						listp.push_front({ key,value });//添加新数据
+						umap[key] = listp.begin();
+					}
+					else {//没找到数据，容量也没满
+						listp.push_front({ key,value });
+						umap[key] = listp.begin();
+					}
+				}
+				else {//找到数据了，就把原先的数据删掉，然后把这个数据从新放到list头部
+					listp.erase(umap[key]);
+					listp.push_front({ key,value });
+					umap[key] = listp.begin();
+				}
+			}
+
+		private:
+			int cap = 0;
+			list<pair<int, int>> listp;
+			unordered_map<int, list<pair<int, int>>::iterator> umap;
+		};
+
 		class LRUCache {
 		public:
 			LRUCache(int capacity) : cap(capacity) {
 			}
+			//int get(int key) 如果关键字 key 存在于缓存中，则返回关键字的值，否则返回 -1 。
 			int get(int key)
 			{
 				if (map.find(key) == map.end())
 					return -1;
-				auto key_value = *map[key];
-				cache.erase(map[key]);
-				cache.push_front(key_value);
-				map[key] = cache.begin();
+				auto key_value = *map[key];//查找数据的时候用umap;
+				listp.erase(map[key]);//list删除umap找到的数据
+				listp.push_front(key_value);//list添加新的数据到list的头部。
+				map[key] = listp.begin();//map和list建立对应关系！无论这个key是新的还是旧的，[]都可以建立关系。
 				return key_value.second;
+				//return 	map[key]->second;//两者是一样的。
 			}
-
+			//void put(int key, int value) 如果关键字 key 已经存在，则放到最前面，代表最新访问过 ；如果不存在，则向缓存中插入该组 key-value 。如果插入操作导致关键字数量超过 capacity ，则应该 逐出 最久未使用的关键字。
 			void put(int key, int value) {
-				if (map.find(key) == map.end())
+
+				if (map.find(key) == map.end())//放入的元素不存在
 				{
-					if (cache.size() == cap)
+					//!!我试了，这个if不能放在外面。要不然过不了
+					if (listp.size() == cap)//当LRU的容量满了之后，删除尾巴的最旧的元素
 					{
-						map.erase(cache.back().first);
-						cache.pop_back();
+						map.erase(listp.back().first);//map中删掉最旧的数据
+						listp.pop_back();//list中删除最旧的数据
 					}
+					listp.push_front({ key, value });//list放最新的数据在头部
+					map[key] = listp.begin();//map和list建立对应关系。
 				}
-				else
+				else//放入的元素存在，那么就删除这个元素，然后把这个元素放到list的头部
 				{
-					cache.erase(map[key]);
+					listp.erase(map[key]);
+					listp.push_front({ key, value });
+					map[key] = listp.begin();//map和list建立对应关系。
 				}
-				cache.push_front({ key, value });
-				map[key] = cache.begin();//hashmap对应关系也得改变?什么时候变呢？发现都是在插入新的list节点的时候，对应关系要变化。 这是自然，新的list没有对应关系，自然要对应上
+				//cache.push_front({ key, value });
 			}
 		private:
 			int cap;
-			list<pair<int, int>> cache;//这是双向链表，用双向链表而不是单向链表的原因是因为为了保证删除的时间复杂度是1。
+			//！！要注意的是，这个代码中，最新的元素是放在list的头部。
+			list<pair<int, int>> listp;//list是双向链表，用它的原因是删除的时间复杂度是1。
 			unordered_map<int, list<pair<int, int>>::iterator> map;
 
 			/*
@@ -4365,9 +4425,62 @@ namespace LinkedList
 				一个节点中的key，对应了list中的value，也对应了map中list的迭代器（节点地址）。
 				[key,value,noetAddr]
 
-				记忆点：lsit存key和value map存key和迭代器
+				记忆点：lsit存key和value map存key和list的迭代器
 			*/
 		};
+
+		//2刷
+		class LRUCache2 {
+		public:
+			LRUCache2(int capacity) :cap(capacity) {
+			}
+			int get(int key) {
+				if (umap.find(key) == umap.end()) {
+					return -1;
+				}
+				auto it = umap[key];
+				listp.erase(umap[key]);
+				listp.push_front(*it); // 插入迭代器指向的元素到 listp 的头部
+				return it->second;
+			}
+
+
+			//往里面放数据。
+			void put(int key, int value) {
+				if (umap.find(key) == umap.end()) {//没找到这个元素
+					if (umap.size() == cap) {//没找到这个元素，并且容量满了，就删除最老的
+						//listp.back().first;
+						umap.erase(listp.back().first);
+						listp.pop_back();
+						listp.push_front({ key, value });
+						umap[key] = listp.begin();
+					}
+					else {
+						//没找到这个元素，并且容量没满
+						listp.push_front({ key, value });
+						umap[key] = listp.begin();
+					}
+				}
+				else {//找到这个元素,就把旧的删除掉，新的放前面。
+					//!!!这里会出现迭代器失效的问题，
+					auto it = umap[key];
+					listp.erase(it);
+					listp.push_front({ key, value });
+					umap[key] = listp.begin();
+				}
+			}
+
+
+
+		private:
+			int cap = 0;
+			list<pair<int, int>> listp;
+			unordered_map<int, list<pair<int, int>>::iterator> umap;
+		};
+
+
+
+
 
 
 
@@ -4938,16 +5051,17 @@ namespace LinkedList
 		}
 		void testLRU()
 		{
-			LRUCache lRUCache(2);
-			lRUCache.put(1, 1); // 缓存是 {1=1}
-			lRUCache.put(2, 2); // 缓存是 {1=1, 2=2}
-			lRUCache.get(1);    // 返回 1
-			lRUCache.put(3, 3); // 该操作会使得关键字 2 作废，缓存是 {1=1, 3=3}
-			lRUCache.get(2);    // 返回 -1 (未找到)
-			lRUCache.put(4, 4); // 该操作会使得关键字 1 作废，缓存是 {4=4, 3=3}
+			LRUCache2 lRUCache(2);
+			lRUCache.put(2, 1); // 缓存是 {1=1}
+			lRUCache.put(1, 1); // 缓存是 {1=1, 2=2}
+			lRUCache.get(2);    // 返回 1
+			lRUCache.put(4, 1); // 该操作会使得关键字 2 作废，缓存是 {1=1, 3=3}
 			lRUCache.get(1);    // 返回 -1 (未找到)
-			lRUCache.get(3);    // 返回 3
-			lRUCache.get(4);    // 返回 4
+			lRUCache.get(2);    // 返回 -1 (未找到)
+			//lRUCache.put(4, 4); // 该操作会使得关键字 1 作废，缓存是 {4=4, 3=3}
+			//lRUCache.get(1);    // 返回 -1 (未找到)
+			//lRUCache.get(3);    // 返回 3
+			//lRUCache.get(4);    // 返回 4
 		}
 
 	};
@@ -11605,7 +11719,8 @@ int main()
 	//DoublePointer::Solution tree;
 	//Dandiaozhan::Solution tree;
 	LinkedList::Solution tree;
-	tree.test();
+	//tree.test();
+	tree.testLRU();
 
 
 
