@@ -5388,6 +5388,20 @@ namespace Tree {
 		int maxDepth(TreeNode* root) {
 			return getdepth(root);
 		}
+
+		//104. 二叉树的最大深度-二刷
+		int getdepth2(TreeNode* node) {
+			if (node == nullptr)return 0;
+			int Ldeep = getdepth(node->left);
+			int Rdeep = getdepth(node->right);
+			return max(Ldeep, Rdeep) + 1;
+
+		}
+		int maxDepth2(TreeNode* root) {
+			return getdepth2(root);
+		}
+
+
 		/*
 		104. 二叉树的最大深度
 
