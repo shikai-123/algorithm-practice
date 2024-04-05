@@ -5405,7 +5405,7 @@ namespace Tree {
 
 
 		//102. 二叉树的层序遍历—二刷
-		vector<vector<int>> levelOrder(TreeNode* root) {
+		vector<vector<int>> levelOrder2(TreeNode* root) {
 			vector<vector<int>>ret;
 			if (!root) return ret; //！！别忘了这个。 如果根节点为空，则直接返回空向量
 			queue<TreeNode*> que;
@@ -6604,26 +6604,43 @@ namespace Tree {
 		！！以上的分析我觉得不对，而是这个题目的设计，让01就成为了左闭右开的区间，就是不要最右边的那个元素。这是闭开只是为了方便理解题目罢了，不是核心。
 		所以上面的题目要做出来的话，就得大概。不光光是要改坐标相加的地方。
 		目前来看，最好的方法还是记忆，不同的题型，用不同的方法。
+		！！！以上都是对数组构造二叉树的问题中，所带来的开闭区间的取舍。对这个问题而言，可看可不看。
 
 		二叉搜索树的构造就不用了。
 		比如-10 -3 0 5 9 中间的0就是分割点，
 		我要的是-10 -3 之所以“可以说”是闭区间，是因为我的代码中，不需要向上面的题目中，把分割点的下标再传进去。
 		所以，闭开只是为了方便理解题目罢了，不是核心。最终还是记忆，不同的题型，用不同的方法。
+		思路：
+			它给提供的是升序数组。每次取中点，然后用中点创建一个点，左边是小于中点的值，接在中点的左边；同理大于中点的值，接在右侧。
+
 		*/
 		TreeNode* sortedArrayToBST1(vector<int>& nums, int left, int right)
 		{
-			if (left > right) return  nullptr;
-			int mid = left + (right - left) / 2;//注意此处，（(right + left) / 2;）可能会出现int越界
+			if (left > right) return  nullptr;//当左》右，这种不合理的情况旧不要再分了。说明到了叶子节点，返回nullptr
+			int mid = left + (right - left) / 2;//注意此处，（(right + left) / 2;）可能会出现int越界.。这个地方和二叉查找是一样的。
 			TreeNode* root = new TreeNode(nums[mid]);
-
-			root->left = sortedArrayToBST1(nums, left, mid - 1);
-			root->right = sortedArrayToBST1(nums, mid + 1, right);
-			return root;
+			root->left = sortedArrayToBST1(nums, left, mid - 1);//中点2 递归接2左边所有的点
+			root->right = sortedArrayToBST1(nums, mid + 1, right);//中点2 递归接2右边所有的点
+			return root;//返回根节点
 
 		}
 		TreeNode* sortedArrayToBST(vector<int>& nums) {
 			return sortedArrayToBST1(nums, 0, nums.size() - 1);
 		}
+
+		//108. 将有序数组转换为二叉搜索树——二刷
+		TreeNode* sortedArrayToBST3(vector<int>& nums, int L, int R) {
+			if (L > R) return nullptr;
+			int mid = L + (R - L) / 2;
+			TreeNode* root = new TreeNode(nums[mid]);
+			root->left = sortedArrayToBST3(nums, L, mid - 1);
+			root->right = sortedArrayToBST3(nums, mid + 1, R);
+			return root;
+		}
+		TreeNode* sortedArrayToBST2(vector<int>& nums) {
+			return sortedArrayToBST3(nums, 0, nums.size() - 1);
+		}
+
 
 
 		/*
