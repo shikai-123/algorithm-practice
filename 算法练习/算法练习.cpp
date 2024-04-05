@@ -5529,18 +5529,39 @@ namespace Tree {
 			https://leetcode.cn/problems/symmetric-tree/solutions/862694/dai-ma-sui-xiang-lu-dai-ni-xue-tou-er-ch-hnjo/?envType=study-plan-v2&envId=top-interview-150
 		*/
 		bool isSymmetric(TreeNode* root) {
-
 			return isSame(root->left, root->right);
 		}
-
 		bool isSame(TreeNode* Lroot, TreeNode* Rroot) {
 			if (Lroot == nullptr && Rroot == nullptr) return true;
 			if (Lroot != nullptr && Rroot == nullptr) return false;
 			if (Lroot == nullptr && Rroot != nullptr) return false;
+			/*
+			!!!这个地方一定要是判断“左val和右val不相等”。如果判断相等在这返回了，假设
+					1
+				2		2 如果判断相等，到这就不下去了.下面的就没有办法判断了。
+			3    3	  3  4 核心就在于只要出现了不对称的情况就得立马返回。这个时候已经得出不对成的结论了。
+			对称了，要继续往下判断，知道根节点
+			*/
 			if (Lroot->val != Rroot->val) return false;
-
+			//判断对称，最左边和最右边的对比（左孩子的左节点和右孩子的右节点）。
 			return isSame(Lroot->left, Rroot->right) && isSame(Lroot->right, Rroot->left);
 		}
+
+
+		//101. 对称二叉树---二刷
+		bool isSame(TreeNode* L, TreeNode* R) {
+			if (L == nullptr&&R == nullptr)return true;
+			if (L != nullptr&&R == nullptr)return false;
+			if (L == nullptr&&R != nullptr)return false;
+			if (L->val != R->val)return false;
+			return isSame(L->left, R->right) && isSame(L->right, R->left);
+		}
+		bool isSymmetric(TreeNode* root) {
+			return isSame(root->left, root->right);
+		}
+
+
+
 
 		/*
 		105. 从前序与中序遍历序列构造二叉树
