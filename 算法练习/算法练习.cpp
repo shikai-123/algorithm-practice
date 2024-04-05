@@ -5209,6 +5209,19 @@ namespace Tree {
 			inoTraversalONE(root->right);
 		}
 
+		//中序遍历--二刷
+		void traversal(TreeNode* root, vector<int> &ret) {
+			if (root == nullptr)return;
+			traversal(root->left, ret);
+			ret.push_back(root->val);
+			traversal(root->right, ret);
+			return;
+		}
+		vector<int> inorderTraversal(TreeNode* root) {
+			vector<int> ret;
+			traversal(root, ret);
+			return ret;
+		}
 
 
 
