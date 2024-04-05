@@ -5352,8 +5352,9 @@ namespace Tree {
 		}
 
 		//层序遍历—从上往下—把遍历的元素，放到二维的vec中
+		//102. 二叉树的层序遍历
 		vector<vector<int>> levelOrder(TreeNode* root) {
-			if (root == nullptr) return vector<vector<int>>();
+			if (root == nullptr) return vector<vector<int>>();//！！别忘了这个
 			vector<vector<int>> result;
 			queue<TreeNode*> que;
 			que.push(root);
@@ -5369,7 +5370,7 @@ namespace Tree {
 					这样这一层的就遍历完毕，下一层的也都放进去了。
 					然后开始下一层的遍历。
 					*/
-					TreeNode* note = que.front();
+					TreeNode* note = que.front();//!!每次循环拿到最新的节点
 					que.pop();
 					vec.push_back(note->val);
 					cout << note->val << endl;
@@ -5377,7 +5378,6 @@ namespace Tree {
 					if (note->right) que.push(note->right);
 				}
 				result.push_back(vec);
-
 			}
 			return result;
 		}
@@ -5402,6 +5402,32 @@ namespace Tree {
 			}
 			return result;
 		}
+
+
+		//102. 二叉树的层序遍历—二刷
+		vector<vector<int>> levelOrder(TreeNode* root) {
+			vector<vector<int>>ret;
+			if (!root) return ret; //！！别忘了这个。 如果根节点为空，则直接返回空向量
+			queue<TreeNode*> que;
+			que.push(root);
+			while (!que.empty())
+			{
+				int qsize = que.size();
+				vector<int> tmp;
+				for (size_t i = 0; i < qsize; i++)
+				{
+					TreeNode* curnote = que.front();
+					que.pop();
+
+					tmp.push_back(curnote->val);
+					if (curnote->left) que.push(curnote->left);
+					if (curnote->right) que.push(curnote->right);
+				}
+				ret.push_back(tmp);
+			}
+			return ret;
+		}
+
 
 		//多叉树-前序
 		void porder(Node* root, vector<int>& ret)
@@ -5510,7 +5536,7 @@ namespace Tree {
 		参考：
 			https://programmercarl.com/0102.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86.html#_104-%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E5%A4%A7%E6%B7%B1%E5%BA%A6
 		*/
-		int maxDepth2(TreeNode* root) {
+		int maxDepth3(TreeNode* root) {
 			if (root == NULL) return 0;
 			int depth = 0;
 			queue<TreeNode*> que;
@@ -5649,14 +5675,14 @@ namespace Tree {
 
 
 		//101. 对称二叉树---二刷
-		bool isSame(TreeNode* L, TreeNode* R) {
+		bool isSame2(TreeNode* L, TreeNode* R) {
 			if (L == nullptr&&R == nullptr)return true;
 			if (L != nullptr&&R == nullptr)return false;
 			if (L == nullptr&&R != nullptr)return false;
 			if (L->val != R->val)return false;
-			return isSame(L->left, R->right) && isSame(L->right, R->left);
+			return isSame2(L->left, R->right) && isSame(L->right, R->left);
 		}
-		bool isSymmetric(TreeNode* root) {
+		bool isSymmetric2(TreeNode* root) {
 			return isSame(root->left, root->right);
 		}
 
