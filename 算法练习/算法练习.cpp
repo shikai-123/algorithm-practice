@@ -5155,107 +5155,111 @@ namespace Tree {
 
 
 		/*
-		# 树
-## 遍历
-> 深度优先遍历
-	前序遍历（递归法，迭代法）
-	中序遍历（递归法，迭代法）
-	后序遍历（递归法，迭代法）
-	对这三种遍历方式的总结就是：
-	左中右是怎么排列的：
-	1、什么序，中就在哪
-	2、左右排序固定
+				# 树
+		## 遍历
+			> 深度优先遍历
+				前序遍历（递归法，迭代法）
+				中序遍历（递归法，迭代法）
+				后序遍历（递归法，迭代法）
+				对这三种遍历方式的总结就是：
+				左中右是怎么排列的：
+				1、什么序，中就在哪
+				2、左右排序固定
 
- 广度优先遍历
-	层次遍历（迭代法）
+			 广度优先遍历
+				层次遍历（迭代法）
 
-要根据什么选择遍历方式？
-其实没有明显的提示可以选择什么遍历方式。或者说什么遍历方式都可以实现，只是某一种方便一些
-本题一定是要后序遍历，因为通过递归函数的返回值来做下一步计算。——337.打家劫舍 III
-
-
-## 关于树的一些总结
-> 1、做了一些题目。尤其是对于递归而言，每一次递归的开始，都把他理解为一个小子树的处理，会更好。
-  2、像这种返回bool的递归，一定要确定什么时候返回true，什么时候返回false。
-	 然后在return的地方调用递归。
-	参考101. 对称二叉树、112. 路径总和
-	基本上都是这种做法
-  3、分析的代码的时候，方便理解或者是写，就从叶子结点往上走，好理解
-	TreeNode* left = lowestCommonAncestor(root->left, p, q);
-	TreeNode* right = lowestCommonAncestor(root->right, p, q);
-	这两行代码，如果要一层一层递归进去，理解很不好理解。
-	可以简化理解，这个思路在任何递归的时候，都比较好用。
-	lowestCommonAncestor(root->left, p, q);  就是当前root的左子树的结果
-	lowestCommonAncestor(root->right, p, q); 就是当前root的右子树的结果
-	不管它内部是怎么递归的，就知道这个结果就行。
-	参考：236. 二叉树的最近公共祖先
-
-## 树的高度和深度
->二叉树节点的深度：指从根节点到该节点的最长简单路径边的条数。
- 二叉树节点的高度：指从该节点到叶子节点的最长简单路径边的条数。
-
- 根据以下两点，做题的时候，选择不同的思路
- 深度可以从上到下去查 所以需要前序遍历（中左右），
- 高度只能从下到上去查，所以只能后序遍历（左右中）
-
- 比如验证平衡二叉树
- 是不是二叉树要看它的左右孩子的高度是不是差1，那么就选择后序遍历
-
-## 关于树中回溯的总结
- > 回溯基于的数据结构最好是vec或者是arry这种，加的时候也是一次，删除的也是一次。不会受到数据自身长度的影响。
-   比如：
-   257. 二叉树的所有路径
-	   vector<int> path;//path一定要vec，如果要用string的话，如果添加了一个3位数字，在回溯的时候，要回溯3次，关键你还得记录他的位数。用vec的话，pop一次就行了
-
-## 在树中递归结束条件的写法
- > 1、如果他的任意一个子树为空，就不满足要求，就退出。
-	比如验证是否为平衡二叉树的时候，
-	“一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 ”
-	其中任意一个孩子为空的话，就会构成他的其中一个子树的高度确定了，这个时候就要返回，算另一个子树
-	110. 平衡二叉树
-	```C++ []
-			if (node == NULL) return 0;
-	 ```
-  2、如果它的左右子树都为空的时候，就退出。
-  一般而言，就是用来啊、判断是否遍历到了子节点。
-  257. 二叉树的所有路径
-	```C++ []
-	if (cur->left == NULL && cur->right == NULL) return 0;
-
-  3、结束条件的判断的写法，要和你递归函数的入参要对应。要不然出现空指针访问的问题。
-	  3.1、入参是子节点指针，结束条件的判断，一定要是对root的判断。 searchBST(root->left, val); 《-----》  if (root == NULL || root->val == val) return root;
-		如果对root->left，就会出现nullptr->left，自然就会报错。
-	  3.2、入参是root节点非子节点，结束条件的判断，才可以是对root->left等判断。
-	  3.3、具体什么时候采取什么样的判断，要根据入参来。而什么样的入参，要根据题目的思路来。多体会吧。
-	  3.4、  700. 二叉搜索树中的搜索 可以参考这个题目
+			要根据什么选择遍历方式？
+			其实没有明显的提示可以选择什么遍历方式。或者说什么遍历方式都可以实现，只是某一种方便一些
+			本题一定是要后序遍历，因为通过递归函数的返回值来做下一步计算。——337.打家劫舍 III
 
 
-## 在树中返回值的选择
-> 1、当你发现返回值不是很好写的时候，考虑一下不要返回值，数据的修改放到参数加引用的时候。这句话很白话，但有时候确实是这样。——257. 二叉树的所有路径
-  2、一般情况下：如果需要搜索整棵二叉树，那么递归函数就不要返回值。如果要搜索其中一条符合条件的路径，递归函数就需要返回值，因为遇到符合条件的路径了就要及时返回。——具体看112，113这两个题目
+			## 关于树的一些总结
+			> 1、做了一些题目。尤其是对于递归而言，每一次递归的开始，都把他理解为一个小子树的处理，会更好。
+			  2、像这种返回bool的递归，一定要确定什么时候返回true，什么时候返回false。
+				 然后在return的地方调用递归。
+				参考101. 对称二叉树、112. 路径总和
+				基本上都是这种做法
+			  3、分析的代码的时候，方便理解或者是写，就从叶子结点往上走，好理解
+				TreeNode* left = lowestCommonAncestor(root->left, p, q);
+				TreeNode* right = lowestCommonAncestor(root->right, p, q);
+				这两行代码，如果要一层一层递归进去，理解很不好理解。
+				可以简化理解，这个思路在任何递归的时候，都比较好用。
+				lowestCommonAncestor(root->left, p, q);  就是当前root的左子树的结果
+				lowestCommonAncestor(root->right, p, q); 就是当前root的右子树的结果
+				不管它内部是怎么递归的，就知道这个结果就行。
+				参考：236. 二叉树的最近公共祖先
 
-## 树的题目中有些是判断，最后返回一个bool量
-> 这种题目有个固定的写法，
-  在递归函数中，先判断各种true、false的情况，然后都返回。
-  然后再开始递归。
-  参考：101. 对称二叉树 100. 相同的树
+		## 树的高度和深度
+			>二叉树节点的深度：指从根节点到该节点的最长简单路径边的条数。
+			 二叉树节点的高度：指从该节点到叶子节点的最长简单路径边的条数。
 
-## 突然有个想法，树的题目基本上都是递归。
-> 既然都是递归，我发现很多题目树的构造，都是到了叶子节点后，然后返回上去，让root-》left 和root-》right去接，
-  既然是这样，在做题目的时候，思考的思路从底部往上走，可能更简单一些
+			 根据以下两点，做题的时候，选择不同的思路
+			 深度可以从上到下去查 所以需要前序遍历（中左右），
+			 高度只能从下到上去查，所以只能后序遍历（左右中）
 
-## 二叉搜索树
-若它的左子树不空，则左子树上所有结点的值均小于它的根结点的值；
-若它的右子树不空，则右子树上所有结点的值均大于它的根结点的值；
-它的左、右子树也分别为二叉搜索树
-1、“中序遍历”正确的搜索树，它的顺序是从小到大的。
-		*/
+			 比如验证平衡二叉树
+			 是不是二叉树要看它的左右孩子的高度是不是差1，那么就选择后序遍历
+
+		## 关于树中回溯的总结
+		 > 回溯基于的数据结构最好是vec或者是arry这种，加的时候也是一次，删除的也是一次。不会受到数据自身长度的影响。
+		   比如：
+		   257. 二叉树的所有路径
+			   vector<int> path;//path一定要vec，如果要用string的话，如果添加了一个3位数字，在回溯的时候，要回溯3次，关键你还得记录他的位数。用vec的话，pop一次就行了
+
+		## 在树中递归结束条件的写法
+		 > 1、如果他的任意一个子树为空，就不满足要求，就退出。
+			比如验证是否为平衡二叉树的时候，
+			“一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 ”
+			其中任意一个孩子为空的话，就会构成他的其中一个子树的高度确定了，这个时候就要返回，算另一个子树
+			110. 平衡二叉树
+			```C++ []
+					if (node == NULL) return 0;
+			 ```
+		  2、如果它的左右子树都为空的时候，就退出。
+			  一般而言，就是用来啊、判断是否遍历到了子节点。
+			  257. 二叉树的所有路径
+				```C++ []
+				if (cur->left == NULL && cur->right == NULL) return 0;
+
+		  3、结束条件的判断的写法，要和你递归函数的入参要对应。要不然出现空指针访问的问题。
+			  3.1、入参是子节点指针，结束条件的判断，一定要是对root的判断。 searchBST(root->left, val); 《-----》  if (root == NULL || root->val == val) return root;
+				如果对root->left，就会出现nullptr->left，自然就会报错。
+			  3.2、入参是root节点非子节点，结束条件的判断，才可以是对root->left等判断。
+			  3.3、具体什么时候采取什么样的判断，要根据入参来。而什么样的入参，要根据题目的思路来。多体会吧。
+			  3.4、  700. 二叉搜索树中的搜索 可以参考这个题目
+
+
+		## 在树中返回值的选择
+			> 1、当你发现返回值不是很好写的时候，考虑一下不要返回值，数据的修改放到参数加引用的时候。这句话很白话，但有时候确实是这样。——257. 二叉树的所有路径
+			  2、一般情况下：如果需要搜索整棵二叉树，那么递归函数就不要返回值。如果要搜索其中一条符合条件的路径，递归函数就需要返回值，因为遇到符合条件的路径了就要及时返回。——具体看112，113这两个题目
+
+		## 树的题目中有些是判断，最后返回一个bool量
+			> 这种题目有个固定的写法，
+			  在递归函数中，先判断各种true、false的情况，然后都返回。
+			  然后再开始递归。
+			  参考：101. 对称二叉树 100. 相同的树
+
+		## 突然有个想法，树的题目基本上都是递归。
+			> 既然都是递归，我发现很多题目树的构造，都是到了叶子节点后，然后返回上去，让root-》left 和root-》right去接，
+			  既然是这样，在做题目的时候，思考的思路从底部往上走，可能更简单一些
+
+		## 二叉搜索树
+			若它的左子树不空，则左子树上所有结点的值均小于它的根结点的值；
+			若它的右子树不空，则右子树上所有结点的值均大于它的根结点的值；
+			它的左、右子树也分别为二叉搜索树
+			1、“中序遍历”正确的搜索树，它的顺序是从小到大的。
+
+
+		二叉树的题目中，一般都用判断题目，比如上面的判断是否为二叉搜索树，或者是其他题目，
+		都是遇到false就返回，不对true做判断。然后不断的往下递归，直到结束都没遇到false这才说明整个函数才能返回true。
+*/
 
 
 
-		//什么序的意思是指在什么位置对val访问。
+//什么序的意思是指在什么位置对val访问。
 
-		//前序遍历-细节实现
+//前序遍历-细节实现
 		void preorderTraversal(TreeNode* root, vector<int> &node)
 		{
 			if (root == nullptr)return;
@@ -5982,6 +5986,7 @@ namespace Tree {
 		/*
 		199. 二叉树的右视图
 		思路：
+			就是看二叉树最右侧的点
 			层序遍历，保存每层中的最后一个节点的值
 		*/
 		vector<int> rightSideView(TreeNode* root) {
@@ -5994,11 +5999,34 @@ namespace Tree {
 				int queSize = que.size();
 				for (size_t i = 0; i < queSize; i++)
 				{
-					TreeNode* node = que.front();
+					TreeNode* node = que.front();//!!!!层序遍历，别忘了把这俩放在while中，我忘了好几次了。
 					que.pop();
-					if (i == queSize - 1) ret.push_back(node->val);//只要这一层的最后一个
+					if (i == queSize - 1)//遍历到了该层的最后位置
+						ret.push_back(node->val);//只要这一层的最后一个
 					if (node->left)que.push(node->left);
 					if (node->right)que.push(node->right);
+				}
+			}
+			return ret;
+		}
+
+		//199. 二叉树的右视图-二刷
+		vector<int> rightSideView2(TreeNode* root) {
+			vector<int>ret;
+			if (root == nullptr)return ret;
+			queue<TreeNode*> que;
+			que.push(root);
+			while (!que.empty())
+			{
+				int size = que.size();
+				for (size_t i = 0; i < size; i++)
+				{
+					TreeNode* curNode = que.front();
+					que.pop();
+					if (i == size - 1)
+						ret.push_back(root->val);
+					if (curNode->left)que.push(curNode->left);
+					if (curNode->right)que.push(curNode->right);
 				}
 			}
 			return ret;
@@ -6307,17 +6335,31 @@ namespace Tree {
 		要学习的点：
 			中序遍历正确的搜索树，它的顺序是从小到大的。
 		*/
-		long long isValidBST_MaxValue = LONG_MIN; // 因为后台测试数据中有int最小值
+		long long isValidBST_MaxValue = LONG_MIN; // 因为后台测试数据中有long long最小值,int_min范围不够用
 		bool isValidBST(TreeNode* root) {
 			if (root == nullptr)return true;//都遍历到底了，还没问题，说明这个搜索树肯定好
 			bool l = isValidBST(root->left);
-			if (root->val > isValidBST_MaxValue)isValidBST_MaxValue = root->val;
+			if (root->val > isValidBST_MaxValue)
+				isValidBST_MaxValue = root->val;
 			else
 				return false;
 
 			bool r = isValidBST(root->right);
-
+			//!最后发明的结果是root左子树和右子树都满足结果才是真的满足。
 			return l && r;
+		}
+
+		//98. 验证二叉搜索树-二刷
+		long long isValidBST_ret = LONG_MIN; // 因为后台测试数据中有long long最小值,int_min范围不够用
+		bool isValidBST2(TreeNode* root) {
+			if (root == nullptr) return true;
+			bool L = isValidBST2(root->left);
+			if (root->val > isValidBST_ret)
+				isValidBST_ret = root->val;
+			else
+				return false;
+			bool R = isValidBST2(root->right);
+			return R && L;
 		}
 
 		/*
@@ -6783,6 +6825,23 @@ namespace Tree {
 			kthSmallest(root, ret);
 			return ret[k - 1];
 		}
+
+
+		//230. 二叉搜索树中第K小的元素-二刷-二叉搜索树就要想到中序遍历
+		void kthSmallest2(TreeNode* root, vector<int> &ret) {
+			if (root == nullptr)  return;
+			kthSmallest2(root->left, ret);
+			ret.push_back(root->val);
+			kthSmallest2(root->right, ret);
+			return;
+		}
+		int kthSmallest(TreeNode* root, int k) {
+			vector<int> ret;
+			kthSmallest2(root, ret);
+			return ret[k - 1];
+		}
+
+
 
 		/*
 		437. 路径总和 III
