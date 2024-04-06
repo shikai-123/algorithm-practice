@@ -5902,31 +5902,60 @@ namespace Tree {
 
 		/*
 		114. 二叉树展开为链表
+		题目：
+			要求就是前序遍历二叉树，然后按照顺序创建“假链表”，其实是一个只有右节点的树。
 		思路：
-			不要嫌蛮烦，就是这个思路。
+			核心：如果当前节点存在左子节点，那么就把这个左子节点移动到右子节点位置。
+
+
 			先往左遍历一个点，然后一直往右遍历，直到最后一个右节点。
 			让这个右节点接到根节点的左节点。
 			然后根节点的右节点接上他原来的左节点。
 
 			然后根节点再往左下走，直到空
 		参考：
-		https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/solutions/1498323/by-lin-shen-shi-jian-lu-k-z5vv/?envType=study-plan-v2&envId=top-interview-150
+			两个链接是一个思路，
+			图好理解：https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/solutions/17274/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-by--26/?envType=study-plan-v2&envId=top-interview-150
+			代码：https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/solutions/1498323/by-lin-shen-shi-jian-lu-k-z5vv/?envType=study-plan-v2&envId=top-interview-150
 		*/
 		void flatten(TreeNode* root) {
 			while (root)
 			{
-				TreeNode* p = root->left;
-				if (p)
-				{
-					while (p->right) p = p->right;
-					p->right = root->right;
-					root->right = root->left;
+				TreeNode* p = root->left;//先保存左节点的指针。
+				if (p) {//如果存在右节点那么才需要调整，也就是把它移动到右边。没有的话就继续往右边走。
+					//不断的找刚才左节点的“最右边”的节点，是为了让这个“最右边”的节点后面接新的节点，当然也是接在它的右节点。
+					//之所以是最右边的位置，是题目中要求的是形成有右边一条边的二叉树的“链表”。你接左边，肯定不能成一条边。
+					while (p->right)
+						p = p->right;//找左子节点的“最右边的节点”
+					p->right = root->right; //让这个“最右边的节点的右节点”接上“当前节点的右节”点。
+					//这四句代码，不要调换顺序。
+					root->right = root->left;//把左节点移动到右节点的位置
 					root->left = nullptr;//根节点左树被右节点接上后，左节点一定要赋值为空。也就是断开这个左树，要不然会出问题
+				}
+				root = root->right;//上面已经把左边都移动到右边了，下一步自然也是移动 按照右边的位置移动右节点。
+			}
+		}
+
+
+
+
+
+		//114. 二叉树展开为链表——二刷
+		void flatten(TreeNode* root) {
+			while (root) {
+				TreeNode* tmpNode = root->left;
+				if (tmpNode) {
+					while (tmpNode->right) {
+						tmpNode = tmpNode->right;
+					}
+					tmpNode->right = root->right;
+					//这四句代码，不要调换顺序。
+					root->left = nullptr;
+					root->right = root->left;
 				}
 				root = root->right;
 			}
 		}
-
 		/*
 		112. 路径总和——复杂但思路清晰的写法
 		思路：
@@ -6835,7 +6864,7 @@ namespace Tree {
 			kthSmallest2(root->right, ret);
 			return;
 		}
-		int kthSmallest(TreeNode* root, int k) {
+		int kthSmallest2(TreeNode* root, int k) {
 			vector<int> ret;
 			kthSmallest2(root, ret);
 			return ret[k - 1];
