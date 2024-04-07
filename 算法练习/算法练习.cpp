@@ -10509,7 +10509,6 @@ namespace TULUN
 			不是从中间走的，而是从图的左上角开始。
 			递归函数的功能——找到xy所在岛屿的所有的坐标，并标记visited[i][l]=true;找完了就出来
 		*/
-
 		//grid图 visited图上哪个点被访问过 xy 要访问的点的坐标
 		void numIslands_bfs(vector<vector<char>>& grid, vector<vector<bool>>& visited, int x, int y)
 		{
@@ -10562,13 +10561,53 @@ namespace TULUN
 		}
 
 
-		/*
-		200、岛屿数量——深度搜索，我没看。题目一样，我节省点时间，二刷的时候看！
-		参考：
-			https://www.programmercarl.com/0200.%E5%B2%9B%E5%B1%BF%E6%95%B0%E9%87%8F.%E6%B7%B1%E6%90%9C%E7%89%88.html
-		思路：
 
-		*/
+
+
+
+
+
+
+
+
+
+		//200、岛屿数量——二刷
+		void numIslands2_bfs(vector<vector<char>>& grid, vector<vector<bool>> &visited, int i, int l) {
+			vector<vector<int>>dir{ {0,1},{0,-1},{1,0},{-1,0} };
+			queue<pair<int, int>> gridNode;
+			gridNode.push({ i, l });
+			visited[i][l] = true;
+			while (gridNode.size())
+			{
+				pair<int, int> curNode = gridNode.front();
+				gridNode.pop();
+				for (size_t dirIndex = 0; dirIndex < 4; dirIndex++)
+				{
+					int nextX = curNode.first + dir[dirIndex][0];
+					int nextY = curNode.second + dir[dirIndex][1];
+					if (nextX >= 0 && nextX < grid.size() && 0 <= nextY && nextY <= grid[0].size())
+						if (visited[nextX][nextY] == false && grid[nextX][nextY] == '1') {
+							gridNode.push({ nextX, nextY });
+							visited[nextX][nextY] = true;
+						}
+				}
+			}
+			return;
+		}
+		int numIslands2(vector<vector<char>>& grid) {
+			int ret = 0;//！别忘了初始化
+			//vector<vector<bool>> visited(grid.size(), (grid[0].size(), false));//!!!这种初始化方法不行
+			vector<vector<bool>> visited(grid.size(), vector<bool>(grid[0].size(), false));//!!别忘了初始化它的空间，要不然后面越界报错
+			for (size_t i = 0; i < grid.size(); i++) {
+				for (size_t l = 0; l < grid[0].size(); l++) {
+					if (visited[i][l] == false && grid[i][l] == '1') {
+						ret++;
+						numIslands2_bfs(grid, visited, i, l);
+					}
+				}
+			}
+			return ret;
+		}
 
 		/*
 		695. 岛屿的最大面积
