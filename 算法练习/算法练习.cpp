@@ -5165,6 +5165,7 @@ namespace Tree {
 				左中右是怎么排列的：
 				1、什么序，中就在哪
 				2、左右排序固定
+				3、前序遍历，根节点一定是首先打印；中序：根节点在中间；后序：根节点再最后。可以根据这些特性从数组中构造一颗树。
 
 			 广度优先遍历
 				层次遍历（迭代法）
@@ -5702,16 +5703,15 @@ namespace Tree {
 		*/
 		TreeNode* traversal(const vector<int>& inorder, int inorderBegin, int inorderEnd, const vector<int>& preorder, int preorderBegin, int preorderEnd) {
 			//简单理解：traversal是处理各个左右子树，当他是空的时候，两者就相等。
-			//有没有发现，下面的两个return中都是用后序或者前序来做的判断。是因为，每次处理的时候，都是先处理后序数组，所以必须用他来判断。
 			if (preorderEnd == preorderBegin) return nullptr;
 
-			int rootValue = preorder[preorderBegin];
+			int rootValue = preorder[preorderBegin];//找到当前前序数组的根节点
 			TreeNode* root = new TreeNode(rootValue);
 
-			//因为是区间是一测闭，一侧开。所以当差值是1的时候，点就剩一个了，这就是叶子节点了。所以需要返回这个点了。
+			//!!因为是区间是一测闭，一侧开。所以当差值是1的时候，点就剩一个了，这就是叶子节点了。所以需要返回这个点了。
 			if (preorderEnd - preorderBegin == 1) return root;
 
-			int delimiterIndex;
+			int delimiterIndex;//分割的位置.这个是在中序数组中寻找的。
 			for (delimiterIndex = inorderBegin; delimiterIndex < inorderEnd; delimiterIndex++) {
 				if (inorder[delimiterIndex] == rootValue) break;
 			}
@@ -5725,11 +5725,13 @@ namespace Tree {
 
 
 			/*
-			中序中左边的长度就是这个“子树”的左子树的长度，在前序的排列中左子树也是这么长。
-			无论是哪种排序方式，它的子树的长度都是一样的，都是那几个对应的字符对应的。所以在前序中左子树的长度，就是在中序中拿到左子树的长度，用这个长度去裁剪后序中左子树的长度，剩下的就是前序中的右子树。
+			中序中左边的长度就是这个“子树”的左子树的长度，在后序的排列中左子树也是这么长。
+			无论是哪种排序方式，它的子树的长度都是一样的，都是那几个对应的字符对应的。
+			所以在前序中左子树的长度，就是在中序中拿到左子树的长度，
 			计算方法：
 				 中序“根节点位置”- “中序节点开始的位置” = “左子树的长度”
-				 前序“左子树的结束卫视” = 前序“开始节点” + “左子树的长度”
+				 拿到了“左子树的长度”后。
+				 前序“数组的起始位置” + 1+“左子树的长度” = “左子树的结束位置”。从而得到了后序数组中左子树的数据。
 			*/
 			// 切割前序数组
 			// 左后序区间，左闭右开[leftPostorderBegin, leftPostorderEnd)
@@ -5746,65 +5748,71 @@ namespace Tree {
 		}
 		TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
 			if (inorder.size() == 0 || preorder.size() == 0) return NULL;
-			// 左闭右开的原则
+			// 左闭右开的原则。所以size()后面不用-1
 			return traversal(inorder, 0, inorder.size(), preorder, 0, preorder.size());
 		}
+
+
+		//105. 从前序与中序遍历序列构造二叉树——二刷
+		TreeNode* buildTre2(vector<int>& preorder, int preorderBegin, int preorderEnd, vector<int>& inorder, int inorderBegin, int inorderEnd) {
+			if (preorderBegin == preorderEnd)return nullptr;
+			TreeNode* root = new TreeNode(preorder[preorderBegin]);
+			//!!因为是区间是一测闭，一侧开。所以当差值是1的时候，点就剩一个了，这就是叶子节点了。所以需要返回这个点了。
+			if (preorderEnd - preorderBegin == 1)return root;
+
+			int cutIndex = 0;//分割的位置,在中序数组上。
+			for (cutIndex = inorderBegin; cutIndex < inorderEnd; cutIndex++)
+			{
+				if (inorder[cutIndex] == root->val)//找到了分割的位置。
+					break;
+			}
+
+			//!一定是先切中序数组
+			int leftInorderBegin = inorderBegin;
+			int leftInorderEnd = cutIndex;
+			int rightinorderBegin = cutIndex + 1;
+			int rightinorderEnd = inorderEnd;
+
+			//然后切割前序数组：左子树长度leftInorderEnd - leftInorderBegin
+			int leftPreorderBegin = preorderBegin + 1;//!!别忘了前序数组，根节点在前面
+			int leftPreorderEnd = (preorderBegin + 1) + (leftInorderEnd - leftInorderBegin);//左子树的位子就是在起始位置上+左子树长度。
+			int rightPreorderBegin = (preorderBegin + 1) + (leftInorderEnd - leftInorderBegin);//右子树起始位置就是上个位置的后面。！注意是左闭又开区间，所以这个不用+1
+			int rightPreorderEnd = preorderEnd;
+
+			root->left = buildTre2(preorder, leftPreorderBegin, leftPreorderEnd, inorder, leftInorderBegin, leftInorderEnd);
+			root->right = buildTre2(preorder, rightPreorderBegin, rightPreorderEnd, inorder, rightinorderBegin, rightinorderEnd);
+			return root;
+		}
+
+		TreeNode* buildTree2(vector<int>& preorder, vector<int>& inorder) {
+			if (preorder.empty() || inorder.empty()) return nullptr;
+			return buildTre2(preorder, 0, preorder.size(), inorder, 0, inorder.size());
+		}
+
+
+
 
 		/*
 		106. 从中序与后序遍历序列构造二叉树
 		参考思路：
 			这个和106. 从中序与后序遍历序列构造二叉树思路很相似
-			思路比较复杂，具体看链接。核心就是：
-			后序遍历的最后一个点，就是这个树的根节点。
-			这个根节点的位置就是中序遍历用来分左子树和右子树的位置，从而知道了哪些节点是左子树，哪些是右子树。
-			回到后续遍历，再去看上面得到的各种子树，然后子树又知道了根节点是谁，然后再回到中序遍历中，
-			不断的轮询这个过程，就知道了所有节点的位置。
-			另外，中序和前序也是这样的思路；
+			思路也不复杂，简单来说：
+			1、从后序数组中的最后的位置拿到根节点。
+			2、找到根节点的值了，从中序数组中找到这个值，然后记录下这个位置。
+			（！先切割中序，再切割后序。千万别弄错。）
+			3、（切割中序）根据这个位置，把中序数组分为两部分。这样就知道左、右子树的长度。
+				也知道了左子树的开始和结束，和右子树的开始和结束。
+			4、（切割后序）知道了左子树的长度后，在后序数组中，数组开头位置+左子树的长度就是左子树的位置；剩余的部分就是右子树和最后面的根节点。
+				也知道了左子树的开始和结束，和右子树的开始和结束。
+			5、然后进入下次递归，这个“根节点”的左子树的参数就是 中序和后序的左子树的开始和结束
 
+			另外，中序和前序也是这样的思路；
+		注意：
+			顺序别搞反了，一定是先切中序数组。卡子哥这么说的，我也不知道为啥，我试了确实不行。
 		参考链接：
 			https://www.programmercarl.com/0106.%E4%BB%8E%E4%B8%AD%E5%BA%8F%E4%B8%8E%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86%E5%BA%8F%E5%88%97%E6%9E%84%E9%80%A0%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E6%80%9D%E8%B7%AF
 			我把它归到同一个函数，经过测试是可以的
 		*/
-		TreeNode* buildTree2(vector<int>& inorder, vector<int>& postorder) {
-			if (postorder.size() == 0) return NULL;
-
-			// 后序遍历数组最后一个元素，就是当前的中间节点
-			int rootValue = postorder[postorder.size() - 1];
-			TreeNode* root = new TreeNode(rootValue);
-
-			// 叶子节点
-			if (postorder.size() == 1) return root;
-
-			// 找到中序遍历的切割点
-			int delimiterIndex;
-			for (delimiterIndex = 0; delimiterIndex < inorder.size(); delimiterIndex++) {
-				if (inorder[delimiterIndex] == rootValue) break;
-			}
-
-			// 切割中序数组
-			// 左闭右开区间：[0, delimiterIndex)
-			vector<int> leftInorder(inorder.begin(), inorder.begin() + delimiterIndex);
-			// [delimiterIndex + 1, end)
-			vector<int> rightInorder(inorder.begin() + delimiterIndex + 1, inorder.end());
-
-			// postorder 舍弃末尾元素
-			postorder.resize(postorder.size() - 1);
-
-			// 切割后序数组
-			// 依然左闭右开，注意这里使用了左中序数组大小作为切割点
-			// [0, leftInorder.size)
-			vector<int> leftPostorder(postorder.begin(), postorder.begin() + leftInorder.size());
-			// [leftInorder.size(), end)
-			vector<int> rightPostorder(postorder.begin() + leftInorder.size(), postorder.end());
-
-			//用这一级的根节点左右接上他的左右子树。
-			//下一轮处理。中序和后续的左右子树要对上。只有这样，都是左或者是右才能处理出来。
-			root->left = buildTree2(leftInorder, leftPostorder);
-			root->right = buildTree2(rightInorder, rightPostorder);
-
-			//每轮都要把子树返回出去，然后被上级的“根节点的左右接收”，直到返回真正的根节点
-			return root;
-		}
 
 		/*
 			目前感觉这个方法简单一些。
@@ -5813,20 +5821,24 @@ namespace Tree {
 				这几个位置，对应的数都是在原始的位置上
 		*/
 		// 中序区间：[inorderBegin, inorderEnd)，后序区间[postorderBegin, postorderEnd)
-		TreeNode* traversal1(const vector<int>& inorder, int inorderBegin, int inorderEnd, const vector<int>& postorder, int postorderBegin, int postorderEnd) {
+		TreeNode* buildTree3(const vector<int>& inorder, int inorderBegin, int inorderEnd, const vector<int>& postorder, int postorderBegin, int postorderEnd) {
 			//简单理解：traversal是处理各个左右子树，当他是空的时候，两者就相等。
 			if (postorderBegin == postorderEnd) return nullptr;
+			//if (inorderBegin == inorderEnd) return nullptr;//这个也行
 
-			int rootValue = postorder[postorderEnd - 1];
+
+			int rootValue = postorder[postorderEnd - 1];//找到当前后序数组的后序遍历的根节点
 			TreeNode* root = new TreeNode(rootValue);
 
 			//因为是区间是一测闭，一侧开。所以当差值是1的时候，点就剩一个了，这就是叶子节点了。所以需要返回这个点了。
 			if (postorderEnd - postorderBegin == 1) return root;
 
-			int delimiterIndex;
+			int delimiterIndex;//分割的位置
 			for (delimiterIndex = inorderBegin; delimiterIndex < inorderEnd; delimiterIndex++) {
 				if (inorder[delimiterIndex] == rootValue) break;
 			}
+
+
 			// 切割中序数组
 			// 左中序区间，左闭右开[leftInorderBegin, leftInorderEnd)
 			int leftInorderBegin = inorderBegin;
@@ -5838,10 +5850,12 @@ namespace Tree {
 
 			/*
 			中序中左边的长度就是这个“子树”的左子树的长度，在后序的排列中左子树也是这么长。
-			无论是哪种排序方式，它的子树的长度都是一样的，都是那几个对应的字符对应的。所以在后序中左子树的长度，就是在中序中拿到左子树的长度，用这个长度去裁剪后序中左子树的长度，剩下的就是后序中的右子树。
+			无论是哪种排序方式，它的子树的长度都是一样的，都是那几个对应的字符对应的。
+			所以在后序中左子树的长度，就是在中序中拿到左子树的长度，
 			计算方法：
 				 中序“根节点位置”- “中序节点开始的位置” = “左子树的长度”
-				 后序“左子树的结束卫视” = 后序“开始节点” + “左子树的长度”
+				 拿到了“左子树的长度”后。
+				 后序“数组的起始位置” + “左子树的长度” = “左子树的结束位置”。从而得到了后序数组中左子树的数据。
 			*/
 			// 切割后序数组
 			// 左后序区间，左闭右开[leftPostorderBegin, leftPostorderEnd)
@@ -5849,18 +5863,22 @@ namespace Tree {
 			int leftPostorderEnd = postorderBegin + (delimiterIndex - inorderBegin); // 终止位置是 需要加上 中序区间的大小size 左后序的结束，
 			// 右后序区间，左闭右开[rightPostorderBegin, rightPostorderEnd)
 			int rightPostorderBegin = postorderBegin + (delimiterIndex - inorderBegin);//
-			int rightPostorderEnd = postorderEnd - 1; // 排除最后一个元素，已经作为节点了
+			int rightPostorderEnd = postorderEnd - 1; // 排除最后一个元素，因为这个元素就是当层树的根节点。
 
-			root->left = traversal1(inorder, leftInorderBegin, leftInorderEnd, postorder, leftPostorderBegin, leftPostorderEnd);
-			root->right = traversal1(inorder, rightInorderBegin, rightInorderEnd, postorder, rightPostorderBegin, rightPostorderEnd);
+			root->left = buildTree3(inorder, leftInorderBegin, leftInorderEnd, postorder, leftPostorderBegin, leftPostorderEnd);
+			root->right = buildTree3(inorder, rightInorderBegin, rightInorderEnd, postorder, rightPostorderBegin, rightPostorderEnd);
 
 			return root;
 		}
 		TreeNode* buildTree3(vector<int>& inorder, vector<int>& postorder) {
 			if (inorder.size() == 0 || postorder.size() == 0) return NULL;
 			// 左闭右开的原则
-			return traversal1(inorder, 0, inorder.size(), postorder, 0, postorder.size());
+			return buildTree3(inorder, 0, inorder.size(), postorder, 0, postorder.size());
 		}
+
+
+
+
 
 		/*
 		117.填充每个节点的下一个右侧节点指针 II
@@ -5941,7 +5959,7 @@ namespace Tree {
 
 
 		//114. 二叉树展开为链表——二刷
-		void flatten(TreeNode* root) {
+		void flatten2(TreeNode* root) {
 			while (root) {
 				TreeNode* tmpNode = root->left;
 				if (tmpNode) {
@@ -6958,9 +6976,11 @@ namespace Tree {
 			//cout << "101. 对称二叉树=" << isSymmetric(&treeRoot) << endl;
 
 
+			vector<int> preorder{ 3,9,20,15,7 };
+			vector<int> inorder{ 9,3,15,20,7 };
 			vector<string> nodes = { "5","3","6","2","4","null","7 " };
 			treeRoot = createBinaryTree(nodes);//构建树
-			cout << deleteNode(treeRoot, 3) << endl;
+			cout << buildTree2(preorder, inorder) << endl;
 			/*vector<int> srtVec = lowestCommonAncestor(treeRoot);
 			for (size_t i = 0; i < srtVec.size(); i++)
 				std::cout << srtVec[i] << endl;
@@ -12022,9 +12042,11 @@ int main()
 	//DynamicPlanning::Solution tree;
 	//DoublePointer::Solution tree;
 	//Dandiaozhan::Solution tree;
-	LinkedList::Solution tree;
-	//tree.test();
-	tree.testLRU();
+	//LinkedList::Solution tree;//tree.testLRU();
+	Tree::Solution tree;
+
+	tree.test();
+
 
 
 
