@@ -6850,10 +6850,14 @@ namespace Tree {
 
 		/*
 		124. 二叉树中的最大路径和
+		题意：
+			求二叉树中的最大的路径和。
+			同一个节点在一条路径序列中至多出现一次 。该路径 至少包含一个 节点，且不一定经过根节点。
 		参考：
 			https://leetcode.cn/problems/binary-tree-maximum-path-sum/solutions/18040/er-cha-shu-zhong-de-zui-da-lu-jing-he-by-ikaruga/?envType=study-plan-v2&envId=top-100-liked
 			思路是一样的，但是代码参考了评论区的“cheney”。
 		思路：
+			看这个代码，从树底部往上走比较好理解.
 			后序遍历，并不是后序遍历有什么特点才选用。后来的代码写完才发现是后续遍历。
 			遍历某一个节点的时候，确定左节点的最大值，右节点的最大值。
 			如果左或者右节点的值小于0.就没有必要留下来，这样只会拖累结果。《0就让他等0就行
@@ -6877,6 +6881,23 @@ namespace Tree {
 			maxPathSum_tarval(root, ret);
 			return ret;
 		}
+
+
+		//124. 二叉树中的最大路径和——二刷
+		int maxPathSum_tarval2(TreeNode* root, int &ret) {
+			if (root == nullptr)return 0;
+			int l = max(0, maxPathSum_tarval2(root->left, ret));
+			int r = max(0, maxPathSum_tarval2(root->right, ret));
+			ret = max(ret, root->val + l + r);//!别弄错root->val + l + r不是ret + l + r，写太快忽略了。
+			return root->val + max(l, r);
+		}
+		int maxPathSum2(TreeNode* root) {
+			int ret = INT_MIN;
+			maxPathSum_tarval2(root, ret);
+			return ret;
+		}
+
+
 
 		void test()
 		{
