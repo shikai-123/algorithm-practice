@@ -6484,62 +6484,55 @@ namespace Tree {
 
 		/*
 		236. 二叉树的最近公共祖先
-			代码简单，思路复杂
+			代码简单，思路复杂.
+			！这个是通用的 235 236都可以用！
 		核心思路：
-			从下往上找。用后序遍历。
-			找到了p和q就往上父节点返回，直到他俩返回的父节点是一样的。
-		要学习的是：
-			分析的代码的时候，方便理解或者是写，就从叶子结点往上走，好理解
-			TreeNode* left = lowestCommonAncestor(root->left, p, q);
-			TreeNode* right = lowestCommonAncestor(root->right, p, q);
-			这两行代码，如果要一层一层递归进去，理解很不好理解。
-			可以简化理解，这个思路在任何递归的时候，都比较好用。
-			 lowestCommonAncestor(root->left, p, q);  就是当前root的左子树的结果
-			 lowestCommonAncestor(root->right, p, q); 就是当前root的右子树的结果
-			 不管它内部是怎么递归的，就知道这个结果就行。
-
+			！“后序遍历”
+			找到了p和q就往上父节点返回。
+			直到他俩返回的父节点是一样的。
 		参考：
-			https://www.programmercarl.com/0235.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html#%E6%80%9D%E8%B7%AF
+			https://www.programmercarl.com/0236.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html#%E6%80%9D%E8%B7%AF
 		*/
 		TreeNode* lowestCommonAncestor1(TreeNode* root, TreeNode* p, TreeNode* q) {
 			if (root == nullptr || root == p || root == q) return root;
-			TreeNode*childLeft = lowestCommonAncestor1(root->left, p, q);//返回右子树的结果
-			TreeNode*childRight = lowestCommonAncestor1(root->right, p, q);
-
-			if (childLeft&&childRight)return root;//它的左右子树找到了pq，那么就返回他的指针，也就是root。最后最后的返回一定是在这，要返回它俩的公共的祖先。
-			else if (childLeft == nullptr&&childRight)return childRight;//右子树有了p或者q，或者有了p和q。就返回右子树的指针。
-			else if (childLeft &&childRight == nullptr)return childLeft;//同理
-			else return nullptr;
+			TreeNode*leftFlag = lowestCommonAncestor1(root->left, p, q);//返回“当前层root”左子树的结果。为null，说明当前层root”左子树没有q或p。不为null，说明有
+			TreeNode*rightFlag = lowestCommonAncestor1(root->right, p, q);//返回“当前层root”右子树的结果
+			//！指针是否空就是当前层的root左子树或者右子树是否含有qp的标示。！
+			if (leftFlag&&rightFlag)
+				return root;//当前层root的左子树和右子树都分别找到了qp（提议中节点不重复，不会出现两个qq的情况）。说明当前层的root是他们的公共祖先，那么就返回。
+			else if (leftFlag == nullptr&&rightFlag)
+				return rightFlag;// 当前层root的右子树有找到了相应的节点，把这个节点返回上去。为了在回溯的时候让他的父节点，爷爷节点或者更高的节点，这一路下来都有标示——它们其中一路中已经有了一个q或者p。直到遇到左节点也有标示的时候,说了这层的root是他们的公共祖先。
+			else if (leftFlag &&rightFlag == nullptr)
+				return leftFlag;//同理
+			else
+				return nullptr;
 		}
+
+
+
+		//236. 二叉树的最近公共祖先——二刷
+		TreeNode* lowestCommonAncestor3(TreeNode* root, TreeNode* p, TreeNode* q) {
+			if (root == nullptr || root == p || root == q) return  root;
+			TreeNode* leftFlag = lowestCommonAncestor3(root->left, p, q);
+			TreeNode* rightFlag = lowestCommonAncestor3(root->right, p, q);
+
+			if (leftFlag&&rightFlag)
+				return root;
+			else if (leftFlag&&rightFlag == nullptr)
+				return leftFlag;
+			else if (leftFlag == nullptr&&rightFlag)
+				return rightFlag;
+			else
+				return nullptr;
+		}
+
+
 
 		/*
 		235. 二叉搜索树的最近公共祖先
-		236. 二叉树的最近公共祖先
-		这两个题是一个思路，但是搜索树有自己的性质，可以根据这个性质。
-		为了方便，还是学习236这种思路，通用。
-		两道题的核心思想就是：
-			如何判断一个节点的子树里有p，子树里有q
 		参考：
 			https://www.programmercarl.com/0235.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html
 		*/
-		TreeNode* lowestCommonAncestor11(TreeNode* root, TreeNode* p, TreeNode* q) {
-			//不用判断节点为空的情况，题目中明确说了，确定存在这个点。
-			if (root->val > p->val&&root->val > q->val)//如果在【pq】的右侧，那么就往左走。
-			{
-				TreeNode* left = lowestCommonAncestor11(root->left, p, q);
-				if (left != NULL) {
-					return left;
-				}
-			}
-			else if (root->val < p->val&&root->val < q->val)//如果在【pq】的左侧，那么就往右走。
-			{
-				TreeNode* right = lowestCommonAncestor11(root->right, p, q);
-				if (right != NULL) {
-					return right;
-				}
-			}
-			return root;
-		}
 		TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
 			while (root)
 			{
@@ -6892,12 +6885,18 @@ namespace Tree {
 
 		/*
 		437. 路径总和 III
+		题意：
+			求该二叉树里节点值之和等于 targetSum 的 路径 的数目。路径 不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
 		参考：
-			https://leetcode.cn/problems/path-sum-iii/submissions/507657743/?envType=study-plan-v2&envId=top-100-liked
+		https://leetcode.cn/problems/path-sum-iii/solutions/615524/rang-ni-miao-dong-de-hui-su-qian-zhui-he-ou6t/?envType=study-plan-v2&envId=top-100-like
+			他这个代码中，最新的测试用列会有问题，就是 int currSum太小了，就得换成 long currSum。
 			这个和560. 和为 K 的子数组很相似，多看看
 		思路：
-			假设当前从根节点 root 到节点 node的前缀和为 curr，则此时我们在已保存的前缀和中，查找是否存在某一个节点的前缀和刚好等于 curr−targetSum。
-			假设从根节点 root 到节点 node 的路径中存在节点 pi到根节点 root 的前缀和为 curr-targetSum，则节点 pi到 node的路径上所有节点的和一定为 targetSum。
+			从根节点 root 到节点 node的前缀和为 currSum，我们保存前缀和中。
+			然后去查找是否存在某一个节点的前缀和刚好等于 currSum−targetSum。发现根节点 root到pi 的前缀和为 currSum-targetSum。
+			说明节点 pi到 node的路径上所有节点的和一定为 targetSum。
+			！因为代码中是递归，所以一定能保证root---- other--- pi ----node是在一条路的。
+			！代码中有回溯。意味着和他不相连的那些路径都删掉了。pathSum_umap[currSum]--;//！！回溯的时候，把这一层的前缀和再减去
 		举例：
 			假设targetSum=8
 					root---- other--- pi ----node
@@ -6905,19 +6904,18 @@ namespace Tree {
 			前缀和	5		 11       16      19
 			pi到node之间的元素的和，就是8.
 		核心：
-			从上图看出，pi到node的和就是8（targetSum）。这个时候就检查pi往前到root中有没有前缀和是11的。
-			有的话，就说明root到pi是存在路径的。比如5->6这个路径。
-			多说点，虽然看题目上，有些路径和根节点无关，但是遍历都是从根节点出发的，起始还是逃不了和根节点的关系
+			1、他是从后往前找的，思路上有点别扭。
+			   前缀和累计到19后，这个时候去找（19-8=11），就往前回头找11.找到了就说明有路径。找不到就继续往下递归。
+			2、虽然看题目上，有些路径和根节点无关，但是遍历都是从根节点出发的，起始还是逃不了和根节点的关系
 		*/
-		unordered_map<long, long>pathSum_umap;//key是前缀和 value是该前缀和出现的次数
-
+		unordered_map<long, long>pathSum_umap;//key是前缀和 value是该前缀和出现的次数、！！ 别忘了测试中数比较大，要用long类型
 		void pathSum_travarsel(TreeNode* node, int targetSum, long currSum, int &ret) {
 			if (node == nullptr)return;
-			currSum += node->val;
+			currSum += node->val;//更新前缀和
 			if (pathSum_umap.find(currSum - targetSum) != pathSum_umap.end()) {//当找到了对应的前缀和的时候，次数ret= ret+ pathSum_umap[currSum - targetSum]
-				ret = ret + pathSum_umap[currSum - targetSum];//！！这里不能是单纯的++。因为可能在这个d
+				ret = ret + pathSum_umap[currSum - targetSum];//！！这里不能是单纯的++。因为同样符合“currSum - targetSum”可能会有多条路线。
 			}
-			pathSum_umap[currSum]++;
+			pathSum_umap[currSum]++;//前缀和是currSum的路线数量++
 			pathSum_travarsel(node->left, targetSum, currSum, ret);
 			pathSum_travarsel(node->right, targetSum, currSum, ret);
 			pathSum_umap[currSum]--;//！！回溯的时候，把这一层的前缀和再减去
@@ -6925,18 +6923,47 @@ namespace Tree {
 		}
 		int pathSum(TreeNode* root, int targetSum) {
 			int ret = 0;
-			pathSum_umap[0] = 1;//前缀和为0，就是啥也没有，就是个空树。但是前缀和0的出现次数就是1
+			pathSum_umap[0] = 1;//前缀和为0，就是啥也没有，就是个空树。但是前缀和0的出现次数就是1。！！测试中有空数。
 			long currSum = 0;
 			pathSum_travarsel(root, targetSum, currSum, ret);
 			return ret;
 		}
 
+
+		//437. 路径总和 III-二刷
+		unordered_map<long, long> pathSum2_umap;
+		void pathSum2_traval(TreeNode* root, int targetSum, long curSum, int& ret) {
+			if (root == nullptr) return;
+			curSum += root->val;
+			if (pathSum2_umap.find(curSum - targetSum) != pathSum2_umap.end()) {
+				ret += pathSum2_umap[curSum - targetSum];
+			}
+			pathSum2_umap[curSum]++;
+			pathSum2_traval(root->left, targetSum, curSum, ret);
+			pathSum2_traval(root->right, targetSum, curSum, ret);
+			pathSum2_umap[curSum]--;
+			return;
+		}
+		int pathSum2(TreeNode* root, int targetSum) {
+			pathSum2_umap[0] = 1;
+			int ret = 0;
+			long curSum = 0;
+			pathSum2_traval(root, targetSum, curSum, ret);
+			return ret;
+		}
+
+
+
 		/*
 		124. 二叉树中的最大路径和
+		题意：
+			求二叉树中的最大的路径和。
+			同一个节点在一条路径序列中至多出现一次 。该路径 至少包含一个 节点，且不一定经过根节点。
 		参考：
 			https://leetcode.cn/problems/binary-tree-maximum-path-sum/solutions/18040/er-cha-shu-zhong-de-zui-da-lu-jing-he-by-ikaruga/?envType=study-plan-v2&envId=top-100-liked
 			思路是一样的，但是代码参考了评论区的“cheney”。
 		思路：
+			看这个代码，从树底部往上走比较好理解.
 			后序遍历，并不是后序遍历有什么特点才选用。后来的代码写完才发现是后续遍历。
 			遍历某一个节点的时候，确定左节点的最大值，右节点的最大值。
 			如果左或者右节点的值小于0.就没有必要留下来，这样只会拖累结果。《0就让他等0就行
@@ -6960,6 +6987,23 @@ namespace Tree {
 			maxPathSum_tarval(root, ret);
 			return ret;
 		}
+
+
+		//124. 二叉树中的最大路径和——二刷
+		int maxPathSum_tarval2(TreeNode* root, int &ret) {
+			if (root == nullptr)return 0;
+			int l = max(0, maxPathSum_tarval2(root->left, ret));
+			int r = max(0, maxPathSum_tarval2(root->right, ret));
+			ret = max(ret, root->val + l + r);//!别弄错root->val + l + r不是ret + l + r，写太快忽略了。
+			return root->val + max(l, r);
+		}
+		int maxPathSum2(TreeNode* root) {
+			int ret = INT_MIN;
+			maxPathSum_tarval2(root, ret);
+			return ret;
+		}
+
+
 
 		void test()
 		{
@@ -10573,7 +10617,6 @@ namespace TULUN
 			不是从中间走的，而是从图的左上角开始。
 			递归函数的功能——找到xy所在岛屿的所有的坐标，并标记visited[i][l]=true;找完了就出来
 		*/
-
 		//grid图 visited图上哪个点被访问过 xy 要访问的点的坐标
 		void numIslands_bfs(vector<vector<char>>& grid, vector<vector<bool>>& visited, int x, int y)
 		{
@@ -10626,13 +10669,53 @@ namespace TULUN
 		}
 
 
-		/*
-		200、岛屿数量——深度搜索，我没看。题目一样，我节省点时间，二刷的时候看！
-		参考：
-			https://www.programmercarl.com/0200.%E5%B2%9B%E5%B1%BF%E6%95%B0%E9%87%8F.%E6%B7%B1%E6%90%9C%E7%89%88.html
-		思路：
 
-		*/
+
+
+
+
+
+
+
+
+
+		//200、岛屿数量——二刷
+		void numIslands2_bfs(vector<vector<char>>& grid, vector<vector<bool>> &visited, int i, int l) {
+			vector<vector<int>>dir{ {0,1},{0,-1},{1,0},{-1,0} };
+			queue<pair<int, int>> gridNode;
+			gridNode.push({ i, l });
+			visited[i][l] = true;
+			while (gridNode.size())
+			{
+				pair<int, int> curNode = gridNode.front();
+				gridNode.pop();
+				for (size_t dirIndex = 0; dirIndex < 4; dirIndex++)
+				{
+					int nextX = curNode.first + dir[dirIndex][0];
+					int nextY = curNode.second + dir[dirIndex][1];
+					if (nextX >= 0 && nextX < grid.size() && 0 <= nextY && nextY <= grid[0].size())
+						if (visited[nextX][nextY] == false && grid[nextX][nextY] == '1') {
+							gridNode.push({ nextX, nextY });
+							visited[nextX][nextY] = true;
+						}
+				}
+			}
+			return;
+		}
+		int numIslands2(vector<vector<char>>& grid) {
+			int ret = 0;//！别忘了初始化
+			//vector<vector<bool>> visited(grid.size(), (grid[0].size(), false));//!!!这种初始化方法不行
+			vector<vector<bool>> visited(grid.size(), vector<bool>(grid[0].size(), false));//!!别忘了初始化它的空间，要不然后面越界报错
+			for (size_t i = 0; i < grid.size(); i++) {
+				for (size_t l = 0; l < grid[0].size(); l++) {
+					if (visited[i][l] == false && grid[i][l] == '1') {
+						ret++;
+						numIslands2_bfs(grid, visited, i, l);
+					}
+				}
+			}
+			return ret;
+		}
 
 		/*
 		695. 岛屿的最大面积
