@@ -6395,62 +6395,55 @@ namespace Tree {
 
 		/*
 		236. 二叉树的最近公共祖先
-			代码简单，思路复杂
+			代码简单，思路复杂.
+			！这个是通用的 235 236都可以用！
 		核心思路：
-			从下往上找。用后序遍历。
-			找到了p和q就往上父节点返回，直到他俩返回的父节点是一样的。
-		要学习的是：
-			分析的代码的时候，方便理解或者是写，就从叶子结点往上走，好理解
-			TreeNode* left = lowestCommonAncestor(root->left, p, q);
-			TreeNode* right = lowestCommonAncestor(root->right, p, q);
-			这两行代码，如果要一层一层递归进去，理解很不好理解。
-			可以简化理解，这个思路在任何递归的时候，都比较好用。
-			 lowestCommonAncestor(root->left, p, q);  就是当前root的左子树的结果
-			 lowestCommonAncestor(root->right, p, q); 就是当前root的右子树的结果
-			 不管它内部是怎么递归的，就知道这个结果就行。
-
+			！“后序遍历”
+			找到了p和q就往上父节点返回。
+			直到他俩返回的父节点是一样的。
 		参考：
-			https://www.programmercarl.com/0235.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html#%E6%80%9D%E8%B7%AF
+			https://www.programmercarl.com/0236.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html#%E6%80%9D%E8%B7%AF
 		*/
 		TreeNode* lowestCommonAncestor1(TreeNode* root, TreeNode* p, TreeNode* q) {
 			if (root == nullptr || root == p || root == q) return root;
-			TreeNode*childLeft = lowestCommonAncestor1(root->left, p, q);//返回右子树的结果
-			TreeNode*childRight = lowestCommonAncestor1(root->right, p, q);
-
-			if (childLeft&&childRight)return root;//它的左右子树找到了pq，那么就返回他的指针，也就是root。最后最后的返回一定是在这，要返回它俩的公共的祖先。
-			else if (childLeft == nullptr&&childRight)return childRight;//右子树有了p或者q，或者有了p和q。就返回右子树的指针。
-			else if (childLeft &&childRight == nullptr)return childLeft;//同理
-			else return nullptr;
+			TreeNode*leftFlag = lowestCommonAncestor1(root->left, p, q);//返回“当前层root”左子树的结果。为null，说明当前层root”左子树没有q或p。不为null，说明有
+			TreeNode*rightFlag = lowestCommonAncestor1(root->right, p, q);//返回“当前层root”右子树的结果
+			//！指针是否空就是当前层的root左子树或者右子树是否含有qp的标示。！
+			if (leftFlag&&rightFlag)
+				return root;//当前层root的左子树和右子树都分别找到了qp（提议中节点不重复，不会出现两个qq的情况）。说明当前层的root是他们的公共祖先，那么就返回。
+			else if (leftFlag == nullptr&&rightFlag)
+				return rightFlag;// 当前层root的右子树有找到了相应的节点，把这个节点返回上去。为了在回溯的时候让他的父节点，爷爷节点或者更高的节点，这一路下来都有标示——它们其中一路中已经有了一个q或者p。直到遇到左节点也有标示的时候,说了这层的root是他们的公共祖先。
+			else if (leftFlag &&rightFlag == nullptr)
+				return leftFlag;//同理
+			else
+				return nullptr;
 		}
+
+
+
+		//236. 二叉树的最近公共祖先——二刷
+		TreeNode* lowestCommonAncestor3(TreeNode* root, TreeNode* p, TreeNode* q) {
+			if (root == nullptr || root == p || root == q) return  root;
+			TreeNode* leftFlag = lowestCommonAncestor3(root->left, p, q);
+			TreeNode* rightFlag = lowestCommonAncestor3(root->right, p, q);
+
+			if (leftFlag&&rightFlag)
+				return root;
+			else if (leftFlag&&rightFlag == nullptr)
+				return leftFlag;
+			else if (leftFlag == nullptr&&rightFlag)
+				return rightFlag;
+			else
+				return nullptr;
+		}
+
+
 
 		/*
 		235. 二叉搜索树的最近公共祖先
-		236. 二叉树的最近公共祖先
-		这两个题是一个思路，但是搜索树有自己的性质，可以根据这个性质。
-		为了方便，还是学习236这种思路，通用。
-		两道题的核心思想就是：
-			如何判断一个节点的子树里有p，子树里有q
 		参考：
 			https://www.programmercarl.com/0235.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html
 		*/
-		TreeNode* lowestCommonAncestor11(TreeNode* root, TreeNode* p, TreeNode* q) {
-			//不用判断节点为空的情况，题目中明确说了，确定存在这个点。
-			if (root->val > p->val&&root->val > q->val)//如果在【pq】的右侧，那么就往左走。
-			{
-				TreeNode* left = lowestCommonAncestor11(root->left, p, q);
-				if (left != NULL) {
-					return left;
-				}
-			}
-			else if (root->val < p->val&&root->val < q->val)//如果在【pq】的左侧，那么就往右走。
-			{
-				TreeNode* right = lowestCommonAncestor11(root->right, p, q);
-				if (right != NULL) {
-					return right;
-				}
-			}
-			return root;
-		}
 		TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
 			while (root)
 			{
@@ -6845,7 +6838,7 @@ namespace Tree {
 			pathSum2_umap[curSum]--;
 			return;
 		}
-		int pathSum(TreeNode* root, int targetSum) {
+		int pathSum2(TreeNode* root, int targetSum) {
 			pathSum2_umap[0] = 1;
 			int ret = 0;
 			long curSum = 0;
