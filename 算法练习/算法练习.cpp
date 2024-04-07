@@ -6786,12 +6786,18 @@ namespace Tree {
 
 		/*
 		437. 路径总和 III
+		题意：
+			求该二叉树里节点值之和等于 targetSum 的 路径 的数目。路径 不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
 		参考：
-			https://leetcode.cn/problems/path-sum-iii/submissions/507657743/?envType=study-plan-v2&envId=top-100-liked
+		https://leetcode.cn/problems/path-sum-iii/solutions/615524/rang-ni-miao-dong-de-hui-su-qian-zhui-he-ou6t/?envType=study-plan-v2&envId=top-100-like
+			他这个代码中，最新的测试用列会有问题，就是 int currSum太小了，就得换成 long currSum。
 			这个和560. 和为 K 的子数组很相似，多看看
 		思路：
-			假设当前从根节点 root 到节点 node的前缀和为 curr，则此时我们在已保存的前缀和中，查找是否存在某一个节点的前缀和刚好等于 curr−targetSum。
-			假设从根节点 root 到节点 node 的路径中存在节点 pi到根节点 root 的前缀和为 curr-targetSum，则节点 pi到 node的路径上所有节点的和一定为 targetSum。
+			从根节点 root 到节点 node的前缀和为 currSum，我们保存前缀和中。
+			然后去查找是否存在某一个节点的前缀和刚好等于 currSum−targetSum。发现根节点 root到pi 的前缀和为 currSum-targetSum。
+			说明节点 pi到 node的路径上所有节点的和一定为 targetSum。
+			！因为代码中是递归，所以一定能保证root---- other--- pi ----node是在一条路的。
+			！代码中有回溯。意味着和他不相连的那些路径都删掉了。pathSum_umap[currSum]--;//！！回溯的时候，把这一层的前缀和再减去
 		举例：
 			假设targetSum=8
 					root---- other--- pi ----node
@@ -6799,19 +6805,18 @@ namespace Tree {
 			前缀和	5		 11       16      19
 			pi到node之间的元素的和，就是8.
 		核心：
-			从上图看出，pi到node的和就是8（targetSum）。这个时候就检查pi往前到root中有没有前缀和是11的。
-			有的话，就说明root到pi是存在路径的。比如5->6这个路径。
-			多说点，虽然看题目上，有些路径和根节点无关，但是遍历都是从根节点出发的，起始还是逃不了和根节点的关系
+			1、他是从后往前找的，思路上有点别扭。
+			   前缀和累计到19后，这个时候去找（19-8=11），就往前回头找11.找到了就说明有路径。找不到就继续往下递归。
+			2、虽然看题目上，有些路径和根节点无关，但是遍历都是从根节点出发的，起始还是逃不了和根节点的关系
 		*/
-		unordered_map<long, long>pathSum_umap;//key是前缀和 value是该前缀和出现的次数
-
+		unordered_map<long, long>pathSum_umap;//key是前缀和 value是该前缀和出现的次数、！！ 别忘了测试中数比较大，要用long类型
 		void pathSum_travarsel(TreeNode* node, int targetSum, long currSum, int &ret) {
 			if (node == nullptr)return;
-			currSum += node->val;
+			currSum += node->val;//更新前缀和
 			if (pathSum_umap.find(currSum - targetSum) != pathSum_umap.end()) {//当找到了对应的前缀和的时候，次数ret= ret+ pathSum_umap[currSum - targetSum]
-				ret = ret + pathSum_umap[currSum - targetSum];//！！这里不能是单纯的++。因为可能在这个d
+				ret = ret + pathSum_umap[currSum - targetSum];//！！这里不能是单纯的++。因为同样符合“currSum - targetSum”可能会有多条路线。
 			}
-			pathSum_umap[currSum]++;
+			pathSum_umap[currSum]++;//前缀和是currSum的路线数量++
 			pathSum_travarsel(node->left, targetSum, currSum, ret);
 			pathSum_travarsel(node->right, targetSum, currSum, ret);
 			pathSum_umap[currSum]--;//！！回溯的时候，把这一层的前缀和再减去
@@ -6819,11 +6824,36 @@ namespace Tree {
 		}
 		int pathSum(TreeNode* root, int targetSum) {
 			int ret = 0;
-			pathSum_umap[0] = 1;//前缀和为0，就是啥也没有，就是个空树。但是前缀和0的出现次数就是1
+			pathSum_umap[0] = 1;//前缀和为0，就是啥也没有，就是个空树。但是前缀和0的出现次数就是1。！！测试中有空数。
 			long currSum = 0;
 			pathSum_travarsel(root, targetSum, currSum, ret);
 			return ret;
 		}
+
+
+		//437. 路径总和 III-二刷
+		unordered_map<long, long> pathSum2_umap;
+		void pathSum2_traval(TreeNode* root, int targetSum, long curSum, int& ret) {
+			if (root == nullptr) return;
+			curSum += root->val;
+			if (pathSum2_umap.find(curSum - targetSum) != pathSum2_umap.end()) {
+				ret += pathSum2_umap[curSum - targetSum];
+			}
+			pathSum2_umap[curSum]++;
+			pathSum2_traval(root->left, targetSum, curSum, ret);
+			pathSum2_traval(root->right, targetSum, curSum, ret);
+			pathSum2_umap[curSum]--;
+			return;
+		}
+		int pathSum(TreeNode* root, int targetSum) {
+			pathSum2_umap[0] = 1;
+			int ret = 0;
+			long curSum = 0;
+			pathSum2_traval(root, targetSum, curSum, ret);
+			return ret;
+		}
+
+
 
 		/*
 		124. 二叉树中的最大路径和
