@@ -10669,16 +10669,6 @@ namespace TULUN
 		}
 
 
-
-
-
-
-
-
-
-
-
-
 		//200、岛屿数量——二刷
 		void numIslands2_bfs(vector<vector<char>>& grid, vector<vector<bool>> &visited, int i, int l) {
 			vector<vector<int>>dir{ {0,1},{0,-1},{1,0},{-1,0} };
@@ -11573,18 +11563,31 @@ namespace TULUN
 	public:
 		/*
 		994. 腐烂的橘子
+		题意：
+			一个腐烂的橘子的四周都会腐烂，每分钟腐烂一层，最后返回腐烂玩所有的橘子之所用的最少时间(分钟)。如果腐烂不完，就返回-1
+			值 0 代表空单元格；
+			值 1 代表新鲜橘子；
+			值 2 代表腐烂的橘子。
 		参考;
-			https://leetcode.cn/problems/rotting-oranges/description/?envType=study-plan-v2&envId=top-100-liked
+			https://leetcode.cn/problems/rotting-oranges/solutions/129542/yan-du-you-xian-sou-suo-python3-c-by-z1m/?envType=study-plan-v2&envId=top-100-liked
 		思路：
 			广度搜索，很适合这个思路，和我图论中用的广度搜索的代码差不多
 			遍历这个图论，每一步都要走腐烂四周的橘子
 			然后在新的腐烂的橘子四周，继续腐烂
-			如果最后新鲜的橘子完全不剩下，就返回腐烂完需要的步数
+			如果最后新鲜的橘子完全不剩下，就返回腐烂完需要的时间.
 			腐烂不完，就返回-1
+		注意：
+			其他的图论的题目的时候，习惯了从左上角第一个点遍历图，比如“200. 岛屿数量”。
+			这个题目却不用从左上角开始，任意一个位置就行。
+			无论从哪个位置开始，都是会把腐烂橘子的四周一点点的都加上。
+			“200. 岛屿数量”，不从左上角开始应该也行，我没试试
+			！！和“200. 岛屿数量”不一样的是：while里面有2个for。
+			这是为了保证最短时间才使用的。
+			假设图的左上和右下角有两个点，但是如果没有外面的那个for，那么在一分钟内，只能腐烂一个角，这样就无法得到最短的时间了
 		*/
 		int orangesRotting(vector<vector<int>>& grid) {
 			int step = 0;
-			int fresh = 0;
+			int fresh = 0;//整个途中，新鲜的橘子的数量。
 			queue<pair<int, int>>rotten;//腐烂的橘子的坐标，rotten：腐烂
 			for (size_t i = 0; i < grid.size(); i++) {
 				for (size_t l = 0; l < grid[0].size(); l++) {
@@ -11609,19 +11612,67 @@ namespace TULUN
 						int newY = orangeDir.second + dirs[l].second;
 						//新的坐标不超边界，并且是新鲜的水果，就腐烂它
 						if (newX >= 0 && newX < grid.size() && newY >= 0 && newY < grid[0].size() &&
-							grid[newX][newY] == 1) {
+							grid[newX][newY] == 1)
+						{
 							canNextStep = true;
 							grid[newX][newY] = 2;
 							rotten.push({ newX ,newY });
-							fresh--;//新鲜的水果数量--
+							fresh--;//新鲜的水果数量-1
 						}
 					}
 				}
-				if (canNextStep)//
+				if (canNextStep)//！！每走一步，腐烂的橘子会腐蚀周围的4个点，所以要放在for外面。
 					step++;
 			}
 			return fresh > 0 ? -1 : step;
 		}
+
+
+		//994. 腐烂的橘子——二刷
+		int orangesRotting2(vector<vector<int>>& grid) {
+			int fresh = 0;
+			int step = 0;//腐烂完所有的新鲜的橘子，所需要的步数。
+			queue<pair<int, int>> bad;//腐烂的橘子
+
+			for (size_t i = 0; i < grid.size(); i++)
+			{
+				for (size_t l = 0; l < grid[0].size(); l++)
+				{
+					if (grid[i][l] == 1)
+						fresh++;
+					else if (grid[i][l] == 2)
+						bad.push({ i,l });
+				}
+			}
+			vector<vector<int>> dir{ {0,1},{0,-1},{1,0},{-1,0} };
+			//遍历
+			while (bad.size())
+			{
+				bool canNext = false;
+				int size = bad.size();//!!别忘了这又两个for
+				for (size_t l = 0; l < size; l++)
+				{
+					pair<int, int >currBad = bad.front();
+					bad.pop();
+					for (size_t i = 0; i < 4; i++)
+					{
+						int newX = currBad.first + dir[i][0];
+						int newY = currBad.second + dir[i][1];
+						if (0 <= newX && newX < grid.size() && 0 <= newY && newY < grid[0].size() && grid[newX][newY] == 1) {
+							grid[newX][newY] = 2;
+							canNext = true;
+							fresh--;
+							bad.push({ newX,newY });//！！新腐烂的橘子别忘了加
+						}
+					}
+				}
+				if (canNext)//！！上面的4个方向的for走完，就要走心的点，所以要放在for外面。
+					step++;
+
+			}
+			return fresh > 0 ? -1 : step;
+		}
+
 
 
 		/*
@@ -11727,7 +11778,7 @@ namespace TULUN
 			//string str = "bbbab";
 			//vector<	vector<int> > graph{ {0,0,1,0,0,0,0,1,0,0,0,0,0},{0,0,0,0,0,0,0,1,1,1,0,0,0},{0,1,1,0,1,0,0,0,0,0,0,0,0},{0,1,0,0,1,1,0,0,1,0,1,0,0} };
 			//vector<	vector<char> > graphc{ {'X','X','X','X'},{'X','O','O','X'},{'X','X','O','X'},{'X','O','X','X'} };
-			//vector<	vector<int> > graph1{ {2,1,1},{1,1,0},{0,1,1} };
+			vector<	vector<int> > graph1{ {2,1,1},{1,1,0},{0,1,1} };
 			//vector<	vector<int> > graph2{ {1,0} };
 			//vector<	vector<int> > graph3{ {4,3},{1,4},{4,8},{1,7},{6,4},{4,2},{7,4},{4,0},{0,9},{5,4} };
 			//vector<	vector<int> > graph4{ {0,7},{0,8},{6,1},{2,0},{0,4},{5,8},{4,7},{1,3},{3,5},{6,5} };
@@ -11740,14 +11791,14 @@ namespace TULUN
 
 			//cout << A.canFinish(2, graph2) << endl;
 
-			Trie trie = Trie();
-			trie.insert("apple");
-			cout << trie.search("apple") << endl;   // 返回 True
-			cout << trie.search("app") << endl;     // 返回 False
-			cout << trie.startsWith("app") << endl; // 返回 True
-			trie.insert("app");
-			cout << trie.search("app") << endl;     // 返回 True
-
+			//Trie trie = Trie();
+			//trie.insert("apple");
+			//cout << trie.search("apple") << endl;   // 返回 True
+			//cout << trie.search("app") << endl;     // 返回 False
+			//cout << trie.startsWith("app") << endl; // 返回 True
+			//trie.insert("app");
+			//cout << trie.search("app") << endl;     // 返回 True
+			orangesRotting2(graph1);
 
 			//vector<int> ret = A.findRedundantDirectedConnection(graph4);
 			//cout << ret[0] << endl;
@@ -12118,7 +12169,7 @@ int main()
 	vector<int> newInterval{ 0,0 };
 
 	//String_Array::Solution tree;
-	//TULUN::Solution tree;
+	TULUN::Solution tree;
 	//BackTracking::Solution tree;
 	//ERFENCAHZHAO::Solution tree;
 	//StackandQueue::Solution tree;
@@ -12126,7 +12177,7 @@ int main()
 	//DoublePointer::Solution tree;
 	//Dandiaozhan::Solution tree;
 	//LinkedList::Solution tree;//tree.testLRU();
-	Tree::Solution tree;
+	//Tree::Solution tree;
 
 	tree.test();
 
