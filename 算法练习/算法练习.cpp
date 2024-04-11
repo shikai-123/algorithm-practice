@@ -11677,15 +11677,21 @@ namespace TULUN
 
 		/*
 		207. 课程表
+		题意：
+			numCourses = 2, prerequisites = [[1,0],[0,1]]
+			总共有 2 门课程。学习课程 1 之前，你需要先完成​课程 0 ；并且学习课程 0 之前，你还应先完成课程 1 。这是不可能的
+			给你一个数组，按照上面题意，确定能否完成学习。
 		参考：
 			https://leetcode.cn/problems/course-schedule/solutions/18806/course-schedule-tuo-bu-pai-xu-bfsdfsliang-chong-fa/?envType=study-plan-v2&envId=top-100-liked
 			什么是拓扑排序：https://blog.csdn.net/lisonglisonglisong/article/details/45543451
 			什么是邻接表：https://zhuanlan.zhihu.com/p/618361957
 			要理解这两个题目，首先要明白下面这两个概念
 		思路：
-			拓扑排序就是就是用来解决依赖问题，所以这个题目这个思想。
-			如果按照拓扑排序删掉图中的“入度为0的点”，最后图中什么都不剩，就是“有向无环图”，就说明满足条件
+			“拓扑排序”就是就是用来解决依赖问题。所以这问题就是要利用这个思路。
+			“拓扑排序”思路就是删掉图中的“入度为0的点”，如果最后图中什么都不剩，就是“有向无环图”，就说明满足条件；否则就是不行。
 			整个题目核心其实就是“拓扑排序”
+			再说下“邻接表”是什么？
+			比如1和2和3相连，那么二维数组邻接表1的后面23两个元素
 		*/
 		bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
 			vector<int> rudubiao(numCourses, 0);//入度表
