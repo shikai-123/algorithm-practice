@@ -11735,12 +11735,6 @@ namespace TULUN
 			return numCourses == 0;//如果全删了，那么符合要求
 		}
 
-
-
-
-
-
-
 		//207. 课程表-二刷
 		bool canFinish2(int numCourses, vector<vector<int>>& prerequisites) {
 			vector<int>rudubiao(numCourses, 0);
