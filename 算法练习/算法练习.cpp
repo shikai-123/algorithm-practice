@@ -11691,14 +11691,16 @@ namespace TULUN
 			“拓扑排序”思路就是删掉图中的“入度为0的点”，如果最后图中什么都不剩，就是“有向无环图”，就说明满足条件；否则就是不行。
 			整个题目核心其实就是“拓扑排序”
 			再说下“邻接表”是什么？
-			比如1和2和3相连，那么二维数组邻接表1的后面23两个元素
+			在图中，比如1和2和+3相连，那么这个数组就是0开头，23在后面。代表的这是“0”的邻接表。
 		*/
+		//numCourses选修的科目数
 		bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
-			vector<int> rudubiao(numCourses, 0);//入度表
-			vector<vector<int>> linjiebiao(numCourses, vector<int>());//邻接表
-			queue<int> q_rudu0;
+			vector<int> rudubiao(numCourses, 0);//入度表;一维数组,下标是课程编号,值是入度.(这个题目中,科目都是连续的,也就都是从0开始!)
+			//!!别忘了初始化，要不然错误
+			vector<vector<int>> linjiebiao(numCourses, vector<int>());//邻接表;二维数组,在图中，比如1和2和+3相连，那么这个数组就是0开头，23在后面.2的邻接表就要另起一行,所以就是二维数组.
+			queue<int> q_rudu0;//保存入度为0的节点。
 			//构建入度表和邻接表
-			for (size_t i = 0; i < prerequisites.size(); i++)//这里用numCourses不行，没有道理，
+			for (size_t i = 0; i < prerequisites.size(); i++)//!牢记一个关键：题目给的数组中10，方向是0-》1 
 			{
 				rudubiao[prerequisites[i][0]]++;//题目给的数组中10，方向是0-》1 所以入度是 prerequisites[1];
 				linjiebiao[prerequisites[i][1]].push_back(prerequisites[i][0]);//方向是0-》1.领接表的头就是0 往后接1
@@ -11718,17 +11720,65 @@ namespace TULUN
 			{
 				int kechengIndex = q_rudu0.front();//课程号
 				q_rudu0.pop();
-				numCourses--;//删掉一个点
-				//既然这个点删掉了，那么与这个点有关的点入度都要改变
-				for (size_t i = 0; i < linjiebiao[kechengIndex].size(); i++)
+				numCourses--;//删掉一个点！！别忘了这个
+				//既然这个点删掉了，那么与这个点有关的点入度都要改变。0-》1；0-》2；0删除了，1和2的入度都要减少。所以for的范围是0的邻接表.
+				for (size_t i = 0; i < linjiebiao[kechengIndex].size(); i++)//！！！范围别弄错，是这个点的所有的邻接的数据 linjiebiao[deleteIndex].size()。
 				{
-					rudubiao[linjiebiao[kechengIndex][i]]--;
-					if (rudubiao[linjiebiao[kechengIndex][i]] == 0)//如果新出现了入度为0的点，那么就放到队列中。准备删掉他
-						q_rudu0.push(linjiebiao[kechengIndex][i]);
+					//用【10】举例子，方向是0-》1，现在删除0；
+					//删除对应的点之后，对应入度表要跟着边；注意的是邻接表这个不用变化。比如0接了1、2。0被删除了，那么在本次while之后，0的邻接表不会再用。
+					rudubiao[linjiebiao[kechengIndex][i]]--;//删除一个点后,对应的入读表也是要变化,首先rudubiao[x]--.那么x肯定是和kechengIndex(被删掉的节点)挨边的元素.
+					//那么挨边的元素是多少呢?就要靠邻接表了.linjiebiao[kechengIndex][i](kechengIndex是被删的元素,i是与他挨边的元素的序号).
+					if (rudubiao[linjiebiao[kechengIndex][i]] == 0)//入度改变了就有可能出现新的入度为0的点，那么就放到队列中。准备删掉他
+						q_rudu0.push(linjiebiao[kechengIndex][i]);//是0的话，就把它的坐标也就是linjiebiao[deleteIndex][i]放到队列中。
 				}
 			}
 			return numCourses == 0;//如果全删了，那么符合要求
 		}
+
+
+
+
+
+
+
+		//207. 课程表-二刷
+		bool canFinish2(int numCourses, vector<vector<int>>& prerequisites) {
+			vector<int>rudubiao(numCourses, 0);
+			vector<vector<int>>linjiebiao(numCourses, vector<int>());//!!别忘了初始化
+			for (size_t i = 0; i < prerequisites.size(); i++)//题目给的数组中10，方向是0-》1 
+			{
+				//用【10】举例子，方向是0-》1
+				rudubiao[prerequisites[i][0]]++;//1在后面，所以是1的入度
+				linjiebiao[prerequisites[i][1]].push_back(prerequisites[i][0]);//0在前面，所以是0的邻接
+			}
+			//邻接表和入度表弄完之后，就开始找入度为0的点，放到queue中
+			queue<int> que0;//入度为0的点都放到这里
+			for (size_t i = 0; i < rudubiao.size(); i++)
+			{
+				if (rudubiao[i] == 0)
+					que0.push(i);
+			}
+
+			while (!que0.empty())//只要入度不为0的点还存在，那么就一直删下去。
+			{
+				int deleteIndex = que0.front();//被删除的这个点的的坐标
+				que0.pop();
+				numCourses--;//删掉一个点
+				for (size_t i = 0; i < linjiebiao[deleteIndex].size(); i++)//!!for的目的就是找这个点的连接的那些点，他们的入度都要调节。！！！范围别弄错，是这个点的所有的邻接的数据 linjiebiao[deleteIndex].size()。
+				{
+					//用【10】举例子，方向是0-》1，现在删除0；
+					//删除对应的点之后，对应入度表要跟着边；注意的是邻接表这个不用变化。比如0接了1、2。0被删除了，那么在本次while之后，0的邻接表不会再用。
+					rudubiao[linjiebiao[deleteIndex][i]]--;
+					//接着判断这个新的入度是不是0
+					if (rudubiao[linjiebiao[deleteIndex][i]] == 0)
+						que0.push(linjiebiao[deleteIndex][i]);//是0的话，就把它的坐标也就是linjiebiao[deleteIndex][i]放到队列中。
+				}
+			}
+			return numCourses == 0;
+		}
+
+
+
 
 		/*
 		208. 实现 Trie (前缀树)
