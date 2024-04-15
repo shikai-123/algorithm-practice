@@ -11777,7 +11777,7 @@ namespace TULUN
 		/*
 		208. 实现 Trie (前缀树)
 		参考：
-			https://leetcode.cn/problems/implement-trie-prefix-tree/description/?envType=study-plan-v2&envId=top-100-liked
+			https://leetcode.cn/problems/implement-trie-prefix-tree/solutions/98390/trie-tree-de-shi-xian-gua-he-chu-xue-zhe-by-huwt/?envType=study-plan-v2&envId=top-100-liked
 		思路：
 			其实就是构建多叉树，有26个英文字母，26个叉。 然后构建就完了。
 		*/
