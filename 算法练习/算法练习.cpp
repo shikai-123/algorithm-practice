@@ -7450,16 +7450,18 @@ namespace BackTracking {
 		78. 子集
 		参考：
 			https://www.programmercarl.com/0078.%E5%AD%90%E9%9B%86.html
+		思路:
+			和组合题目很相似,可以联系"46 全排列"题目对着看.
+			其实还是把他想象成一棵树,每个排列都是叶子节点,然后不断的回溯向上走,然后向下走.
 		*/
 		vector<vector<int>> subsets_ret;
 		vector<int>subsets_signal;
 		//2.1、确定返回值和参数
-		void subsetsTracking(const vector<int>& nums, int startIndex)
-		{
+		void subsetsTracking(const vector<int>& nums, int startIndex) {
 			//这个题目特殊的是它的结果是它遍历中的每一个都是，而不是满足了什么条件才是,所以递归结束条件才不一样
 			subsets_ret.push_back(subsets_signal);// 收集子集，要放在终止添加的上面，否则会漏掉自己
 			//2.2、确定回溯函数结束条件
-			if (startIndex >= nums.size())return;// 终止条件可以不加
+			if (startIndex == nums.size())return;//每次排列的开始都在旧位置+1,所以当排列到最后元素的时候,就说明排列该结束了.
 			//2.3、确定单层搜索的过程——！！for负责横向遍历，递归负责纵向遍历。
 			for (size_t i = startIndex; i < nums.size(); i++)
 			{
@@ -7473,6 +7475,36 @@ namespace BackTracking {
 			subsetsTracking(nums, 0);
 			return subsets_ret;
 		}
+
+
+
+
+
+
+
+
+		//78. 子集--二刷
+		vector<vector<int>> subsets_ret2;
+		vector<int>subsets_signalret2;
+		void subsetsTravsel2(vector<int>& nums, int startIndex) {
+			subsets_ret2.push_back(subsets_signalret2);
+			if (startIndex == nums.size()) return;
+
+			for (size_t i = startIndex; i < nums.size(); i++) {
+
+				subsets_signalret2.push_back(nums[i]);
+				subsetsTravsel2(nums, i);
+				subsets_signalret2.pop_back();
+			}
+			return;
+		}
+
+
+		vector<vector<int>> subsets2(vector<int>& nums) {
+			subsetsTravsel2(nums, 0);
+			return subsets_ret2;
+		}
+
 
 		/*
 		90. 子集 II
