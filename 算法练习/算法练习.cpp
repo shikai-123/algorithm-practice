@@ -11776,10 +11776,14 @@ namespace TULUN
 
 		/*
 		208. 实现 Trie (前缀树)
+		题意:
+			就是插入数据,查找数据(完全匹配),查找数据(部分匹配)
 		参考：
 			https://leetcode.cn/problems/implement-trie-prefix-tree/solutions/98390/trie-tree-de-shi-xian-gua-he-chu-xue-zhe-by-huwt/?envType=study-plan-v2&envId=top-100-liked
 		思路：
 			其实就是构建多叉树，有26个英文字母，26个叉。 然后构建就完了。
+			单词是由26个字母组成.除了根节点,这个树每一层有26个.然后每个节点下面都是有26个.
+			这样通过从"根节点"开始往下走,如果能走到底,那么就是完全匹配.走不到底就是部分匹配.
 		*/
 		class Trie {
 		private:
@@ -11808,7 +11812,7 @@ namespace TULUN
 						return false;
 					currNode = currNode->next[c - 'a'];
 				}
-				return currNode->isEnd;
+				return currNode->isEnd;//走到了尾巴,要找到的这个字符是完全匹配的.
 			}
 
 			//字符的部分匹配
@@ -11822,6 +11826,62 @@ namespace TULUN
 				return true;//部分匹配就是这样，只要在遍历完prefix后，中间没有在for中出现return false 就算ok
 			}
 		};
+
+
+
+
+
+
+
+
+
+
+
+
+		//二刷-208. 实现 Trie (前缀树)
+		class Trie {
+		private:
+			bool isEnd = false;//curNode走到最后为1,否则就是0
+			Trie *next[26];
+		public:
+			//插入数据
+			void insert(string word) {
+				Trie *curNode = this;
+				for (auto c : word) {
+					if (curNode->next[c - 'a'] == nullptr)//如果当前字符的下个节点不存在,但是for还没走完,自然就要接上新的
+						curNode->next[c - 'a'] = new Trie();
+					curNode = curNode->next[c - 'a'];
+				}
+				curNode->isEnd = true;//!!!别弄错.是最后一个节点的isEnd赋值
+			}
+
+			//查找完全匹配
+			bool search(string word) {
+				Trie *curNode = this;
+				for (auto c : word) {
+					if (curNode->next[c - 'a'] == nullptr)
+						return false;
+					curNode = curNode->next[c - 'a'];
+				}
+				return curNode->isEnd;//!!!别弄错.是最后一个节点的isEnd返回.比如123,查找的却是12,因为2不是末尾,isEnd是true.所以返回的是false,
+			}
+
+
+			//查找部分匹配
+			bool startsWith(string prefix) {
+				Trie *curNode = this;
+				for (auto c : prefix) {
+					if (curNode->next[c - 'a'] == nullptr)
+						return false;
+					curNode = curNode->next[c - 'a'];
+				}
+				return true;
+			}
+		};
+
+
+
+
 
 		void test()
 		{
