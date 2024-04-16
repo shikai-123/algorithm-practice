@@ -7549,18 +7549,21 @@ namespace BackTracking {
 		/*
 		46.全排列
 		参考：
-		https://www.programmercarl.com/0046.%E5%85%A8%E6%8E%92%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
-		used数组用来标记那些元素被用了。之前都是用来去重。
-		每次开始的位置都是0，因为他是排列。不是组合，比如12 有12 21 ，组合12 21是一个，
-		排列中取了2之后，发现1还没取就要去取了，
-		元素取没取，用used数组来判断。
+			https://www.programmercarl.com/0046.%E5%85%A8%E6%8E%92%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路:
+			used数组用来标记那些元素被用了。之前都是用来去重。
+			每次开始的位置都是0，因为他是排列。不是组合，比如12 有12 21 ，组合12 21是一个，
+			排列中取了2之后，发现1还没取就要去取了，
+			元素取没取，用used数组来判断。
+
+			总体来说,代码写起来很简单.回溯递归的题目就是理解起来麻烦.
 		*/
-		vector<int>permute_signal;
-		vector<vector<int>>permute_ret;
+		vector<int>permute_signal;//单个的组合结果
+		vector<vector<int>>permute_ret;//最终的组合结果
 		void permute_tracking(vector<int>& nums, vector<bool>& used)
 		{
 			//在叶子节点上取结果
-			if (permute_signal.size() == nums.size())
+			if (permute_signal.size() == nums.size())//单个结果的长度和原数组相同.
 			{
 				permute_ret.push_back(permute_signal);
 				return;
@@ -7572,6 +7575,7 @@ namespace BackTracking {
 				if (used[i] == true)continue;
 				permute_signal.push_back(nums[i]);
 				used[i] = true;
+				//假设是123,现在i走到了元素3的位置,然后回溯,这个时候3的位置used=fasle.然后单个结果中删掉3,
 				permute_tracking(nums, used);
 				used[i] = false;
 				permute_signal.pop_back();
@@ -7583,6 +7587,37 @@ namespace BackTracking {
 			permute_tracking(nums, used);
 			return permute_ret;
 		}
+
+
+
+
+		//46.全排列--二刷
+		vector<int>permute_signalret2;
+		vector<vector<int>>permute_ret2;
+		void permute2(vector<int>& nums, vector<int>& uesd) {
+			if (permute_signalret2.size() == nums.size()) {
+				permute_ret2.push_back(permute_signalret2);
+				return;
+			}
+
+			for (size_t i = 0; i < nums.size(); i++) {
+				if (uesd[i] == true)
+					continue;
+				permute_signalret2.push_back(nums[i]);
+				uesd[i] = true;
+				permute2(nums, uesd);
+				uesd[i] = false;
+				permute_signalret2.pop_back();
+			}
+			return;
+		}
+
+		vector<vector<int>> permute2(vector<int>& nums) {
+			vector<int> uesd(nums.size(), false);
+			permute2(nums, uesd);
+			return permute_ret2;
+		}
+
 
 
 		/*
@@ -11839,17 +11874,17 @@ namespace TULUN
 
 
 		//二刷-208. 实现 Trie (前缀树)
-		class Trie {
+		class Trie2 {
 		private:
 			bool isEnd = false;//curNode走到最后为1,否则就是0
-			Trie *next[26];
+			Trie2 *next[26];
 		public:
 			//插入数据
 			void insert(string word) {
-				Trie *curNode = this;
+				Trie2 *curNode = this;
 				for (auto c : word) {
 					if (curNode->next[c - 'a'] == nullptr)//如果当前字符的下个节点不存在,但是for还没走完,自然就要接上新的
-						curNode->next[c - 'a'] = new Trie();
+						curNode->next[c - 'a'] = new Trie2();
 					curNode = curNode->next[c - 'a'];
 				}
 				curNode->isEnd = true;//!!!别弄错.是最后一个节点的isEnd赋值
@@ -11857,7 +11892,7 @@ namespace TULUN
 
 			//查找完全匹配
 			bool search(string word) {
-				Trie *curNode = this;
+				Trie2 *curNode = this;
 				for (auto c : word) {
 					if (curNode->next[c - 'a'] == nullptr)
 						return false;
@@ -11869,7 +11904,7 @@ namespace TULUN
 
 			//查找部分匹配
 			bool startsWith(string prefix) {
-				Trie *curNode = this;
+				Trie2 *curNode = this;
 				for (auto c : prefix) {
 					if (curNode->next[c - 'a'] == nullptr)
 						return false;
