@@ -7172,6 +7172,9 @@ namespace BackTracking {
 
 		/*
 		17. 电话号码的字母组合
+		题意:
+			给你一个手机键盘.每次给你一个数字字符串,然后返回这个数字字符串所拥有的字符,
+			所能组成的所有字符串.
 		参考：
 			https://www.programmercarl.com/0017.%E7%94%B5%E8%AF%9D%E5%8F%B7%E7%A0%81%E7%9A%84%E5%AD%97%E6%AF%8D%E7%BB%84%E5%90%88.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
@@ -7182,9 +7185,7 @@ namespace BackTracking {
 			for遍历开始的坐标：
 				一个集合的时候，从上次的位置后面开始，
 				多个集合的时候，从头开始，因为是不同的集合，从头开始也不会重复
-
 		*/
-
 		string letterCombinations_signal;
 		vector<string> letterCombinations_ret;
 
@@ -7206,10 +7207,10 @@ namespace BackTracking {
 				letterCombinations_ret.push_back(letterCombinations_signal);
 				return;
 			}
-			string tmpStr = iponeStr[digits[index] - '0'];//拿到对应数字的对应字母
+			string tmpStr = iponeStr[digits[index] - '0'];//拿到对应数字的对应字母.!!!!这里是减0,别弄错了!!digits里面是数字字符
 			for (size_t i = 0; i < tmpStr.size(); i++)
 			{
-				letterCombinations_signal.push_back(tmpStr[i]);
+				letterCombinations_signal.push_back(tmpStr[i]);//举例abc和def;首先是a,然后是进入新的递归然后是d,这样就组成了ad,然后d被删除后,新的for,然后ae.然后af,然后bd...直到结束
 				letterCombinations_backtrack(digits, index + 1);//!!i+1不对，这样每次递归就只能是1了，起不到digits往后轮的作用
 				letterCombinations_signal.pop_back();
 			}
@@ -7221,6 +7222,40 @@ namespace BackTracking {
 			letterCombinations_backtrack(digits, 0);
 			return letterCombinations_ret;
 		}
+
+
+
+
+
+
+
+
+		//17. 电话号码的字母组合--二刷
+		vector<string> letterCombinations_ret;
+		string letterCombinations_signalret;
+		string iponeNum[10] = { "","","abc","def", "ghi", "jkl", "mno", "pqrs", "tuv","wxyz" };
+		//digits题目给的数字字符串  index本次递归用到的第几个数字
+		void letterCombinations_dfs(string &digits, int index) {
+			if (letterCombinations_signalret.size() == digits.size()) {
+				letterCombinations_ret.push_back(letterCombinations_signalret);
+				return;
+			}
+
+			string tmpStr = iponeNum[digits[index] - 'a'];
+			for (size_t i = 0; i < tmpStr.size(); i++) {
+				letterCombinations_signalret.push_back(tmpStr[i]);
+				letterCombinations_dfs(digits, index + 1);
+				letterCombinations_signalret.pop_back();
+			}
+			return;
+		}
+
+		vector<string> letterCombinations2(string digits) {
+			if (digits.empty())return vector<string>();
+			letterCombinations_dfs(digits, 0);
+			return letterCombinations_ret;
+		}
+
 
 		/*
 		39. 组合总和
@@ -7477,12 +7512,6 @@ namespace BackTracking {
 		}
 
 
-
-
-
-
-
-
 		//78. 子集--二刷
 		vector<vector<int>> subsets_ret2;
 		vector<int>subsets_signalret2;
@@ -7624,6 +7653,10 @@ namespace BackTracking {
 
 
 		//46.全排列--二刷
+		//!!一点想法:刷hot100的时候,发现46全排列和17电话号码,没用到used数组,而是在每次递归的时候,用到了新的开始下标.这个题目也是能改嘛?
+		//确实可以;参考:https://leetcode.cn/problems/permutations/solutions/2363882/46-quan-pai-lie-hui-su-qing-xi-tu-jie-by-6o7h/?envType=study-plan-v2&envId=top-100-liked
+		//那么都换成这个部分
+
 		vector<int>permute_signalret2;
 		vector<vector<int>>permute_ret2;
 		void permute2(vector<int>& nums, vector<int>& uesd) {
