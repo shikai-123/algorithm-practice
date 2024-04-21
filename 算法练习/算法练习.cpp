@@ -7948,37 +7948,75 @@ namespace BackTracking {
 
 		/*
 		79. 单词搜索
+		题意:
+			给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。
+			如果 word 存在于网格中，返回 true ；否则，返回 false。
 		参考：
-			https://leetcode.cn/problems/word-search/?envType=study-plan-v2&envId=top-100-liked
+			https://leetcode.cn/problems/word-search/solutions/2361646/79-dan-ci-sou-suo-hui-su-qing-xi-tu-jie-5yui2/?envType=study-plan-v2&envId=top-100-liked
+			代码虽然有点区别,但思路是一样的.
 		思路：
 			深度递归+剪枝
 			深度递归，检查4个不同的方向。如果单词不匹配，或者越界，返回false
 			别忘了剪枝——board[row][col] = ' ';和恢复board[row][col] = word[k];
 		*/
+		//当前元素在矩阵 board 中的行列索引 i 和 j ，当前目标字符在 word 中的索引 k 。
 		bool exist_dfs(vector<vector<char>>& board, string word, int row, int col, int k) {
-			if (row<0 || row>board.size() - 1 ||
-				col<0 || row>board[0].size() - 1 ||
-				board[row][col] != word[k])
+			if (row < 0 || row >= board.size() ||
+				col < 0 || col >= board[0].size() ||//越界
+				board[row][col] != word[k])//单词不匹配
 				return false;
 			//如果遍历到word的最后，说明符合条件了，返回true
-			if (k == word.size() - 1) return true;
+			if (k == word.size() - 1) return true;//??为什么要-1.abc 找的a的时候k=0;b,k=1;c,k=2;可以看到k=2的时候,所有的字符都找到了.
 			//这个是一定的，假设abcb，这种带重复的就会出现问题，假设矩阵中只有一个b，abc都找到了，另外一个b实际上没有，但是你回溯的时候，如果你原先不清出，那么原先的b就会用上，就会满足条件。
-			board[row][col] = ' ';
+			board[row][col] = ' ';//标记当前矩阵元素： 将 board[i][j] 修改为 空字符 '' ，代表此元素已访问过，防止之后搜索时重复访问。
 			//上下左右遍历,顺序无所谓
 			bool ret = exist_dfs(board, word, row, col + 1, k + 1) ||
 				exist_dfs(board, word, row, col - 1, k + 1) ||
 				exist_dfs(board, word, row - 1, col, k + 1) ||
 				exist_dfs(board, word, row + 1, col, k + 1);
-			board[row][col] = word[k];//清完一个要恢复过来，不恢复的话，万一第一次尝试不行，换条路的时候，发现路是缺失的
+			//清完一个要恢复过来，不恢复的话，万一第一次尝试不行，换条路又找他了，发现路是缺失的.
+			board[row][col] = word[k];//!!注意,用的是word来恢复.
 			return ret;//上面是或，只要有一个true就可以
 		}
 		bool exist(vector<vector<char>>& board, string word) {
-			for (size_t i = 0; i < board.size(); i++)
-			{
-				for (size_t l = 0; l < board[0].size(); l++)
-				{
+			//这里通过两层for,从矩阵中的左上角一个个作为单词的起点开始测试.直到发现了一个能够成功的起点.
+			for (size_t i = 0; i < board.size(); i++) {
+				for (size_t l = 0; l < board[0].size(); l++) {
 					//如果true就是返回true，不行就返回false
-					if (exist_dfs(board, word, i, l, 0))return true;
+					if (exist_dfs(board, word, i, l, 0))
+						return true;
+				}
+			}
+			return false;
+		}
+
+
+		bool exist2_bfs(vector<vector<char>>& board, string word, int row, int col, int k) {
+			if (row >= board.size() || col >= board[0].size() ||
+				row < 0 || col < 0 ||
+				board[row][col] != word[k])
+				return false;
+
+			if (word.size() - 1 == k)
+				return true;
+
+			board[row][col] = ' ';
+
+			bool ret = exist2_bfs(board, word, row, col + 1, k + 1) ||
+				exist2_bfs(board, word, row, col - 1, k + 1) ||
+				exist2_bfs(board, word, row - 1, col, k + 1) ||
+				exist2_bfs(board, word, row + 1, col, k + 1);
+			board[row][col] = word[k];
+
+			return ret;
+		}
+		//79. 单词搜索,二刷
+		bool exist2(vector<vector<char>>& board, string word) {
+
+			for (size_t row = 0; row < board.size(); row++) {
+				for (size_t col = 0; col < board[0].size(); col++) {
+					if (exist2_bfs(board, word, row, col, 0))
+						return true;
 				}
 			}
 			return false;
