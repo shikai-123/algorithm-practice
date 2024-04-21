@@ -7231,13 +7231,13 @@ namespace BackTracking {
 
 
 		//17. 电话号码的字母组合--二刷
-		vector<string> letterCombinations_ret;
+		vector<string> letterCombinations_ret2;
 		string letterCombinations_signalret;
 		string iponeNum[10] = { "","","abc","def", "ghi", "jkl", "mno", "pqrs", "tuv","wxyz" };
 		//digits题目给的数字字符串  index本次递归用到的第几个数字
 		void letterCombinations_dfs(string &digits, int index) {
 			if (letterCombinations_signalret.size() == digits.size()) {
-				letterCombinations_ret.push_back(letterCombinations_signalret);
+				letterCombinations_ret2.push_back(letterCombinations_signalret);
 				return;
 			}
 
@@ -7253,12 +7253,15 @@ namespace BackTracking {
 		vector<string> letterCombinations2(string digits) {
 			if (digits.empty())return vector<string>();
 			letterCombinations_dfs(digits, 0);
-			return letterCombinations_ret;
+			return letterCombinations_ret2;
 		}
 
 
 		/*
 		39. 组合总和
+		题意:
+			给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，
+			找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合 ，并以列表形式返回。你可以按 任意顺序 返回这些组合.
 		参考：
 			https://www.programmercarl.com/0039.%E7%BB%84%E5%90%88%E6%80%BB%E5%92%8C.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 			这个题目剪枝和不剪枝只是少了一些函数的递归而已。
@@ -7266,7 +7269,6 @@ namespace BackTracking {
 		*/
 		vector<vector<int>>combinationSum_ret;
 		vector<int>combinationSum_signal;
-
 		//2.1、确定返回值和参数
 		void combinationSum_back_track(const vector<int>& candidates, int sum, int target, int startIndex)
 		{
@@ -7287,13 +7289,38 @@ namespace BackTracking {
 				sum -= candidates[i];
 				combinationSum_signal.pop_back();
 			}
-
 		}
 		vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
 			sort(candidates.begin(), candidates.end());//排序的目的是为了剪枝，顺序是从小到大，前面数据的和已经超过目标值，后面的自然就不用算了。
 			combinationSum_back_track(candidates, 0, target, 0);
 			return combinationSum_ret;
 		}
+
+		//39. 组合总和 二刷
+
+		vector<vector<int>> combinationSum_ret2;
+		vector<int> combinationSum_signalret2;
+		void combinationSum2_resever(vector<int>& candidates, int target, int sum, int index) {
+			if (sum > target)return;
+			else if (sum == target) {
+				combinationSum_ret2.push_back(combinationSum_signalret2);
+				return;//!!别忘了这个return
+			}
+
+			for (size_t i = index; i < candidates.size(); i++)
+			{
+				combinationSum_signalret2.push_back(candidates[i]);
+				combinationSum2_resever(candidates, target, sum + candidates[i], 0);//!!这是组合,所以index从i开始,要是排列就可0开始.232 和223 在组合中是一样的
+				combinationSum_signalret2.pop_back();
+			}
+			return;
+		}
+		vector<vector<int>> combinationSum_2(vector<int>& candidates, int target) {
+			combinationSum2_resever(candidates, target, 0, 0);
+			return combinationSum_ret2;
+		}
+
+
 
 
 		/*
