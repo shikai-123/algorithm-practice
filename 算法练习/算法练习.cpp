@@ -7369,19 +7369,31 @@ namespace BackTracking {
 
 		/*
 		131. 分割回文串
+		题意:
+			给你一个字符串 s，请你将 s 分割成一些子串，使每个子串都是回文串。返回 s 所有可能的分割方案。
+			正着读和反着读,都是一样的,就是回文串
 		参考：
 			https://www.programmercarl.com/0131.%E5%88%86%E5%89%B2%E5%9B%9E%E6%96%87%E4%B8%B2.html#%E6%80%9D%E8%B7%AF
-		！！这个题的最要注意的地方就是：
-		递归函数的下次开始的地方 不在是固定的startIndex + 1
-		而是真正对应结束位置的i，然后+1 才是新位置。
-		具体看下边的注释
+		思路:
+			！！这个题的最要注意的地方就是：
+			1\递归函数的下次开始的地方 不在是固定的startIndex + 1,而是真正对应结束位置的i，然后+1 才是新位置。
+			2\!hot100的递归题目中,startIndex是下标,它== s.size()的时候,都是越界了,但因为他是i+1递归来的,上面是size-1,
+			比如aab.
+			第一层取a,然后判断a是不是回文,是就放到单个结果中
+			第二层取a,然后判断,最后放到单个结果中
+			第三层取b,然后判断,最后放到单个结果中
+			到底了,单个结果放到总结果中.
+			然后开始回溯,回到第1层中,aab的两个a都被取了,现在取ab,返现不是回文,继续回溯.
+			就这么一直到结束
+
+			!!看二刷的题目,这个写的比较复杂.
 		*/
 		vector<vector<string>> partition_ret;
 		vector<string > partition_singal;
 		//2.1、确定返回值和参数
 		void partitionTracking(const string & s, int startIndex)
 		{
-			//2.2、确定回溯函数结束条件
+			//2.2、确定回溯函数结束条件.
 			if (startIndex == s.size())
 			{
 				partition_ret.push_back(partition_singal);
@@ -7394,19 +7406,20 @@ namespace BackTracking {
 				//判断是不是回文串
 				/*
 				!!!isPalindrome(s, startIndex, i - startIndex + 1) 这是错的！
-				i - startIndex + 1 改成i
+				把"i - startIndex + 1" 改成 "i"
 				一下思路，看链接的图去理解最好了。
 				对于aab而言，纵向的单个a a b都取完了。
 				然后开始取ab，这个时候，递归回到第二层（看图）
 				for的横向遍历， ab截取a是一个i，截取"ab"是第二个i 所这个时候判断回文的范围应该是startindex 到 i
 				*/
-				//!!只有当前的有效才可以往下走，要不然没有意义
+				//!!startIndex到i的字符串是回文串,然后把字符串放到结果中.然后进入进的递归中,i要往后偏移,接着就是判断后面的字符串是不是回文,就这么一直递归下去.
 				if (isPalindrome(s, startIndex, i))
 				{
-					string cutSrt = s.substr(startIndex, i - startIndex + 1);
+					string cutSrt = s.substr(startIndex, i - startIndex + 1);//截取开始的位置,和数量
 					partition_singal.push_back(cutSrt);
 					/*
 					?!为什么说递归从i+1开始 而不是寻常的startIndex + 1开始
+					!!这个地方我当时,应该是理解错了,我二刷的时候发现都是i从"i+1"开始.
 					可以从另外一个角度理解这个事
 					startIndex在一个for中是不变的，而i时发生变化的。
 					！！i代表的是待处理的字串的结束位置，如果回文字符串aa这种多个的，i和startIndex就不会相等，就会出问题
@@ -7420,7 +7433,7 @@ namespace BackTracking {
 			}
 			return;
 		}
-
+		//判断传入的字符串s,从begin到end,是不是回文串
 		bool isPalindrome(const string & s, int begin, int end)
 		{
 			for (; begin < end; begin++, end--)//<=或者<都行。比如101 
@@ -7437,6 +7450,33 @@ namespace BackTracking {
 			partitionTracking(s, 0);
 			return partition_ret;
 		}
+
+		//131. 分割回文串-二刷
+		vector<vector<string>> partition2_ret;
+		vector<string> partition2_sigle;
+		void partition2_traval(string s, int startIndex) {
+			if (startIndex == s.size()) {
+				partition2_ret.push_back(partition2_sigle);
+				return;
+			}
+			for (size_t i = startIndex; i < s.size(); i++)
+			{
+				if (isPalindrome(s, startIndex, i)) {
+					string str = s.substr(startIndex, i - startIndex + 1);
+					partition2_sigle.push_back(str);
+					partition2_traval(s, i + 1);
+					partition2_sigle.pop_back();
+				}
+			}
+
+		}
+		vector<vector<string>> partition2(string s) {
+			partition2_traval(s, 0);
+			return partition2_ret;
+		}
+
+
+
 
 		/*
 		93. 复原 IP 地址
