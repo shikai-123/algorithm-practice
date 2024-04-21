@@ -7635,6 +7635,8 @@ namespace BackTracking {
 
 		/*
 		46.全排列
+		题意:
+			给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
 		参考：
 			https://www.programmercarl.com/0046.%E5%85%A8%E6%8E%92%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路:
@@ -7682,6 +7684,8 @@ namespace BackTracking {
 		//!!一点想法:刷hot100的时候,发现46全排列和17电话号码,没用到used数组,而是在每次递归的时候,用到了新的开始下标.这个题目也是能改嘛?
 		//确实可以;参考:https://leetcode.cn/problems/permutations/solutions/2363882/46-quan-pai-lie-hui-su-qing-xi-tu-jie-by-6o7h/?envType=study-plan-v2&envId=top-100-liked
 		//那么都换成这个部分
+		//!!他这个虽然实现了+1的方式,但是结果不对.我也是试了很多方式,都比较恶心,也没试出来,就这样把
+
 
 		vector<int>permute_signalret2;
 		vector<vector<int>>permute_ret2;
@@ -7884,6 +7888,8 @@ namespace BackTracking {
 
 		/*
 		22. 括号生成
+		题意:
+			数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
 		参考：
 			https://leetcode.cn/problems/generate-parentheses/solutions/938191/shen-du-you-xian-bian-li-zui-jian-jie-yi-ypti/?envType=study-plan-v2&envId=top-100-liked
 			他的图话的话的很好，如果不明白，就看这个图
@@ -7899,8 +7905,7 @@ namespace BackTracking {
 		*/
 		//n括号数量 Ln左括号数量 Rn右括号数量  str要加的括号字符 ret 用来记录结果
 	public:
-		void generateParenthesis_bfs(int n, int Ln, int Rn, string str,
-			vector<string>& ret) {
+		void generateParenthesis_bfs(int n, int Ln, int Rn, string str, vector<string>& ret) {
 			if (Ln > n && Rn > n)
 				return;
 			if (Ln == n && Rn == n)
@@ -7918,6 +7923,27 @@ namespace BackTracking {
 			generateParenthesis_bfs(n, 0, 0, "", ret);
 			return ret;
 		}
+
+
+
+		//22. 括号生成--二刷,比上面的那个方法好点
+		void generateParenthesis_bfs2(int n, int Ln, int Rn, string str, vector<string>& ret) {
+			if (n == Ln && n == Rn)
+				ret.push_back(str);
+			if (n > Ln)
+				generateParenthesis_bfs2(n, Ln + 1, Rn, str + "(", ret);
+			if (n > Rn && Rn < Ln)//右括号没用完,并且右括号的数量还小于左括号的时候.可以添加新的右括号了.
+				generateParenthesis_bfs2(n, Ln, Rn + 1, str + ")", ret);
+			return;
+		}
+		vector<string> generateParenthesis2(int n) {
+			vector<string> ret;
+			generateParenthesis_bfs2(n, 0, 0, "", ret);
+			return ret;
+		}
+
+
+
 
 
 		/*
