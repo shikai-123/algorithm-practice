@@ -2976,10 +2976,32 @@ namespace StackandQueue {
 						return false;
 				}
 			}
-			if (stk.empty())
+			if (stk.empty())//!!如果碰到了只有一个括号,stk这里要判断
 				return true;
 			return false;
 		}
+
+		//20. 有效的括号--二刷
+		bool isValid2(string s) {
+			stack<char> stk;
+			for (char c : s)
+			{
+				if (stk.empty() || c == '[' || c == '(' || c == '{')
+					stk.push(c);
+				else if (stk.top() + 1 == c || stk.top() + 2 == c)
+					stk.pop();
+				else
+					return false;
+			}
+			if (stk.empty())	return true;
+			return false;
+		}
+
+
+
+
+
+
 
 		/*
 		71. 简化路径
@@ -12428,7 +12450,7 @@ namespace ERFENCAHZHAO {
 
 
 
-		//153. 寻找旋转排序数组中的最小值
+		//153. 寻找旋转排序数组中的最小值--二刷
 		int findMin2(vector<int>& nums) {
 			int l = 0, r = nums.size() - 1;
 			int numR = nums[r];
