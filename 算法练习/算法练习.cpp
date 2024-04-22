@@ -7796,11 +7796,14 @@ namespace BackTracking {
 
 		/*
 		51. N皇后
+		题意:
+			按照国际象棋的规则，皇后可以攻击与之处在同一行或同一列或同一斜线上的棋子。n 皇后问题 研究的是如何将 n 个皇后放置在 n×n 的棋盘上，并且使皇后彼此之间不能相互攻击。
+			给你一个整数 n ，返回所有不同的 n 皇后问题 的解决方案。每一种解法包含一个不同的 n 皇后问题 的棋子放置方案，该方案中 'Q' 和 '.' 分别代表了皇后和空位。
 		参考：
-		https://www.programmercarl.com/0051.N%E7%9A%87%E5%90%8E.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
-		和其他题目不同的是，这是一个二维数组的回溯，之前的都是一维数组的回溯。
-		用递归来控制每一行，在每层的递归中遍历这一行的不同列
-		棋盘的宽度就是for循环的长度，递归的深度就是棋盘的高度，这样就可以套进回溯法的模板里了。
+			https://www.programmercarl.com/0051.N%E7%9A%87%E5%90%8E.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+			和其他题目不同的是，这是一个二维数组的回溯，之前的都是一维数组的回溯。
+			用递归来控制每一行，在每层的递归中遍历这一行的不同列
+			棋盘的宽度就是for循环的长度，递归的深度就是棋盘的高度，这样就可以套进回溯法的模板里了。
 		*/
 		bool solveNQueens_isValid(int row, int col, vector<string>& chessboard, int n) {
 			//检查列——只用检查到row（当前遍历的行数），不用检查到底
@@ -7826,9 +7829,7 @@ namespace BackTracking {
 
 		vector<vector<string>> solveNQueens_ret;
 
-		//n是棋盘的宽度
-		//row是当前递归到棋盘的第几行了
-		//signalchessboard构造的单个棋盘
+		//n是棋盘的宽度  row是当前递归到棋盘的第几行了  signalchessboard构造的单个棋盘
 		void solveNQueensStracking(int n, int row, vector<string>&signalchessboard)
 		{
 			if (row == n)
@@ -7855,6 +7856,11 @@ namespace BackTracking {
 			return solveNQueens_ret;
 		}
 
+
+
+
+
+
 		/*
 		37. 解数独
 		参考：
@@ -7864,7 +7870,6 @@ namespace BackTracking {
 		因为解数独找到一个符合的条件（就在树的叶子节点上）立刻就返回，相当于找从根节点到叶子节点一条唯一路径，所以需要使用bool返回值
 		只有有了返回值，才能对返回值做判断，返回值复合条件了就可以返回，正好返回值的判断就在递归函数下面，接着返回，就能造成上面说的一直放回到头的效果。
 		*/
-
 		bool solveSudoku_isValid(int row, int col, char val, vector<vector<char>>& board)
 		{
 			for (int i = 0; i < 9; i++) { // 判断行里是否重复
