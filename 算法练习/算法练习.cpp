@@ -12398,11 +12398,17 @@ namespace ERFENCAHZHAO {
 			https://www.programmercarl.com/0704.%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE.html#%E6%80%9D%E8%B7%AF
 			他用的是[)的区间，我给他改成[]区间了，代码能通过。关于区间可以看代码随想的写法
 		思路：
+			做这个题目,一定要画图.好理解
 			题目必要要用时间复杂度为 O(log n) 的算法解决此问题。如果没有这个条件，直接遍历得了，然后返回，只不过时间复杂度是n
 			整体上还是二分的思路，但是于nums[mid]比较的对象，换成了固定的nums的最右侧
 			不明白了，就看他的图
-		其他：
-			这个和上个都是旋转矩阵，能不能用这个思路解决上面的那个题目呢？我还没怎么试
+			数组的单调性分为两个区间,比如[4,5,6,7,0,1,2],分为4567,和012.这两个部分的区间.
+			最小的部分,一定在右面区间的左边,这是一定的,要不就是像[1234567],但也是在最左边.
+			利用二分查找,比较nums[mid]和nums[right]的值,nums[mid]较大,说明最小值在mid的右面
+			nums[right]较大,说明最小值在mid的左侧.
+		注意:
+			 if (nums[mid] <= numR)这里是小于等于.等于号只能在这,
+			 在if (nums[mid] >= numR)是错误的.
 		*/
 		int findMin(vector<int>& nums) {
 			int left = 0, right = nums.size() - 1;
@@ -12417,6 +12423,27 @@ namespace ERFENCAHZHAO {
 			}
 			return nums[left];//最后返回nums[left]
 		}
+
+
+
+
+
+		//153. 寻找旋转排序数组中的最小值
+		int findMin2(vector<int>& nums) {
+			int l = 0, r = nums.size() - 1;
+			int numR = nums[r];
+			while (l <= r)
+			{
+				int mid = l + (r - l) / 2;
+				if (nums[mid] > numR)
+					l = mid + 1;
+				else if (nums[mid] <= numR)//!!等号一定要在这里,因为最低点是有可能是等于numR的
+					r = mid - 1;
+			}
+			return nums[l];
+		}
+
+
 
 
 		/*
