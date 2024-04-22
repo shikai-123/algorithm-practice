@@ -12164,8 +12164,41 @@ namespace TULUN
 namespace ERFENCAHZHAO {
 	class Solution {
 	public:
+
+
+		/*
+		二分法标准写法;
+		参考:
+			https://www.programmercarl.com/0704.%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE.html#%E6%80%9D%E8%B7%AF
+		思路:
+			我们定义 target 是在一个在左闭右闭的区间里，也就是[left, right] （这个很重要非常重要）。
+			当然也有,左闭右开的区间里，也就是[left, right),这个时候就是另外一种写法,具体参考连接的写法.
+		*/
+		int searchStandard(vector<int>& nums, int target) {
+			int left = 0;
+			int right = nums.size() - 1; // 定义target在左闭右闭的区间里，[left, right]
+			while (left <= right) { // 当left==right，区间[left, right]依然有效，所以用 <=
+				int middle = left + ((right - left) / 2);// 防止溢出 等同于(left + right)/2
+				if (nums[middle] > target) {
+					right = middle - 1; // target 在左区间，所以[left, middle - 1]
+				}
+				else if (nums[middle] < target) {
+					left = middle + 1; // target 在右区间，所以[middle + 1, right]
+				}
+				else { // nums[middle] == target
+					return middle; // 数组中找到目标值，直接返回下标
+				}
+			}
+			// 未找到目标值
+			return -1;
+		}
+
+
 		/*
 		35. 搜索插入位置
+		题意:
+			给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
+			请必须使用时间复杂度为 O(log n) 的算法。
 		参考：
 			无，起始就是简单的二分查找的变种
 		思路：
@@ -12188,11 +12221,26 @@ namespace ERFENCAHZHAO {
 			}
 			//二分查找只有left 》right才会跳出while；如果能找到，早就找到了。
 			//left此时已经是更新后的位置了，这个位置如果存在对应的元素，上面肯定早就找到了，找不到就在这个位置插入！！！
-			return left;
+			return left;//!!这个地方和标准的"二分查找"不一样.
 			//return right + 1; 哪个都行
 		}
 
-
+		//35. 搜索插入位置---二刷
+		int searchInsert2(vector<int>& nums, int target) {
+			int Left = 0, Right = nums.size() - 1;
+			int mid = 0;
+			while (Left <= Right)
+			{
+				mid = Left + (Right - Left) / 2;
+				if (nums[mid] > target)
+					Right = mid - 1;
+				else if (nums[mid] < target)
+					Left = mid + 1;
+				else
+					return mid;
+			}
+			return Left;
+		}
 
 		/*
 		34. 在排序数组中查找元素的第一个和最后一个位置
