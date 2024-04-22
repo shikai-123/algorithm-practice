@@ -12302,22 +12302,16 @@ namespace ERFENCAHZHAO {
 
 		/*
 		33. 搜索旋转排序数组
-		题意:
-			整数数组 nums 按升序排列，数组中的值 互不相同
-			在传递给函数之前，nums 在预先未知的某个下标 k（0 <= k < nums.length）上进行了 旋转
-			例如， [0,1,2,4,5,6,7] 在下标 3 处经旋转后可能变为 [4,5,6,7,0,1,2] 。
-			给你 旋转后 的数组 nums 和一个整数 target ，如果 nums 中存在这个目标值 target ，则返回它的下标，否则返回 -1 。
-			你必须设计一个时间复杂度为 O(log n) 的算法解决此问题。
 		参考：
 			没什么能参考的，
 		思路：
 			（不包括nums[mid]）这个我不好解释，先记住吧！
-			一般的二分查找都是nums[mid]和tatget比较.而这里是nums[mid]和nums[l],nums[r]比较,
-			目的是知道mid到r或者mid到l之间的元素是单调的,
-			只有某一个区间是单调的,才能用二分法,代码中也是在判断出单调之后,才使用二分法.
-			观察这题目,和二分查找的区别,就是上面这个区间判断.
-			区间,全部都是左闭右闭,[l,mid],[mid,r]这样代码统一,方便记忆.虽然有两个mid,但是nums[mid]进入哪个if都能处理,我已经试了,没问题
-			之前的是[l,mid],(mid,r].这样虽然也是全部区间,不好记忆,过段时间再看也会忘.
+			到时候，如果做不出来，就用
+			int search1(vector<int>& nums, int target) {
+			for (int i = 0; i < nums.size(); ++i)
+				if (nums[i] == target) return i;
+			return -1;
+		}
 		*/
 		int search(vector<int>& nums, int target) {
 			int l = 0, r = nums.size() - 1;
@@ -12327,20 +12321,20 @@ namespace ERFENCAHZHAO {
 				int mid = ((r - l) >> 1) + l;
 				if (target == nums[mid])
 					return mid;
-				// 左边界《=中间节点的值时候，另外中间节点一定在左节点的右边,说明从l到mid中间都是升序的，也就是正常情况。转折点不在这。
+				// 左边界《=中间节点的值时候，说明从l到mid中间都是升序的，也就是正常情况。转折点不在这。
 				// 既然l到mid是确定都是有序的，那么就在l和mid之间处理
 				if (nums[l] <= nums[mid]) {//!!!这里是《=
 					//target在l和mid中间，那么r就要更新mid-1（不包括nums[mid]）；这个和二分法的处理是一样。
-					if (nums[l] <= target && target <= nums[mid])
+					if (nums[l] <= target && target < nums[mid])
 						r = mid - 1;
 					//target不在l和mid中间，那就是在mid和r之间。那么l就要更新mid+1；这个和二分法的处理是一样。
 					else
 						l = mid + 1;
 				}
 				// 左边界>中间节点的值的时候,说明mid到r是有序的，是升序。
-				else if (nums[l] >= nums[mid]) {//!!!!这里只有》，没有等于
+				else if (nums[l] > nums[mid]) {//!!!!这里只有》，没有等于
 					//target在mid和r之间。l更新成mid+1（不包括nums[mid]）；这个和二分法的处理是一样。
-					if (nums[mid] <= target && target <= nums[r])
+					if (nums[mid] < target && target <= nums[r])
 						l = mid + 1;
 					else//target不在mid和r中间，那就是在l和mid之间。那么r就要更新mid-1；这个和二分法的处理是一样。
 						r = mid - 1;
@@ -12348,40 +12342,6 @@ namespace ERFENCAHZHAO {
 			}
 			return -1;
 		}
-
-
-		//33. 搜索旋转排序数组,暴力搜索,结果是对的,但是实际复杂度不合适.到时候，如果做不出来，就用这个, 时间复杂度不满足要求.
-		int search1(vector<int>& nums, int target) {
-			for (int i = 0; i < nums.size(); ++i)
-				if (nums[i] == target) return i;
-			return -1;
-		}
-		//33. 搜索旋转排序数组,二刷
-		int search2(vector<int>& nums, int target) {
-			int l = 0, r = nums.size() - 1;
-			while (l <= r)
-			{
-				int mid = l + ((r - l) >> 2);
-				if (nums[mid] == target)
-					return mid;
-				if (nums[l] <= nums[mid]) {
-					if (nums[l] <= target && target <= nums[mid])
-						r = mid - 1;
-					else
-						l = mid + 1;
-				}
-				else if (nums[mid] <= nums[r]) {
-
-					if (nums[mid] <= target && target <= nums[r])
-						r = mid - 1;
-					else
-						l = mid + 1;
-				}
-			}
-			return -1;
-		}
-
-
 
 
 		/*
