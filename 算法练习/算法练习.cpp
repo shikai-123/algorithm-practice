@@ -2043,7 +2043,7 @@ namespace Matrix
 		}
 
 		//74. 搜索二维矩阵,	240. 搜索二维矩阵 II,二刷.
-		bool searchMatrix(vector<vector<int>>& matrix, int target) {
+		bool searchMatrix2(vector<vector<int>>& matrix, int target) {
 			for (size_t i = 0; i < matrix.size(); i++) {
 				for (size_t l = 0; l < matrix[0].size(); l++) {
 					if (matrix[i][l] == target)
@@ -12258,6 +12258,10 @@ namespace ERFENCAHZHAO {
 
 		/*
 		34. 在排序数组中查找元素的第一个和最后一个位置
+		题意:
+			给你一个按照非递减顺序排列的整数数组 nums，和一个目标值 target。请你找出给定目标值在数组中的开始位置和结束位置。
+			如果数组中不存在目标值 target，返回 [-1, -1]。
+			你必须设计并实现时间复杂度为 O(log n) 的算法解决此问题。
 		参考：
 			https://blog.csdn.net/qq_37500516/article/details/116116926
 		思考：
@@ -12277,6 +12281,23 @@ namespace ERFENCAHZHAO {
 			ret[1] = it - nums.begin() - 1;//-1是因为该位置的上个位置才是==target的位置
 			return ret;
 		}
+
+
+
+		//34. 在排序数组中查找元素的第一个和最后一个位置--二刷
+		vector<int> searchRange2(vector<int>& nums, int target) {
+			vector<int> ret{ -1,-1 };
+			auto it = lower_bound(nums.begin(), nums.end(), target);
+			if (it == nums.end() || *it != target)//别忘了有时候,lower_bound找到的元素是>=target,如果>target,说明没有找到,则直接返回
+				return ret;
+			ret[0] = it - nums.begin();
+			auto it1 = upper_bound(nums.begin(), nums.end(), target);
+			//通过lower_bound,能走到这,说明数组中肯定有一个元素,upper_bound是找>target的元素,有可能找到,有可能找不到,但是无论能不能找到,都可以用ret[1] = it1 - nums.begin() - 1;
+			ret[1] = it1 - nums.begin() - 1;
+
+			return ret;
+		}
+
 
 
 		/*
