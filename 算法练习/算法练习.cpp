@@ -2936,7 +2936,7 @@ namespace StackandQueue {
 			set.insert(val);
 		}
 
-		void pop() {
+		void pop() {//因为muilset可以放多个重复的元素,所以当参数为元素的值的时候,会删除所有等于这个值的所有的元素.要想删除重复元素的某一个.就传参迭代器.
 			set.erase(set.find(stk.top()));
 			stk.pop();//主要是把数据从栈中取出,set跟着一块操作
 		}
@@ -2966,7 +2966,7 @@ namespace StackandQueue {
 		}
 
 		void pop() {
-			set.erase(stk.top());
+			set.erase(set.find(stk.top()));
 			stk.pop();
 		}
 
