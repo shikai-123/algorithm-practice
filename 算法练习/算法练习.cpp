@@ -2912,30 +2912,40 @@ namespace StackandQueue {
 
 	/*
 	155. 最小栈
+	题意:
+		设计一个支持 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。
+		实现 MinStack 类:
+		MinStack() 初始化堆栈对象。
+		void push(int val) 将元素val推入堆栈。
+		void pop() 删除堆栈顶部的元素。
+		int top() 获取堆栈顶部的元素。
+		int getMin() 获取堆栈中的最小元素。
 	思路：
-		用multiset和和stack容器搭配使用即可
+		用multiset和和stack容器搭配使用即可.
+		multiset保证数据的排序,set的第一个元素就是最小的.另外可能会放多个相同的元素,就用multi
+		因为要返回栈顶元素,set只能保证返回最小的,但是最小的不一定在栈顶,所以还需要一个栈来保证返回的是栈顶.
+
+		思路当然有很多种,我觉得使用双端队列也可以,但是记住这个思路就行,没必要再换了.
 	*/
 	class MinStack {
 	public:
-		MinStack() {
-
-		}
+		MinStack() {}
 
 		void push(int val) {
-			stk.push(val);
+			stk.push(val);//主要是把数据放到栈中,set跟着一块操作
 			set.insert(val);
 		}
 
 		void pop() {
 			set.erase(set.find(stk.top()));
-			stk.pop();
+			stk.pop();//主要是把数据从栈中取出,set跟着一块操作
 		}
 
 		int top() {
-			return  stk.top();
+			return  stk.top();//取出数据对栈单独操作就行
 		}
 		//并能在常数时间内检索到最小元素的栈。
-		int getMin() {
+		int getMin() {//只有这里,为了保证常数时间,才对set操作.
 			return *set.begin();
 		}
 
@@ -2943,6 +2953,36 @@ namespace StackandQueue {
 		stack<int>stk;
 		multiset<int>set;
 	};
+
+
+	//155. 最小栈-二刷
+	class MinStack2 {
+	public:
+		MinStack2() {}
+
+		void push(int val) {
+			stk.push(val);
+			set.insert(val);
+		}
+
+		void pop() {
+			set.erase(stk.top());
+			stk.pop();
+		}
+
+		int top() {
+			return stk.top();
+		}
+		//并能在常数时间内检索到最小元素的栈。
+		int getMin() {
+			return *set.begin();
+		}
+
+	private:
+		stack<int> stk;
+		multiset<int> set;
+	};
+
 	class Solution {
 	public:
 
