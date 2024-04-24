@@ -3299,7 +3299,7 @@ namespace StackandQueue {
 			一旦队列中的数量超过了k，从头部删除删除掉数据，最后剩下的就是高频数据。
 			最后把剩下的数据都放到vec中。
 		*/
-		class cm
+		class cm//优先级队列的自定义的比较函数,一定要是在类中,传参也是这个类名.
 		{
 		public:
 			bool operator() (const pair<int, int>& l, const  pair<int, int> &r)
@@ -3309,7 +3309,7 @@ namespace StackandQueue {
 		};
 
 		vector<int> topKFrequent(vector<int>& nums, int k) {
-			map<int, int> mp;
+			map<int, int> mp;//元素的值 和 它对应的出现的次数
 			priority_queue<pair<int, int>, vector<pair<int, int>>, cm >pque;
 			//统计各个数据出现的频率
 			for (size_t i = 0; i < nums.size(); i++) {
@@ -3317,7 +3317,7 @@ namespace StackandQueue {
 			}
 
 			for (pair<int, int> it : mp) {
-				pque.push(it);
+				pque.push(it);//插入和删除的顺序别颠倒,要不然不对
 				if (pque.size() > k)//!!一旦这个队列中的元素数量超过了k，这个队列是自动排序的，说明头部的这个是频率最小的，给他删掉。
 					pque.pop();
 			}
@@ -3329,6 +3329,30 @@ namespace StackandQueue {
 			}
 			return ret;
 		}
+
+		//347.前 K 个高频元素--二刷
+		vector<int> topKFrequent2(vector<int>& nums, int k) {
+			map<int, int>map;
+			priority_queue<pair<int, int>, vector<pair<int, int>>, cm> pque;
+
+			for (int num : nums) {
+				map[num]++;
+			}
+
+			for (auto it : map) {
+				pque.push(it);
+				if (pque.size() > k)
+					pque.pop();
+			}
+			vector<int> ret;
+			for (size_t i = 0; i < k; i++)
+			{
+				ret.push_back(pque.top().first);
+				pque.pop();
+			}
+			return ret;
+		}
+
 
 
 
