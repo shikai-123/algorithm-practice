@@ -12537,14 +12537,16 @@ namespace KUAIPAI
 {
 	class Solution {
 	public:
-		/*
-			215. 数组中的第K个最大元素
-				就是返回第k大的元素,比如12344 第2大的元素是4，不是3。题目中有说明
 
+
+		/*
+		215. 数组中的第K个最大元素
+			题意:
+					就是返回第k大的元素,比如12344 第2大的元素是4，不是3。因为4由有两个,所以第二个4就是第2大.题目中有说明
 			参考：
 				https://leetcode.cn/problems/kth-largest-element-in-an-array/solutions/2361969/215-shu-zu-zhong-de-di-k-ge-zui-da-yuan-d786p/?envType=study-plan-v2&envId=top-100-liked
 			思路1：
-				时间复杂的 O(n log n)。这个很简单，还能过。题目中要求是这个
+				时间复杂的 O(n log n)。这个很简单，还能过。耗时和复杂的写法时间差不了多少.
 				int findKthLargest(vector<int>& nums, int k) {
 					sort(nums.begin(), nums.end());
 					return nums[nums.size() - k];
@@ -12586,19 +12588,50 @@ namespace KUAIPAI
 				《---------------------------K从右往左，K是逐渐的减小
 				small	   equal	    big
 				123			4			56
-
+				因为题目中要求的是第k大的元素,所以一定要从右往左走,
+				如果题目中要求第几小的元素,那就从左往右.
 			*/
 			if (k <= big.size())//如果k的大小不超big的范围，那么说明第k大的元素在big中
 				return	findKthLargest_qucikSelect(big, k);//继续递归，接着切割
 			else if (k > big.size() + equal.size())//如果k的大小超过了big+equal的范围，那么说明第k大的元素在small中
 				return findKthLargest_qucikSelect(sma, k - (big.size() + equal.size()));//第k大的元素，在small中，是第“k - (big.size() + equal.size())”大
-			return base;//不在切割了，就是最终想要的。
+			return base;//如果这次随机选的base.不在big也不再small区间中,而是在equ区间中,则说明是合适的.(我无法用一句干练的话描述出来,你想一想就明白)
 		}
 
 
 		int findKthLargest(vector<int>& nums, int k) {
 			return findKthLargest_qucikSelect(nums, k);
 		}
+
+
+
+		int findKthLargest_kuaipai2(vector<int>& nums, int k) {
+			vector<int> equ, big, sma;
+			int base = nums[rand() % nums.size()];
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				if (nums[i] < base)
+					sma.push_back(nums[i]);
+				else if (nums[i] == base)
+					equ.push_back(nums[i]);
+				else if (nums[i] > base)
+					big.push_back(nums[i]);
+			}
+			if (k <= big.size())
+				return findKthLargest_kuaipai2(big, k);//!!别忘了添加return,比如在第k大的元素在big中,那么就一直在这个区间中找了,找完了之后就返回,你不加return的话,就还会往下走,返回base,这个是不对的
+			else if (k > (big.size() + equ.size()))//k在small的区间中,
+				return findKthLargest_kuaipai2(sma, k - big.size() - equ.size());//equ的区间中.本开的第k大,在这个区间中就是k - big.size()大
+			return base;
+		}
+
+
+		//215. 数组中的第K个最大元素--二刷
+		int findKthLargest2(vector<int>& nums, int k) {
+			return findKthLargest_kuaipai2(nums, k);
+		}
+
+
+
 	};
 }
 
