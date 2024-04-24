@@ -3377,25 +3377,32 @@ namespace StackandQueue {
 
 		/*
 		394. 字符串解码
+		题意:
+			给定一个经过编码的字符串，返回它解码后的字符串。编码规则为: k[encoded_string]，表示其中方括号内部的 encoded_string 正好重复 k 次。注意 k 保证为正整数。
+			你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+			此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 k ，例如不会出现像 3a 或 2[4] 的输入。'
+			输入：s = "3[a]2[bc]"
+			输出："aaabcbc"
 		参考：
 			https://leetcode.cn/problems/decode-string/solutions/6274/ti-jie-czhan-by-youlookdeliciousc/?envType=study-plan-v2&envId=top-100-liked
-			评论区中的有一个栈的，麻烦点。两个栈的思路简单。
+			评论区中的有一个栈的解法,这个更简单,我已经写在下面了.
+			看下面的一刷和二刷的注释,最好理解
+
 		思路：
-			这个对我来说，有个思维误区，虽然用了栈，但是不是把遍历到的元素都一个个压栈，始终栈只有一层，每次都是头顶元素在累加元素strChar.top() += str;。
+			这个对我来说，有个思维误区，虽然用了栈，但是,不是把遍历到的元素都一个个压栈，始终栈只有一层，每次都是头顶元素在累加元素strChar.top() += str;。
 			我记个和上面模一个题目很相似，这里我累了。我就不看了。
 			遍历这个字符串，遇到“[”才往栈内放；遇到“]”才出栈；其他情况，对栈都不需要操作。
 		巧法：
 			方便记忆这个代码，用 2[ab] 这样的例子就很方便。如果用3[a2[c]]这样就理解起来，在最后else上理解起来，非常麻烦。
-
 		*/
 		string decodeString(string s) {
-			string str;//记录读取的字母
-			int num = 0;//记录读取的数字
-			stack<int>strNum;
-			stack<string>strChar;
+			string str;//最后组合出的字符
+			int num = 0;//每个字母的个数
+			stack<int>strNum;//记录读取的数字
+			stack<string>strChar;//记录读取的字母
 			for (char c : s) {
 				if ('0' <= c && c <= '9')
-					num = num * 10 + c - '0';//读到2.这里写的比较复杂是因为会有两位数的情况出现
+					num = num * 10 + c - '0';//读到2.这里写的比较复杂是因为会有两位数的情况出现.一位数的时候nums=0.二位数的时候num是上次的值
 				else if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z')
 					str += c;//str读到了ab
 				else if ('[' == c)
@@ -3421,6 +3428,74 @@ namespace StackandQueue {
 				}
 			}
 			return str;
+		}
+
+		//394. 字符串解码.一个栈的版本,这个比较简单
+		//https://leetcode.cn/problems/decode-string/solutions/6274/ti-jie-czhan-by-youlookdeliciousc/comments/1053288
+		//2[a2[b]]==abbabb
+		string decodeString2(string s) {
+			string strNum = "";
+			string strChar = "";
+			stack<string> stk;
+			for (char c : s) {
+				if (c >= '0' && c <= '9') {
+					strNum += c;//遇到数组,就不断的加起来.
+				}
+				if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {//别忘了,他大小写都有
+					strChar += c;//遇到字符,也是不断的加起来.
+				}
+				if (c == '[') {//遇到了[,就把数字和字符都压到栈.并且清空.
+					stk.push(strNum); // 比如两个[之间的a2是统一层级,他们同时压到栈里.这样他们在栈中的层级是一样的.
+					strNum = "";
+					stk.push(strChar);
+					strChar = "";
+				}
+				if (c == ']') {
+					string top = stk.top();
+					stk.pop();
+					string times = stk.top();
+					stk.pop();
+					int itimes = atoi(times.c_str());
+					for (int j = 0; j < itimes; ++j)
+						top += strChar;
+					strChar = top;//??为什么组合出来的字符要给strChar?因为组合出来的字符,不一定是最终的字符,可能是属于中间的层级,那么就需要把他再压入栈中,然后在和数字相乘,最终得到最终的
+				}
+			}
+			return strChar;
+		}
+
+		//394. 字符串解码--单个栈--二刷
+		//2[a2[b]]==abbabb  2一个层级 a2一个层级 b一个层级
+		string decodeString3(string s) {
+			string strLevel = "";//同一个层级的字符
+			string numLevel = "";//同一个层级的数字
+			stack<string> strChar;
+			for (char c : s) {
+				if ('0' <= c && c <= '9') {
+					numLevel += c;
+				}
+				else if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z') {
+					strLevel += c;
+				}
+				else if ('[' == c) {//遇到了[,说明上个层级都遍历完毕.那么上个层级积累的字符和数字都要放到栈中.然后清空.
+					strChar.push(numLevel);//先压数字还是字符都行,下面出栈的时候,能对应上就行.
+					numLevel = "";
+					strChar.push(strLevel);
+					strLevel = "";
+				}
+				else if (']' == c) {
+					//因为上面压栈,是先压的数字,后压的字符;所以先出来的就是字符.
+					string tmpStr = strChar.top();//当前的拿到的最新的
+					strChar.pop();
+					int times = stoi(strChar.top());
+					strChar.pop();
+					for (size_t i = 0; i < times; i++) {
+						tmpStr += strLevel;//!!组出来一个新的层级的字符!!2[a2[b]]举例子,当遇到第二个]的时候,tmpStr=a,strLevel就是上一层级2[b]得到的bb.这样组合的字符就是一个层级了,也变成了2[abb]
+					}
+					strLevel = tmpStr;//然后得到的最新的一个层级的字符给了strLevel
+				}
+			}
+			return strLevel;
 		}
 
 
@@ -3474,9 +3549,11 @@ namespace StackandQueue {
 			medianFinder.findMedian(); // return 2.0
 			vector<int>nums{ 1,3,1,2,0,5 };
 
-			vector<int>ret = maxSlidingWindow(nums, 3);
-			for (auto c : ret)
-				cout << c << " ";
+			//vector<int>ret = maxSlidingWindow(nums, 3);
+
+			decodeString3("3[a]2[bc]");
+			/*for (auto c : ret)
+				cout << c << " ";*/
 		}
 
 	};
@@ -12731,7 +12808,7 @@ int main()
 	vector<int> newInterval{ 0,0 };
 
 	//String_Array::Solution tree;
-	TULUN::Solution tree;
+	//TULUN::Solution tree;
 	//BackTracking::Solution tree;
 	//ERFENCAHZHAO::Solution tree;
 	//StackandQueue::Solution tree;
@@ -12740,6 +12817,7 @@ int main()
 	//Dandiaozhan::Solution tree;
 	//LinkedList::Solution tree;//tree.testLRU();
 	//Tree::Solution tree;
+	StackandQueue::Solution tree;
 
 	tree.test();
 
