@@ -732,36 +732,6 @@ namespace String_Array
 			return ans;
 		}
 
-		int largestRectangleArea(vector<int>& heights)
-		{
-			int ans = 0;
-			vector<int> st;
-			heights.insert(heights.begin(), 0);
-			heights.push_back(0);
-			for (int i = 0; i < heights.size(); i++)
-			{
-				if (!st.empty())
-				{
-					cout << " i-" << i << " st.back()-" << st.back() << " heights[st.back()]-" << heights[st.back()]\
-						<< " heights[i]-" << heights[i] << endl;
-				}
-				else
-				{
-					cout << " empty" << endl;
-				}
-				while (!st.empty() && heights[st.back()] > heights[i])
-				{
-					int cur = st.back();
-					st.pop_back();
-					int left = st.back() + 1;
-					int right = i - 1;
-					ans = max(ans, (right - left + 1) * heights[cur]);
-				}
-				st.push_back(i);
-			}
-			return ans;
-		}
-
 
 		/*
 		59.螺旋矩阵II
@@ -10791,6 +10761,9 @@ namespace Dandiaozhan
 
 		/*
 		84.柱状图中最大的矩形
+		题意:
+			给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+			求在该柱状图中，能够勾勒出来的矩形的最大面积。
 		参考：
 			https://www.programmercarl.com/0084.%E6%9F%B1%E7%8A%B6%E5%9B%BE%E4%B8%AD%E6%9C%80%E5%A4%A7%E7%9A%84%E7%9F%A9%E5%BD%A2.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
@@ -10855,7 +10828,6 @@ namespace Dandiaozhan
 			heights.insert(heights.begin(), 0);
 			stack<int>stk;
 			int ret = 0;
-
 			for (int i = 0; i < heights.size(); i++)
 			{
 				while (!stk.empty() && heights[i] < heights[stk.top()])
