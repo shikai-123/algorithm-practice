@@ -8725,6 +8725,7 @@ namespace Greedy {
 			for (size_t i = 0; i < s.size(); i++)
 			{
 				maxI = max(maxI, hashbuf[s[i] - 'a']);//不断的更新字符最后的位置下标。
+				//这个地方不用>,到了尾部的时候,就已经是字符串的尾部了,如果不是尾部的话,maxI肯定会更大.
 				if (maxI == i)//遍历到了最大下标的位置，记录一下区间长度。
 				{
 					ret.push_back(maxI - begin + 1);
@@ -8733,6 +8734,31 @@ namespace Greedy {
 			}
 			return ret;
 		}
+
+
+		//763. 划分字母区间
+		vector<int> partitionLabels2(string s) {
+			int begin = 0;
+			int maxI = 0;
+			int hashBuf[26];
+			vector<int>ret;
+			for (int i = 0; i < s.size(); i++) {
+				hashBuf[s[i] - 'a'] = i;
+			}
+			for (int i = 0; i < s.size(); i++)
+			{
+				maxI = max(maxI, hashBuf[s[i] - 'a']);
+				if (i == maxI) {
+					ret.push_back(i - begin + 1);
+					begin = i + 1;
+				}
+			}
+			return ret;
+		}
+
+
+
+
 
 		/*
 		56. 合并区间
