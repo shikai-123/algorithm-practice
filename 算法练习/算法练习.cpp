@@ -9679,9 +9679,27 @@ namespace DynamicPlanning
 				else if (prices[i] - minValue > result)
 					result = prices[i] - minValue;
 			}
-			cout << "利润 " << result << endl;
+			//cout << "利润 " << result << endl;
 			return result;
 		}
+
+
+		//121. 买卖股票的最佳时机1--二刷
+		int maxProfit1_3(vector<int>& prices) {
+			int minValue = prices[0];
+			int maxValue = prices[0];
+			int maxRet = 0;
+			for (size_t i = 0; i < prices.size(); i++)
+			{
+				if (prices[i] < minValue)
+					minValue = prices[i];
+				else if (prices[i] - minValue > maxRet)
+					maxRet = prices[i] - minValue;
+			}
+			return maxRet;
+		}
+
+
 
 
 		/*
@@ -9714,7 +9732,6 @@ namespace DynamicPlanning
 			返回值：
 				最后的要返回dp[i][0]，dp[i][1]中较大的那个，但实际上肯定是卖出股票的dp[i][1]大
 		*/
-
 		int maxProfit1_2(vector<int>& prices) {
 			if (prices.size() == 0) return 0;
 			vector<vector<int>>dp(prices.size(), { 0,0 });
