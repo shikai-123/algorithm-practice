@@ -301,43 +301,6 @@ namespace String_Array
 
 
 
-		/*和前一个不同的是，它跳跃的距离是不固定的，之前跳的距离就是元素大小，现在是0--元素大小之间0 <= j <= nums[i]
-		这个更只能用贪心算法
-		这个我已经忘了当初是怎么写的了，所以换成代码随想的思路，最重要的是有个可以回顾的东西
-		*/
-		int jump(vector<int>& nums) {
-			int jumpNums = 0;
-			int orderValue = 0;
-			if (nums.size() == 1)
-			{
-				return 0;
-			}
-			int orderIndex = nums.size() - 1;//目标点的下标
-			int tempMax = 0;//在一个周期中。距离目标点的最大距离
-			for (int i = 1; i <= nums.size() - 1; i++)//i是所在这个位置的点的下标
-			{
-				for (int i = 1; i <= orderIndex; i++)//i是所在这个位置的点的下标
-				{
-					if (orderIndex - i + nums[orderIndex - i] >= orderIndex)//往目标点，往前退一个目标。计算它的下表+它的值，是否》=当前目标的下表。
-					{
-						if (nums[orderIndex - i] >= i)
-						{
-							tempMax = i;
-						}
-					}
-				}
-				orderIndex = orderIndex - tempMax;
-				orderValue = 0;
-				jumpNums++;
-				if (orderIndex == 0)
-				{
-					return jumpNums;
-				}
-			}
-			return jumpNums;
-		}
-
-
 		int hIndex1(vector<int>& citations) {
 
 			sort(citations.begin(), citations.end());
@@ -8421,6 +8384,11 @@ namespace Greedy {
 
 		/*
 		45. 跳跃游戏 II
+		题意:
+			给定一个长度为 n 的 0 索引整数数组 nums。初始位置为 nums[0]。
+			每个元素 nums[i] 表示从索引 i 向前跳转的最大长度。换句话说，如果你在 nums[i] 处，你可以跳转到任意 nums[i + j] 处:
+			0 <= j <= nums[i];i + j < n
+			返回到达 nums[n - 1] 的最小跳跃次数。生成的测试用例可以到达 nums[n - 1]
 		参考：
 			https://www.programmercarl.com/0045.%E8%B7%B3%E8%B7%83%E6%B8%B8%E6%88%8FII.html#%E6%80%9D%E8%B7%AF
 		思路：
@@ -8434,12 +8402,11 @@ namespace Greedy {
 			比代码随想的效率高，可以达到8ms
 		*/
 		int jump(vector<int>& nums) {
-			if (nums.size() == 1) return 0;//别忘了当长度为1的时候
+			if (nums.size() == 1) return 0;//别忘了当长度为1的时候,它走到末尾就是0步.!!这个不能去掉
 			int step = 0;//走的步数
 			int currCover = 0;//当前的最大范围
 			int nextCover = 0;//下一步能走的最大范围
-			for (int i = 0; i < nums.size(); i++)
-			{
+			for (int i = 0; i < nums.size(); i++) {
 				nextCover = max(nextCover, nums[i] + i);//获取currCover当前的最大范围中的能得到的最大范围
 				if (nextCover >= nums.size() - 1)//判断这个最大范围有没有超过这个数组，超过的话，就走新的一步，然后结束判断。
 				{
@@ -8455,6 +8422,30 @@ namespace Greedy {
 			}
 			return step;
 		}
+
+
+		//45. 跳跃游戏 II
+		int jump2(vector<int>& nums) {
+			if (nums.size() == 1) return 0;
+			int currCover = 0;
+			int nextCover = 0;
+			int step = 0;
+			for (int i = 0; i < nums.size(); i++) {
+				nextCover = max(nextCover, nums[i] + i);
+				if (nextCover > nums.size() - 1) {
+					step++;
+					break;
+				}
+				if (i == currCover) {
+					currCover = nextCover;
+					step++;
+				}
+			}
+			return step;
+		}
+
+
+
 
 		/*
 		1005.K次取反后最大化的数组和
