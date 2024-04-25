@@ -3269,7 +3269,7 @@ namespace StackandQueue {
 			一旦队列中的数量超过了k，从头部删除删除掉数据，最后剩下的就是高频数据。
 			最后把剩下的数据都放到vec中。
 		*/
-		class cm
+		class cm//优先级队列的自定义的比较函数,一定要是在类中,传参也是这个类名.
 		{
 		public:
 			bool operator() (const pair<int, int>& l, const  pair<int, int> &r)
@@ -3279,7 +3279,7 @@ namespace StackandQueue {
 		};
 
 		vector<int> topKFrequent(vector<int>& nums, int k) {
-			map<int, int> mp;
+			map<int, int> mp;//元素的值 和 它对应的出现的次数
 			priority_queue<pair<int, int>, vector<pair<int, int>>, cm >pque;
 			//统计各个数据出现的频率
 			for (size_t i = 0; i < nums.size(); i++) {
@@ -3287,7 +3287,7 @@ namespace StackandQueue {
 			}
 
 			for (pair<int, int> it : mp) {
-				pque.push(it);
+				pque.push(it);//插入和删除的顺序别颠倒,要不然不对
 				if (pque.size() > k)//!!一旦这个队列中的元素数量超过了k，这个队列是自动排序的，说明头部的这个是频率最小的，给他删掉。
 					pque.pop();
 			}
@@ -3299,6 +3299,30 @@ namespace StackandQueue {
 			}
 			return ret;
 		}
+
+		//347.前 K 个高频元素--二刷
+		vector<int> topKFrequent2(vector<int>& nums, int k) {
+			map<int, int>map;
+			priority_queue<pair<int, int>, vector<pair<int, int>>, cm> pque;
+
+			for (int num : nums) {
+				map[num]++;
+			}
+
+			for (auto it : map) {
+				pque.push(it);
+				if (pque.size() > k)
+					pque.pop();
+			}
+			vector<int> ret;
+			for (size_t i = 0; i < k; i++)
+			{
+				ret.push_back(pque.top().first);
+				pque.pop();
+			}
+			return ret;
+		}
+
 
 
 
@@ -10567,8 +10591,8 @@ namespace Dandiaozhan
 			这样就知道左边和右边第一个比自己大的元素了。
 
 		单调栈里元素是递增呢？ 还是递减呢？
-			如果求一个元素右边第一个更大元素，单调栈就是递增的，
-			如果求一个元素右边第一个更小元素，单调栈就是递减的。
+			如果求一个元素右边第一个更大元素，单调栈就是递增的，遇到小于等于栈顶元素的就入栈,大于栈顶元素的就出栈.
+			如果求一个元素右边第一个更小元素，单调栈就是递减的,遇到大于等于栈顶元素的就入栈,小于栈顶元素的就出栈.
 
 		单调栈的顺序：
 			 从栈头到栈底，递增就是，单调递增栈。
@@ -10770,12 +10794,12 @@ namespace Dandiaozhan
 			有暴力和单调栈方法，这里用单调栈的方法。
 			求遍历到的每一个下标，它左侧第一个最小的元素和右侧第一个最小的元素。
 			为什么这么做呢？
-			从当前坐标的高度往左右延申，直到遇见左右第一个比它矮的矩形，
-			这个时候所得到的面积，就是当前遍历的下标对应的最大矩形的面积
+			从当前坐标的高度往左右延申，直到遇见左右第一个比它矮的矩形，(具体为啥,我也不知道了,记住吧!!!!)
+			这个时候所得到的面积，就是当前遍历的下标对应的最大矩形的面积.(这里别误解,着得到的是当前下标的最大的矩形,而不是整个图像中最大的矩形.)
 			然后，取其中最大的面积，就是当前数组中，也就是柱状图中最大的矩形。
 
 
-			既然要求所遇到的第一个“较小”的元素，单调栈从头到尾是单调递减的。
+			既然要求所遇到的右侧第一个“较小”的元素，则用单调递减栈,从头到尾是单调递减的,遇到了小于栈顶栈顶元素的就要出栈.
 			面积：
 				are = hig*wid;
 			宽度：
@@ -12586,14 +12610,16 @@ namespace KUAIPAI
 {
 	class Solution {
 	public:
-		/*
-			215. 数组中的第K个最大元素
-				就是返回第k大的元素,比如12344 第2大的元素是4，不是3。题目中有说明
 
+
+		/*
+		215. 数组中的第K个最大元素
+			题意:
+					就是返回第k大的元素,比如12344 第2大的元素是4，不是3。因为4由有两个,所以第二个4就是第2大.题目中有说明
 			参考：
 				https://leetcode.cn/problems/kth-largest-element-in-an-array/solutions/2361969/215-shu-zu-zhong-de-di-k-ge-zui-da-yuan-d786p/?envType=study-plan-v2&envId=top-100-liked
 			思路1：
-				时间复杂的 O(n log n)。这个很简单，还能过。题目中要求是这个
+				时间复杂的 O(n log n)。这个很简单，还能过。耗时和复杂的写法时间差不了多少.
 				int findKthLargest(vector<int>& nums, int k) {
 					sort(nums.begin(), nums.end());
 					return nums[nums.size() - k];
@@ -12635,19 +12661,50 @@ namespace KUAIPAI
 				《---------------------------K从右往左，K是逐渐的减小
 				small	   equal	    big
 				123			4			56
-
+				因为题目中要求的是第k大的元素,所以一定要从右往左走,
+				如果题目中要求第几小的元素,那就从左往右.
 			*/
 			if (k <= big.size())//如果k的大小不超big的范围，那么说明第k大的元素在big中
 				return	findKthLargest_qucikSelect(big, k);//继续递归，接着切割
 			else if (k > big.size() + equal.size())//如果k的大小超过了big+equal的范围，那么说明第k大的元素在small中
 				return findKthLargest_qucikSelect(sma, k - (big.size() + equal.size()));//第k大的元素，在small中，是第“k - (big.size() + equal.size())”大
-			return base;//不在切割了，就是最终想要的。
+			return base;//如果这次随机选的base.不在big也不再small区间中,而是在equ区间中,则说明是合适的.(我无法用一句干练的话描述出来,你想一想就明白)
 		}
 
 
 		int findKthLargest(vector<int>& nums, int k) {
 			return findKthLargest_qucikSelect(nums, k);
 		}
+
+
+
+		int findKthLargest_kuaipai2(vector<int>& nums, int k) {
+			vector<int> equ, big, sma;
+			int base = nums[rand() % nums.size()];
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				if (nums[i] < base)
+					sma.push_back(nums[i]);
+				else if (nums[i] == base)
+					equ.push_back(nums[i]);
+				else if (nums[i] > base)
+					big.push_back(nums[i]);
+			}
+			if (k <= big.size())
+				return findKthLargest_kuaipai2(big, k);//!!别忘了添加return,比如在第k大的元素在big中,那么就一直在这个区间中找了,找完了之后就返回,你不加return的话,就还会往下走,返回base,这个是不对的
+			else if (k > (big.size() + equ.size()))//k在small的区间中,
+				return findKthLargest_kuaipai2(sma, k - big.size() - equ.size());//equ的区间中.本开的第k大,在这个区间中就是k - big.size()大
+			return base;
+		}
+
+
+		//215. 数组中的第K个最大元素--二刷
+		int findKthLargest2(vector<int>& nums, int k) {
+			return findKthLargest_kuaipai2(nums, k);
+		}
+
+
+
 	};
 }
 
