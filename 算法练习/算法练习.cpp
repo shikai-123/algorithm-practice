@@ -8912,6 +8912,9 @@ namespace DynamicPlanning
 
 		/*
 		70. 爬楼梯
+		题意:
+			假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+			每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
 		参考：
 			https://www.programmercarl.com/0070.%E7%88%AC%E6%A5%BC%E6%A2%AF.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
@@ -8940,6 +8943,28 @@ namespace DynamicPlanning
 			}
 			return fb[3];
 		}
+
+
+
+		//70. 爬楼梯--二刷
+		int climbStairs2(int n) {
+			if (n < 4) return n;
+			int fb[3];
+			fb[0] = 0;
+			fb[1] = 1;
+			fb[2] = 2;
+			fb[3] = 3;
+			int sum = 0;
+			for (size_t i = 4; i <= n; i++)//!!别忘了=;得有i=n的时候.
+			{
+				sum = fb[2] + fb[1];
+				fb[1] = fb[2];
+				fb[2] = sum;
+			}
+			return sum;
+		}
+
+
 
 		/*
 		746. 使用最小花费爬楼梯
