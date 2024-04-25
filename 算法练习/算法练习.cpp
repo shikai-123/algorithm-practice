@@ -10472,6 +10472,9 @@ namespace DynamicPlanning
 
 		/*
 		118. 杨辉三角
+		题意:
+			给定一个非负整数 numRows，生成「杨辉三角」的前 numRows 行。
+			在「杨辉三角」中，每个数是它左上方和右上方的数的和
 		参考：
 			没什么参考的，看注释就明白
 		思路：
@@ -10492,7 +10495,7 @@ namespace DynamicPlanning
 				ret[i][ret[i].size() - 1] = 1;
 
 				//计算中间的部分,因为头部不放，起始位置就是1.
-				for (int l = 1; i > l; l++)//l最小是1.i也就是 2才能进，满足“第二行才能计算”的条件
+				for (int l = 1; l < i; l++)//l最小是1.i也就是 2才能进，满足“第二行才能计算”的条件
 				{
 					ret[i][l] = ret[i - 1][l] + ret[i - 1][l - 1];
 				}
@@ -10500,6 +10503,22 @@ namespace DynamicPlanning
 			return ret;
 		}
 
+
+		//118. 杨辉三角--二刷
+		vector<vector<int>> generate2(int numRows) {
+			vector<vector<int>> ret(numRows);
+			for (size_t i = 0; i < numRows; i++)
+			{
+				ret[i].resize(i + 1);
+				ret[i][0] = 1;
+				ret[i][ret[i].size() - 1] = 1;
+				for (size_t l = 1; l < i; l++)
+				{
+					ret[i][l] = ret[i - 1][l] + ret[i - 1][l - 1];
+				}
+			}
+			return ret;
+		}
 
 		/*
 		152. 乘积最大子数组
