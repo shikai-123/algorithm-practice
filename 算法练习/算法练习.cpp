@@ -299,42 +299,6 @@ namespace String_Array
 			return result;
 		}
 
-		/*
-			题解中有更简单的，另外我这是从后往前走的贪心算法，也可以试试从前往后，路径应该都是一样的。
-			我已经看不懂，我当时是怎么想的了。
-			下面贪心的时候，有新的解法，代码简答，看他这个吧
-		*/
-		bool canJump(vector<int>& nums) {
-			if (nums.size() == 1)
-			{
-				return true;
-			}
-			if (nums[0] == 0)//根据规则，第一个如果是0，并且size不是1.那么肯定不行
-			{
-				return false;
-			}
-			int orderIndex = nums.size() - 1;//目标点的下标
-			for (int i = 1; i <= nums.size() - 1; i)//i是所在这个位置的点的下标
-			{
-				if (orderIndex - i < 0) {
-					return false;//如果目标点的下标orderIndex,比从当前遍历的点到目标点需要的步数，还大。肯定是数组越界了
-				}
-				if (orderIndex - i + nums[orderIndex - i] >= orderIndex)//往目标点，往前退一个目标。计算它的下表+它的值，是否》=当前目标的下表。
-				{
-					orderIndex = orderIndex - i;
-					i = 1;
-				}
-				else//如果不行，那么就在往前一走一个
-				{
-					i++;
-				}
-				if (orderIndex == 0)//如果目标点到了数组的第一个位置，那么肯定就是可以的。
-				{
-					return true;
-				}
-			}
-			return false;
-		}
 
 
 		/*和前一个不同的是，它跳跃的距离是不固定的，之前跳的距离就是元素大小，现在是0--元素大小之间0 <= j <= nums[i]
@@ -8421,6 +8385,9 @@ namespace Greedy {
 
 		/*
 		55. 跳跃游戏
+		题意:
+			给你一个非负整数数组 nums ，你最初位于数组的 第一个下标 。数组中的每个元素代表你在该位置可以跳跃的最大长度。
+			判断你是否能够到达最后一个下标，如果可以，返回 true ；否则，返回 false 。
 		参考：
 			https://www.programmercarl.com/0055.%E8%B7%B3%E8%B7%83%E6%B8%B8%E6%88%8F.html#%E6%80%9D%E8%B7%AF
 		思路：
@@ -8428,17 +8395,29 @@ namespace Greedy {
 			如果嘴个范围大于等于了这个数组的长度，说明符合条件。（全局最优解）
 		*/
 		bool canJump(vector<int>& nums) {
-			if (nums.size() == 1) return true; // 只有一个元素，就是能达到，即使元素是0，因为一个元素它本身就是尾巴
-			int cover = nums[0];//数组最小长度为1，不会出现错误。注意cover代表的是下表，便于理解。
-			// 注意这里是小于等于cover 本质就是只有小于等于才能让下标走到cover代表的位置，要不然【123】过不去，
+			int cover = nums[0];//你能走到的范围.如果这个范围能超过数组范围就说明能走到底
 			for (int i = 0; i <= cover; i++)
 			{
-				cover = max(cover, i + nums[i]);
+				cover = max(cover, i + nums[i]);//没走一步更新最大的范围
 				if (cover >= nums.size() - 1)//-1是因为cover代表的是下标
 					return true;
 			}
 			return false;
 		}
+
+		//55. 跳跃游戏
+		bool canJump2(vector<int>& nums) {
+			int cover = nums[0];
+			for (int i = 0; i <= cover; i++) {//!!I要改成和cover的类型一样,要不然max不能匹配两个类型不同的关系.
+				cover = max(cover, nums[i] + i);
+				if (cover >= nums.size() - 1)
+					return true;
+			}
+			return false;
+		}
+
+
+
 
 		/*
 		45. 跳跃游戏 II
