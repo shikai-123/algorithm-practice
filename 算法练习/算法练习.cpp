@@ -3495,25 +3495,31 @@ namespace StackandQueue {
 
 		/*
 		295. 数据流的中位数
+		题意:
+			中位数是有序整数列表中的中间值。如果列表的大小是偶数，则没有中间值，中位数是两个中间值的平均值。
+			例如 arr = [2,3,4] 的中位数是 3 。
+			例如 arr = [2,3] 的中位数是 (2 + 3) / 2 = 2.5
 		参考：
 			https://leetcode.cn/problems/find-median-from-data-stream/solutions/2361972/295-shu-ju-liu-de-zhong-wei-shu-dui-qing-gmdo/?envType=study-plan-v2&envId=top-100-liked
 		思路：
-			相对于题目，这里做了更该，从!=改成了==。但原理都一样。返回中值的时候，从A.top()改成B.top()。
+			相对于题目，这里做了更改，从!=改成了==。但原理都一样。返回中值的时候，从A.top()改成B.top()。
 			这个题目用到了两个“优先队列”，思路简单。关于优先队列，尤其是搭配less和greater的使用。
 			有两个优先队列，A保存小数据，所以得是大顶堆，B保存大数据，得是小顶堆。
 			两个尺寸一样的话，就先放到A中过滤，然后从A中挑个更大的到B。这个时候假设一开始是2个元素，1和2，现在新来了3.然后3先放到A，然后把2放到B，最后拿B的top返回即可。
 			尺寸不一样的话，比如A1 B23，现在来了4，那么直接放到B，然后跳出2放到A中，A12 B34 中值就是两个top/2
+
+			要记忆的点,尺寸相等时候先给大顶堆.否则先给小顶堆
 		*/
 		class MedianFinder {
 		private:
-			priority_queue<int, vector<int>, less<int>> pqA;//用less，就是大顶堆。保存较小的数。
-			priority_queue<int, vector<int>, greater<int>> pqB;//用greater，就是小顶堆。保存较大的数。
+			priority_queue<int, vector<int>, less<int>> pqA;//用less，就是大顶堆。头部是大数,尾部是小数.保存较小的数。
+			priority_queue<int, vector<int>, greater<int>> pqB;//用greater，就是小顶堆。头部是小数,尾部是大数.保存较大的数。
 		public:
 			MedianFinder() {
 
 			}
 			void addNum(int num) {
-
+				//当size一样的时候,多出来的放到b中,所以最后返回的时候,也就是返回b的top
 				if (pqA.size() == pqB.size()) {//当两个队列的大小相同的时候，先放A中放，因为A保存较小的数，放到A中过滤(小的话就放到A，大的话下面会放到B)
 					pqA.push(num);
 					pqB.push(pqA.top());
@@ -3526,9 +3532,36 @@ namespace StackandQueue {
 				}
 			}
 			double findMedian() {
-				return pqA.size() != pqB.size() ? pqB.top() : (pqA.top() + pqB.top()) / 2.0;
+				return pqA.size() != pqB.size() ? pqB.top() : (pqA.top() + pqB.top()) / 2.0;//!!别忘了这个地方是2.0;这样才能保证返回的是浮点,要不然是整数就缺少精度,最后结果也不对
 			}
 		};
+
+		//295. 数据流的中位数
+		class MedianFinder2 {
+		private:
+			priority_queue<int, vector<int>, less<int>> minQue;//大锥顶队列,头部大.保存较小的数
+			priority_queue<int, vector<int>, greater<int>> maxQue;//小锥顶队列,头部小,保存较大的数
+		public:
+			MedianFinder2() {}
+			void addNum(int num) {
+				if (maxQue.size() == minQue.size()) {
+					minQue.push(num);
+					maxQue.push(minQue.top());
+					minQue.pop();
+				}
+				else
+				{
+					maxQue.push(num);
+					minQue.push(maxQue.top());
+					maxQue.pop();
+				}
+				return;
+			}
+			double findMedian() {
+				return maxQue.size() == minQue.size() ? maxQue.top() : (maxQue.top() + minQue.top()) / 2;
+			}
+		};
+
 
 
 
