@@ -8736,7 +8736,7 @@ namespace Greedy {
 		}
 
 
-		//763. 划分字母区间
+		//763. 划分字母区间-二刷
 		vector<int> partitionLabels2(string s) {
 			int begin = 0;
 			int maxI = 0;
