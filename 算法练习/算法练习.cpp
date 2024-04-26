@@ -9497,6 +9497,9 @@ namespace DynamicPlanning
 
 		/*
 		279. 完全平方数
+		题意:
+			给你一个整数 n ，返回 和为 n 的完全平方数的最少数量 。
+			完全平方数 是一个整数，其值等于另一个整数的平方；换句话说，其值等于一个整数自乘的积。例如，1、4、9 和 16 都是完全平方数，而 3 和 11 不是。
 		参考：
 			https://www.programmercarl.com/0279.%E5%AE%8C%E5%85%A8%E5%B9%B3%E6%96%B9%E6%95%B0.html
 		题目说明：
@@ -9504,31 +9507,58 @@ namespace DynamicPlanning
 			求用到的“完全平方数”的最少数量
 		思路：
 			每个“完全平方数”可以多次使用，完全背包问题。
-			不在乎顺序，就是排列。
+			不在乎顺序，就是组合。但是本题目是最"最小数",先遍历物品还是背包都行.
 			转换为背包思路：背包容量是n，“完全平方数”是每个物品的重量。
 			问放满背包，“最少”有多少“物品”。
-			1、定义dp：dp[j] 当和为j的时候，最少有dp[j]中方法。
-			2、初始化：题目描述，“完全平方数”1, 4, 9, 16, ...。题目中没有0.所以=0；
-			3、确定dp公式：
+			1、定义dp：dp[j] 和为j的的时候,完全平方数的"最少"数量为dp[j]
+			2、确定dp公式：看下面的注释
+			3、初始化：dp[0]表示 和为0的完全平方数的最小数量，那么dp[0]一定是0。非0下标的dp[j]一定要初始为最大值，这样dp[j]在递推的时候才不会被初始值覆盖
+
 		*/
 		int numSquares(int n) {
-			vector<size_t>dp(n + 1, INT_MAX);//!!!取最小值，1、往往都是INT_MAX来初始化。2、小心dp[i - j * j] + 1越界了，正好越界1
-			dp[0] = 0;//题目描述，“完全平方数”1, 4, 9, 16, ...。题目中没有0.所以=0；
+			//size_t类型不能是int,超限.别忘了n+1，要不数组越界
+			vector<size_t>dp(n + 1, INT_MAX);//从递归公式dp[j] = min(dp[j - i * i] + 1, dp[j]);中可以看出每次dp[j]都要选最小的，所以非0下标的dp[j]一定要初始为最大值，这样dp[j]在递推的时候才不会被初始值覆盖。
+			dp[0] = 0;//题目描述,n从1开始,题目中没有0.所以给他赋值0就行,很多时候dp的初始化,道理讲的都有点牵强.
 			for (size_t i = 0; i <= n; i++)//背包
 			{
 				//物品-J*J就是具体的要放的物品的重量，！物品要小于等于背包容量！
 				for (size_t j = 0; j*j <= i; j++)
 				{
-					/*
-					dp[i]：“i”背包容量；
-					dp[i - j * j] + 1：dp[背包容量-当前物品重量]+1：拿掉当前物品“i - j * j”，然后加上新的物品就是物品数+1；
-					*/
+					/*dp[i]：“i”背包容量；
+					dp[i - j * j] + 1：dp[背包容量-当前物品重量]+1：拿掉当前物品“i - j * j”，然后加上新的物品就是物品数+1；*/
 					dp[i] = min(dp[i - j * j] + 1, dp[i]);
 				}
 			}
 			return dp[n];
 		}
 
+
+
+		//279. 完全平方数--二刷
+		int numSquares2(int n) {
+			vector<size_t>dp(n + 1, INT_MAX);
+			//先后顺序就无所谓了.但, 还是推荐先遍历背包,再遍历物品,这样物品往背包中放的这种思路就体现的很明显
+			for (size_t i = 0; i <= n; i++)//背包!!!都别忘了有"等于"
+			{
+				for (size_t l = 0; l*l <= i; l++)//物品  "l*l"这个物品要 <="l"这个背包容量
+				{
+					dp[i] = min(dp[i], dp[i - l * l] + 1);//别写错了了,是l*l
+				}
+			}
+			return dp[n];
+		}
+
+		//先遍历物品,再背包就有点不好理解.
+		int numSquares3(int n) {
+			vector<int> dp(n + 1, INT_MAX);
+			dp[0] = 0;
+			for (int i = 1; i * i <= n; i++) { // 遍历物品.i*i<=n.因为如果一个元素的平方都大于n了,那么这个元素就炒了,再怎么加都得不到n
+				for (int j = i * i; j <= n; j++) { // 遍历背包 j = i * i.不能是 j = i;要不然报错.!!这个就不好理解
+					dp[j] = min(dp[j - i * i] + 1, dp[j]);
+				}
+			}
+			return dp[n];
+		}
 
 		/*
 		139.单词拆分
@@ -9569,6 +9599,7 @@ namespace DynamicPlanning
 		198.打家劫舍
 		题目解析：
 			从数组中偷，挨边的不能偷。
+			计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
 		参考：
 			https://www.programmercarl.com/0198.%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D.html
 		思路：
@@ -9598,6 +9629,23 @@ namespace DynamicPlanning
 			}
 			return dp[nums.size() - 1];
 		}
+
+
+		//198.打家劫舍-二刷
+		int robErShua(vector<int>& nums) {
+			if (nums.empty()) return 0;
+			if (nums.size() == 1) return nums[0];
+			vector<int> dp(nums.size());
+
+			dp[0] = nums[0];
+			dp[1] = max(nums[0], nums[1]);
+			for (size_t i = 2; i < nums.size(); i++)
+			{
+				dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
+			}
+			return dp[nums.size() - 1];
+		}
+
 
 
 		/*
