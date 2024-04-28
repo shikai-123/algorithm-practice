@@ -9462,6 +9462,10 @@ namespace DynamicPlanning
 
 		/*
 		322. 零钱兑换
+		题意:
+			给你一个整数数组 coins ，表示不同面额的硬币；以及一个整数 amount ，表示总金额。
+			计算并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
+			你可以认为每种硬币的数量是无限的。
 		参考：
 			https://www.programmercarl.com/0322.%E9%9B%B6%E9%92%B1%E5%85%91%E6%8D%A2.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
@@ -9478,7 +9482,7 @@ namespace DynamicPlanning
 		int coinChange(vector<int>& coins, int amount) {
 			vector<unsigned int>dp(amount + 1, INT_MAX);//因为dp[j - coins[i]] + 1会出现INT_MAX+1，出现越界，所有要定义无符号
 			dp[0] = 0;
-			for (int i = 0; i < coins.size(); i++)//物品
+			for (int i = 0; i < coins.size(); i++)//物品!!!!不要用<=.要不然下面的coins[i]报错.
 			{
 				//当前物品重量《=背包容量
 				for (int j = coins[i]; j <= amount; j++)//背包
@@ -9494,6 +9498,22 @@ namespace DynamicPlanning
 			return dp[amount];
 		}
 
+		//322. 零钱兑换--二刷
+		int coinChange2(vector<int>& coins, int amount) {
+			vector<unsigned int> dp(amount + 1, INT_MAX);
+			dp[0] = 0;
+			for (int i = 0; i < coins.size(); i++)
+			{
+				for (int l = coins[i]; l <= amount; l++)
+				{
+					dp[l] = min(dp[l], dp[l - coins[i]] + 1);
+				}
+			}
+
+			if (dp[amount] == INT_MAX)//还有兑钱兑不开的情况,所以要返回-1
+				return -1;
+			return dp[amount];
+		}
 
 		/*
 		279. 完全平方数
@@ -9538,7 +9558,7 @@ namespace DynamicPlanning
 		int numSquares2(int n) {
 			vector<size_t>dp(n + 1, INT_MAX);
 			//先后顺序就无所谓了.但, 还是推荐先遍历背包,再遍历物品,这样物品往背包中放的这种思路就体现的很明显
-			for (size_t i = 0; i <= n; i++)//背包!!!都别忘了有"等于"
+			for (size_t i = 0; i <= n; i++)//背包!!!都别忘了有"等于".也就是背包被装满,容量为n的时候.
 			{
 				for (size_t l = 0; l*l <= i; l++)//物品  "l*l"这个物品要 <="l"这个背包容量
 				{
@@ -10707,7 +10727,9 @@ namespace DynamicPlanning
 			string str = "aba";
 			vector<int> dp{ -2,1,-3,4,-1,2,1,-5,4 };
 			vector<int> dp1{ 3,2,1,4,7 };
-			cout << longestPalindrome(str);
+			vector<int> coins = { 2 };
+			int amount = 3;
+			cout << coinChange2(coins, amount);
 		}
 
 	};
@@ -12979,12 +13001,12 @@ int main()
 	//BackTracking::Solution tree;
 	//ERFENCAHZHAO::Solution tree;
 	//StackandQueue::Solution tree;
-	//DynamicPlanning::Solution tree;
+	DynamicPlanning::Solution tree;
 	//DoublePointer::Solution tree;
 	//Dandiaozhan::Solution tree;
 	//LinkedList::Solution tree;//tree.testLRU();
 	//Tree::Solution tree;
-	StackandQueue::Solution tree;
+	//StackandQueue::Solution tree;
 
 	tree.test();
 
