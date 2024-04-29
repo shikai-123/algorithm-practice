@@ -9591,12 +9591,21 @@ namespace DynamicPlanning
 			转成背包问题：
 			此数组中拿到单词放到s中，看最后能不能放满背包。
 			背包容量是要拼凑的单词的长度。
-			dp[i]含义：当遍历到字符串s到位置i的时候，前面的都可以被“单词”组成
-			递推公式：dp[i]很明显是依托于前面的部分。在前面能匹配上的前提下，后面的才有意义。
-					if(j-i的区间能匹配，并且下标为j的时候也为true)，这个时候dp[i]=true
-					为了方便匹配，用set匹配方便
-			确定遍历顺序：对于组成单词而言，单词的顺序不能随意指定，所以就是排列。
-			初始化：一开始一定要为true，要不然后面都是false了
+			dp[i]含义：
+				当遍历到字符串s到位置i的时候，前面的都可以被“单词”组成
+			递推公式：
+				dp[i]很明显是依托于前面的部分。在前面能匹配上的前提下，后面的才有意义。
+				如果i-j的区间能匹配，并且下标为j的时候也为true)，这个时候dp[i]=true
+				这个题目和"300.最长递增子序列"很相似,
+				假设下标i在下标j的后面,
+				如果想要字符s在下标i这个位置能够组成字符串的话,
+				前提他前面的坐标j是可以被单词组成,也就是下标j的dp[j]==true
+				并且j到i这一块也是单词的一部分,也就是tring tmp = s.substr(j, i - j);ordSet.find(tmp) != wordSet.end();
+				只有这样才能这个位置i的时候,才能都是被单词组成的.
+			确定遍历顺序：
+				对于组成单词而言，单词的顺序不能随意指定，所以就是排列。
+			初始化：
+				一开始一定要为true，要不然后面都是false了
 		*/
 		bool wordBreak(string s, vector<string>& wordDict) {
 			vector<bool>dp(s.size() + 1, false);
@@ -9617,6 +9626,31 @@ namespace DynamicPlanning
 			}
 			return dp[s.size()];
 		}
+
+
+
+		//139.单词拆分-二刷
+		bool wordBreak(string s, vector<string>& wordDict) {
+			vector<bool>dp(s.size() + 1, false);
+			dp[0] = true;
+			unordered_set<string>uset(wordDict.begin(), wordDict.end());
+			for (size_t i = 0; i <= s.size(); i++)//遍历背包容量的时候,背包的当前容量肯定得有和最大容量相等的时候,这个时候就用到"等于".所以是"<="
+			{
+				for (size_t l = 0; l < i; l++)
+				{
+					string tmp = s.substr(l, i - l);
+					if (dp[l] == true && uset.find(tmp) != uset.end()) {
+						dp[i] = true;
+					}
+				}
+			}
+			return dp[s.size()];
+		}
+
+
+
+
+
 
 		/*
 		198.打家劫舍
