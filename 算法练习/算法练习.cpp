@@ -10036,16 +10036,17 @@ namespace DynamicPlanning
 		/*
 		300.最长递增子序列
 		题意:
-		给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
-		子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+			给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+			子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
 		参考：
 			https://www.programmercarl.com/0300.%E6%9C%80%E9%95%BF%E4%B8%8A%E5%8D%87%E5%AD%90%E5%BA%8F%E5%88%97.html
 		思路：
-			1、dp含义：dp[i]表示i之前包括i的以nums[i]结尾的最长递增子序列的长度
+			1、dp含义：dp[i]表示nums[i]结尾的最长递增子序列的长度
 			2、dp递推公式：
 				if (nums[i] > nums[l])
 					dp[i]=max(dp[i-1]+1,dp[i]);
-				如果后面的值是》前面的值的话。遍历到位置i，他的长度是由前面的最大长度+1，
+				假设下标i在下标l的后面,并且如果nums[i] > nums[l],说明l到i这段是递增的,
+				那么这个时候,递增序列的最大长度要+1的.
 			3、初始化：
 				!所有的都初始化1，因为最短就是1。
 				初始化0，结果最后差一个。
@@ -10061,20 +10062,49 @@ namespace DynamicPlanning
 		*/
 		int lengthOfLIS(vector<int>& nums) {
 			if (nums.size() <= 1) return 1;
-			vector<int>dp(nums.size(), 1);
+			vector<int>dp(nums.size(), 1);//一定要初始化1,要不然过不去
 			int ret = 0;
 			for (size_t i = 1; i < nums.size(); i++)
 			{
-				for (size_t l = 0; l < i; l++)
+				for (size_t l = 0; l < i; l++)//我们是假设i是在l的后面,所以i的范围不能超过l.
 				{
 					if (nums[i] > nums[l])
-						dp[i] = max(dp[l] + 1, dp[i]);//!!!
+						//!!这里加max是而不是"dp[i] = dp[l] + 1;".
+						//举例,0,3,2,3.遍历大第一个3的时候,最长为2,遍历到2的是时候,长度应该也是2.
+						//这个时候就出问题了,2比前面的小,所以它的长度就变成了默认值1,
+						//其实这个时候,最长子序列还是2啊!!
+						//题目中,最长子序列在随着数组往后遍历的时候,只会增加不会减少.(你细想一下)所以就用max,
+						dp[i] = max(dp[l] + 1, dp[i]);
 				}
-				//cout << "dp " << dp[i] << endl;
+				//放在理解起来麻烦点,因为i在l的后面,内部的for计算的就是i到l的距离中最大的长度,i从0到末尾,这样i往后走一次都代表以i结尾的数组的最长子序列,所以放在第一层的for中,这样就会在每一次更新i的时候,更新最长长度.
+				ret = max(ret, dp[i]);//max放在内部的for也是可以的,但是放在这里比较省性能.
+			}
+			return ret;
+		}
+
+
+
+
+		//300.最长递增子序列--二刷
+		int lengthOfLIS2(vector<int>& nums) {
+			int ret = 0;
+			vector<int>dp(nums.size(), 1);//dp数组的长度也不是都要+1,这里就不需要..
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				for (size_t l = 0; l < i; l++)
+				{
+					if (nums[l] < nums[i])
+						dp[i] = max(dp[i], dp[l] + 1);
+				}
 				ret = max(ret, dp[i]);
 			}
 			return ret;
 		}
+
+
+
+
+
 
 
 		/*
