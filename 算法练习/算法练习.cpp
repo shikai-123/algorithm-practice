@@ -10854,7 +10854,7 @@ namespace DynamicPlanning
 		}
 
 
-		//64. 最小路径和--二刷--推荐这个方法
+		//64. 最小路径和--二刷--推荐这个方法--放在外面初始化,好理解
 		int minPathSum2(vector<vector<int>>& grid) {
 			for (size_t i = 1; i < grid.size(); i++)//靠着左边界
 				grid[i][0] = grid[i][0] + grid[i - 1][0];
