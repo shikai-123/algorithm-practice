@@ -9630,7 +9630,7 @@ namespace DynamicPlanning
 
 
 		//139.单词拆分-二刷
-		bool wordBreak(string s, vector<string>& wordDict) {
+		bool wordBreak2(string s, vector<string>& wordDict) {
 			vector<bool>dp(s.size() + 1, false);
 			dp[0] = true;
 			unordered_set<string>uset(wordDict.begin(), wordDict.end());
@@ -10660,6 +10660,12 @@ namespace DynamicPlanning
 
 		/*
 		152. 乘积最大子数组
+		题意:
+			给你一个整数数组 nums ，请你找出数组中乘积最大的非空连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+			测试用例的答案是一个 32-位 整数。
+			输入: nums = [2,3,-2,4]
+			输出: 6
+			解释: 子数组 [2,3] 有最大乘积 6。
 		参考：
 			https://leetcode.cn/problems/maximum-product-subarray/solutions/7561/hua-jie-suan-fa-152-cheng-ji-zui-da-zi-xu-lie-by-g/?envType=study-plan-v2&envId=top-100-liked
 		思路：
@@ -10676,12 +10682,30 @@ namespace DynamicPlanning
 			for (int num : nums) {
 				if (num < 0)
 					swap(tmpMax, tmpMin);
-				tmpMin = min(tmpMin*num, num);
-				tmpMax = max(tmpMax*num, num);
-				maxRet = max(maxRet, tmpMax);
+				tmpMax = max(tmpMax*num, num);//!!!注意是比较"当前元素"和"当前元素乘以之前的最大乘积"
+				tmpMin = min(tmpMin*num, num);//ai说的,这样做是为了确保连续子数组的最大乘积在每一步都能得到正确的更新，保证最终得到的是整个数组中的最大乘积。
+				maxRet = max(maxRet, tmpMax);//也不是很好理解,就记住吧
 			}
 			return maxRet;
 		}
+
+		//152. 乘积最大子数组
+		int maxProduct2(vector<int>& nums) {
+			int ret = INT_MIN;
+			int tmpMax = 1, tmpMin = 1;
+			for (int num : nums) {
+				if (num < 0)
+					swap(tmpMax, tmpMin);
+				tmpMax = max(num, num*tmpMax);
+				tmpMin = min(num, num*tmpMin);
+				ret = max(ret, tmpMax);
+			}
+			return ret;
+		}
+
+
+
+
 
 
 		/*
