@@ -9225,6 +9225,9 @@ namespace DynamicPlanning
 
 		/*
 		416. 分割等和子集
+		题意:
+			给你一个 只包含正整数 的 非空 数组 nums 。
+			请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
 		参考：
 			https://www.programmercarl.com/0416.%E5%88%86%E5%89%B2%E7%AD%89%E5%92%8C%E5%AD%90%E9%9B%86.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
@@ -9237,15 +9240,20 @@ namespace DynamicPlanning
 			两个子集自然就相等。
 
 
-			定义dp数组：dp[i]：i就是“容量”（i代表的就是元素和的最大值，不能超过他，所以有点像容量的概念）为i的时候，能存的最大的元素和是多少。
-				比如dp[7]在这个“nums = [1,5,11,5]”中，dp[7]=6; 7是dp能接受的不大于7最大和，而在这个题目中，最大只能是6
+			定义dp数组：
+				dp[i]：背包总容量（所能装的总重量）是i，放进物品后，背的最大重量为dp[i]。也就是“容量,也就是元素的和”为i的时候，能存的最大的元素和是多少。
+				比如dp[7]在这个“nums = [1,5,11,5]”中，dp[7]=6; 7代表dp能接受的和诗不大于7的，而在这个题目中，是没有办法直接加到7,最大只能是6
+				当dp[11]的时候,dp[11]==11;这个时候数组可以分割成 [1, 5, 5] 和 [11]
 				所以最后判断的时候，
 				如果dp[sum/2]==sum/2;则说明满足条件。（也就是当让dp的最大值为sum/2的时候，他的dp[sum/2]的值也确实为sum/2，这是符合条件的）
-			初始化dp数组：dp[0] =0;容量是0.存的是数也是0;
-			确定dp数组等式：dp[i]=max(dp[i],dp[i-m[j]]+value[i]);
+			初始化dp数组：
+				dp[0] =0;容量是0.存的是数也是0;
+			确定dp数组等式：
+				dp[i]=max(dp[i],dp[i-m[j]]+value[i]);
 				这个地方不一样——他的重量和价值相同。
 				所以：dp[i]=max(dp[i],dp[i-sum[j]]+sum[i]);
-			确定遍历顺序：根据这个01背包问题的话，第二个for是倒叙遍历。
+			确定遍历顺序：
+				根据这个01背包问题的话，第二个for是倒叙遍历。
 		*/
 		bool canPartition(vector<int>& nums) {
 			//vector<int> dp(0, nums.size());这个不对！！！ 根据dp的含义，dp[i]中的i和他的结果有可能是一样的，和nums的大小没关系
@@ -9261,8 +9269,7 @@ namespace DynamicPlanning
 
 			for (size_t i = 0; i < nums.size(); i++)//遍历“物品”——实质就是遍历要放到背包的数——在本题目中就是nums[i]
 			{
-				//j代表剩余的可以加的大小，当剩余可加的大小》=要加上的数，说明可以往dp中加（可以往dp中放）
-				for (size_t j = sum; j >= nums[i]; j--)//遍历背包“容量”——实质就是遍历背包的剩余容量——在本体中就是剩余可以加的大小。
+				for (size_t j = sum; j >= nums[i]; j--)//遍历背包“容量”——初始化用背包容量;判断条件:当前背包容量,要大于等于物品.才能放,要不然就结束循环.
 				{
 					dp[j] = max(dp[j], dp[j - nums[i]] + nums[i]);
 				}
@@ -9270,6 +9277,30 @@ namespace DynamicPlanning
 			if (dp[sum] == sum)
 				return true;
 
+			return false;
+		}
+
+
+		//416. 分割等和子集--二刷
+		bool canPartition2(vector<int>& nums) {
+			vector<int>dp(10001, 0);
+			int sum = 0;
+			for (int num : nums)
+				sum += num;
+			if (sum % 2 == 1)
+				return false;
+			sum = sum / 2;
+			dp[0] = 0;
+			for (size_t i = 0; i < nums.size(); i++)//物品
+			{
+				for (size_t l = sum; l >= nums[i]; l--)//背包
+				{
+					dp[l] = max(dp[l], dp[l - nums[i]] + nums[i]);
+				}
+			}
+
+			if (dp[sum] == sum)
+				return true;
 			return false;
 		}
 
@@ -9660,7 +9691,6 @@ namespace DynamicPlanning
 		参考：
 			https://www.programmercarl.com/0198.%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D.html
 		思路：
-
 			乍一想，i能不能偷，只看i-1不就完了，不为什么这么做的原因，是因为要考虑“最大价值”
 			279为例。一开始不知道要偷2还是7。所以就要比较2+7和9的大小，谁大要谁，然后i++往后移动。
 			说明，当前i房间能不能偷，取决于i-1房间偷了不，以及i-2房间偷了没。
@@ -9669,10 +9699,13 @@ namespace DynamicPlanning
 
 			1、往背包放钱，很明显的是背包，每个钱只能放一次，01背包。
 			2、在背包容量一定的情况下，求最大的价值，要用到max函数
-			dp[j] = max(dp[j], dp[j - weight[i]] + value[i]);
-			dp数组含义：dp[j] 偷到“下标为i”的时候最大价值
-			递推公式：dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
-			初始化：从递推公式来看，要初始化1，2,，但是dp[1]要为 0 1的最大值
+				dp[j] = max(dp[j], dp[j - weight[i]] + value[i]);//
+			dp数组含义：
+				dp[j] 偷到“下标为i”的时候最大价值
+			递推公式：
+				dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
+			初始化：
+				从递推公式来看，要初始化1，2,，但是dp[1]要为 0 1的最大值
 		*/
 		int rob(vector<int>& nums) {
 			if (nums.size() == 0) return 0;
