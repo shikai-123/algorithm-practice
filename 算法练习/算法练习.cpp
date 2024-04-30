@@ -10822,11 +10822,15 @@ namespace DynamicPlanning
 
 		/*
 		64. 最小路径和
+		题意:
+			给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+			说明：每次只能向下或者向右移动一步。
 		参考：
 			https://leetcode.cn/problems/minimum-path-sum/solutions/25943/zui-xiao-lu-jing-he-dong-tai-gui-hua-gui-fan-liu-c/?envType=study-plan-v2&envId=top-100-liked
 		思路：
 			动态规划。
-			dp[i][j]代表到了ij位置的最小路径。不用额外的dp数组。假设走到了某一个点，把这个点的值修改，下面再往下走的时候，路径会加新的元素值，之前的点就不会加了
+			dp[i][j]代表到了ij位置的最小路径。
+				不用额外的dp数组。假设走到了某一个点，把这个点的值修改成当前路径和，下面再往下走的时候，路径添加新的元素值，之前的点就已经加过了,所以不用再加了.
 			核心：当前路径的长度= 当前点的值+ min（左路径，上路径）。
 			1、遇到左边界，
 			2、遇到上边界
@@ -10839,7 +10843,7 @@ namespace DynamicPlanning
 				for (int l = 0; l < grid[0].size(); l++) {
 					if (i == 0 && l == 0) continue;//把这个放到最前面，下面的不会越界。另外别忘了加else，要不然过不去
 					//靠着左边界
-					else if (l == 0) grid[i][l] = grid[i][l] + grid[i - 1][l];
+					else if (l == 0) grid[i][l] = grid[i][l] + grid[i - 1][l];//这些靠边的点,得单独计算,要不放在这单独计算,要不放就像"62. 不同路径"放在外边初始化,我已经写出来,在下面的二刷.
 					//靠着上边界
 					else if (i == 0) grid[i][l] = grid[i][l] + grid[i][l - 1];
 					else
@@ -10848,6 +10852,22 @@ namespace DynamicPlanning
 			}
 			return grid[grid.size() - 1][grid[0].size() - 1];
 		}
+
+
+		//64. 最小路径和--二刷--推荐这个方法
+		int minPathSum2(vector<vector<int>>& grid) {
+			for (size_t i = 1; i < grid.size(); i++)//靠着左边界
+				grid[i][0] = grid[i][0] + grid[i - 1][0];
+			for (size_t l = 1; l < grid[0].size(); l++)//靠着上边界
+				grid[0][l] = grid[0][l] + grid[0][l - 1];
+			for (int i = 1; i < grid.size(); i++) {
+				for (int l = 1; l < grid[0].size(); l++) {
+					grid[i][l] = grid[i][l] + min(grid[i - 1][l], grid[i][l - 1]);
+				}
+			}
+			return grid[grid.size() - 1][grid[0].size() - 1];
+		}
+
 
 		/*
 		5. 最长回文子串
