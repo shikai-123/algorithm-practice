@@ -8999,6 +8999,11 @@ namespace DynamicPlanning
 
 		/*
 		62. 不同路径
+		题意:
+			一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为 “Start” ）。
+			机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+			问总共有多少条不同的路径？
+			和上楼梯基本上是一样的,只不过这个是二维的.
 		其他：
 			dp数组只初始化左上角行不行，不行的。这样的话，用dp公式来算，复杂，不如直接初始化。
 		参考：
@@ -9023,6 +9028,27 @@ namespace DynamicPlanning
 			}
 			return dp[m - 1][n - 1];
 		}
+
+
+		//62. 不同路径--二刷
+		int uniquePaths2(int m, int n) {
+			vector<vector<int>>dp(m, vector<int>(n, 0));
+			for (size_t i = 0; i < m; i++)
+				dp[i][0] = 1;
+			for (size_t i = 0; i < n; i++)
+				dp[0][i] = 1;
+			for (size_t i = 1; i < m; i++)
+			{
+				for (size_t l = 1; l < n; l++)
+				{
+					dp[i][l] = dp[i - 1][l] + dp[i][l - 1];
+				}
+			}
+			return dp[m - 1][n - 1];
+		}
+
+
+
 
 		/*
 		63. 不同路径 II
