@@ -10743,6 +10743,11 @@ namespace DynamicPlanning
 
 		/*
 		32. 最长有效括号
+		题意:
+			给你一个只包含 '(' 和 ')' 的字符串，找出最长有效（格式正确且连续）括号子串的长度
+			输入：s = ")()())"
+			输出：4
+			解释：最长有效括号子串是 "()()"
 		参考：
 			https://leetcode.cn/problems/longest-valid-parentheses/?envType=study-plan-v2&envId=top-100-liked
 			其实这个，我没怎么明白，我按着代码写了一些自己的注释，实在不行，到时候就换热门的题解。
@@ -10776,6 +10781,18 @@ namespace DynamicPlanning
 			return *max_element(dp.begin(), dp.end());
 			//return dp[n]; 这不是一个累加的，比如()())dp中的元素，()()这个时候是4，到)就变成0了。所以用上面的那种。
 		}
+
+
+
+		//32. 最长有效括号
+		int longestValidParentheses2(string s) {
+
+
+
+		}
+
+
+
 
 		/*
 		64. 最小路径和
