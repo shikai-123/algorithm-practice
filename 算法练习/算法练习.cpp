@@ -10270,11 +10270,18 @@ namespace DynamicPlanning
 
 		/*
 		1143.最长公共子序列
+		题意:
+			给定两个字符串 text1 和 text2，返回这两个字符串的最长 公共子序列 的长度。如果不存在 公共子序列 ，返回 0 。
+			输入：text1 = "abcde", text2 = "ace"
+			输出：3
+			解释：最长公共子序列是 "ace" ，它的长度为 3 。
 		参考：
 			https://www.programmercarl.com/1143.%E6%9C%80%E9%95%BF%E5%85%AC%E5%85%B1%E5%AD%90%E5%BA%8F%E5%88%97.html
 		思考：
 			这个题目的 重复子数组在text1或2中是可以“不连续的”。
-			1、dp含义：dp[i][l] 代表从下表0到text1[i-1] text2[i-1]这个位置的最长子序列
+			1、dp含义：
+				dp[i][l] 代表从下表0到text1[i-1] text2[i-1]这个位置的最长子序列
+				注意,它代表的是下标到i-1的位置.
 			2、公式：
 				相同的时候：
 				if(text1[i]==text2[l])
@@ -10300,7 +10307,7 @@ namespace DynamicPlanning
 			{
 				for (size_t l = 1; l < text2.size() + 1; l++)
 				{
-					if (text1[i - 1] == text2[l - 1])//-1别忘了， 遍历到i的时候，下表是i-1
+					if (text1[i - 1] == text2[l - 1])//-1别忘了,因为"dp[i][l] 代表从下表0到text1[i-1] text2[i-1]这个位置的最长子序列"
 						dp[i][l] = max(dp[i - 1][l - 1] + 1, dp[i][l]);
 					else
 						dp[i][l] = max(dp[i][l - 1], dp[i - 1][l]);
@@ -10310,6 +10317,22 @@ namespace DynamicPlanning
 		}
 
 
+		//1143.最长公共子序列---二刷
+		int longestCommonSubsequence2(string text1, string text2) {
+			vector<vector<int>> dp(text1.size() + 1, vector<int>(text2.size() + 1, 0));
+
+			for (size_t i = 1; i < text1.size() + 1; i++)
+			{
+				for (size_t l = 1; l < text2.size() + 1; l++)
+				{
+					if (text1[i - 1] == text2[l - 1])
+						dp[i][l] = max(dp[i - 1][l - 1] + 1, dp[i][l]);
+					else
+						dp[i][l] = max(dp[i - 1][l], dp[i][l - 1]);
+				}
+			}
+			return dp[text1.size()][text2.size()];
+		}
 
 		/*
 		1035.不相交的线
@@ -10917,14 +10940,6 @@ namespace DynamicPlanning
 			}
 			return R - L - 1;//不确定的时候 找个例子算算 比如aba 在遍历到b的时候i=1，第一次l=0 r=2，第二次i=-1，r=3. 这时候长度就是3- -1 =4 长度为4然后-1得到3
 		}
-
-
-
-
-
-
-
-
 
 
 
