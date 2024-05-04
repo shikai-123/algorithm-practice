@@ -10482,6 +10482,7 @@ namespace DynamicPlanning
 			return dp[word1.size()][word2.size()];
 		}
 
+
 		/*
 		子序列，总结：
 		结果什么时候用max函数来确定？
@@ -10499,17 +10500,32 @@ namespace DynamicPlanning
 
 		/*
 		72. 编辑距离
+		题意:
+			给你两个单词 word1 和 word2， 请返回将 word1 转换成 word2 所使用的最少操作数
+			输入：word1 = "horse", word2 = "ros"
+			输出：3
+			解释：
+			horse -> rorse (将 'h' 替换为 'r')
+			rorse -> rose (删除 'r')
+			rose -> ros (删除 'e')
 		参考：
 			https://www.programmercarl.com/0072.%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
 		思路：
 			和“583. 两个字符串的删除操作”非常像
-			1、dp[i][j]：坐标i-1和j-1，最少的操作次数
+			1、dp[i][j]：
+				坐标i-1和j-1，最少的操作次数
+				表示以下标i-1为结尾的字符串word1，和以下标j-1为结尾的字符串word2，最近编辑距离为dp[i][j]。
 			2、公式
-				i-1和j-1元素相等：dp[i-1][j-1];因为这两个元素相同，所以不用删除元素，也就不用添加删除次数。
+				i-1和j-1元素相等：
+					dp[i-1][j-1];因为这两个元素相同，所以不用删除元素，也就不用添加删除次数。
 				i-1和j-1元素不相等：
-				增加：dp[i-1][j]+1或者：dp[i][j-1]+1
-				删除：dp[i-1][j]+1或者：dp[i][j-1]+1；和“增加”是一样的，比如abc和ab，增加c和去掉c都是一样，最后哪个小，就用谁就行。
-				替换：dp[i-1][j-1]+1；dp[i-1][j-1]是前一次两者都相等，比如abc和abd，到了d开始不相等了，只需要操作一次就行
+					增加：dp[i-1][j]+1(操作word1),或者dp[i][j-1]+1(操作word2)
+					删除：dp[i-1][j]+1或者：dp[i][j-1]+1；和“增加”是一样的，比如abc和ab，增加c和去掉c都是一样，最后哪个小，就用谁就行。
+					替换：dp[i-1][j-1]+1；dp[i-1][j-1]是前一次两者都相等，比如abc和abd，到了d开始不相等了，只需要操作一次就行
+			3、初始化
+				dp[i][0] ：以下标i-1为结尾的字符串word1，和空字符串word2，最近编辑距离为dp[i][0]。
+				那么dp[i][0]就应该是i，对word1里的元素全部做删除操作，即：dp[i][0] = i;
+				同理dp[0][j] = j;
 		*/
 		int minDistance1(string word1, string word2) {
 			vector<vector<int>>dp(word1.size() + 1, vector<int>(word2.size() + 1, 0));
@@ -10517,13 +10533,14 @@ namespace DynamicPlanning
 				dp[i][0] = i;
 			for (size_t j = 0; j < word2.size() + 1; j++)
 				dp[0][j] = j;
+
 			for (size_t i = 1; i < word1.size() + 1; i++)
 			{
 				for (size_t j = 1; j < word2.size() + 1; j++)
 				{
-					if (word1[i - 1] == word2[j - 1])
+					if (word1[i - 1] == word2[j - 1])//!!别忘了-1,因为"dp的i,l代表坐标i-1和j-1，最少的操作次数"
 						dp[i][j] = dp[i - 1][j - 1];
-					else
+					else//增加,删除,替换都是在这里
 						dp[i][j] = min(dp[i - 1][j - 1] + 1, min(dp[i - 1][j] + 1, dp[i][j - 1] + 1));
 				}
 			}
@@ -10531,41 +10548,31 @@ namespace DynamicPlanning
 		}
 
 
-
-
-
-		/*
-		72. 编辑距离
-		参考：
-			https://www.programmercarl.com/0072.%E7%BC%96%E8%BE%91%E8%B7%9D%E7%A6%BB.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
-		思路：
-			和“583. 两个字符串的删除操作”非常像
-			1、dp[i][j]：坐标i-1和j-1，最少的操作次数
-			2、公式
-				i-1和j-1元素相等：dp[i-1][j-1];因为这两个元素相同，所以不用删除元素，也就不用添加删除次数。
-				i-1和j-1元素不相等：
-				增加：dp[i-1][j]+1或者：dp[i][j-1]+1
-				删除：dp[i-1][j]+1或者：dp[i][j-1]+1；和“增加”是一样的，比如abc和ab，增加c和去掉c都是一样，最后哪个小，就用谁就行。
-				替换：dp[i-1][j-1]+1；dp[i-1][j-1]是前一次两者都相等，比如abc和abd，到了d开始不相等了，只需要操作一次就行
-		*/
+		//72. 编辑距离--二刷
 		int minDistance2(string word1, string word2) {
 			vector<vector<int>>dp(word1.size() + 1, vector<int>(word2.size() + 1, 0));
 			for (size_t i = 0; i < word1.size() + 1; i++)
 				dp[i][0] = i;
-			for (size_t j = 0; j < word2.size() + 1; j++)
-				dp[0][j] = j;
+			for (size_t i = 0; i < word2.size() + 1; i++)
+				dp[0][i] = i;
+
 			for (size_t i = 1; i < word1.size() + 1; i++)
 			{
-				for (size_t j = 1; j < word2.size() + 1; j++)
+				for (size_t l = 1; l < word2.size() + 1; l++)
 				{
-					if (word1[i - 1] == word2[j - 1])
-						dp[i][j] = dp[i - 1][j - 1];
+					if (word1[i - 1] == word2[l - 1])
+						dp[i][l] = dp[i - 1][l - 1];
 					else
-						dp[i][j] = min(dp[i - 1][j - 1] + 1, min(dp[i - 1][j] + 1, dp[i][j - 1] + 1));
+						dp[i][l] = min(dp[i - 1][l - 1] + 1, min(dp[i][l - 1] + 1, dp[i - 1][l] + 1));
 				}
 			}
 			return dp[word1.size()][word2.size()];
 		}
+
+
+
+
+
 
 
 		/*
