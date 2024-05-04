@@ -10877,9 +10877,14 @@ namespace DynamicPlanning
 		参考：
 			https://leetcode.cn/problems/longest-palindromic-substring/solutions/7600/5-zui-chang-hui-wen-zi-chuan-cc-by-bian-bian-xiong/?envType=study-plan-v2&envId=top-100-liked
 		思路：
+			这个题目的算法,我粗略的看了一下,有"中心扩展算法"和"动态规划",其实还是"中心扩展算法"好理解点.
+
 			中心扩展算法
 			扩展是有两种的方式，一种奇数的，满足aba这种；一种偶数的abba这种。
 			然后不断更新回文字符的长度，最后返回一个最长的。
+
+			动态规划
+			参考:https://leetcode.cn/problems/longest-palindromic-substring/solutions/63641/zhong-xin-kuo-san-fa-he-dong-tai-gui-hua-by-reedfa/?envType=study-plan-v2&envId=top-100-liked
 		*/
 		string longestPalindrome(string s) {
 			//别忘了这个
@@ -10892,16 +10897,16 @@ namespace DynamicPlanning
 				int len2 = longestPalindrome_expan(s, i, i + 1);// 以当前字符和下一个字符为中心扩展
 				int len = max(len1, len2);
 				if (len > end - start) {//如果新的回文字符串超过了上次的长度
-					start = i - (len - 1) / 2;//跟新回文子串的坐标
+					start = i - (len - 1) / 2;//更新回文子串的坐标
 					end = i + len / 2;
-					//abba i=1的时候，len1=1，len2=4. i现在是回文子串的终点，现在知道回文子串的长度，那么就len/2得到半径，然后确定回文子串的开始和结束的位置
+					//abba i=1的时候，len1=1，len2=4. 
+					//i是你遍历到的字符串的下标;现在知道回文子串的长度，那么就len/2得到回文字串的半径，然后通过i+半径和i-半径.就能得到回文子串的开始和结束的位置
 					//其实还是因为 数组的下标是从0开始的，然后在确定左边的时候，就得(len-1)/2 右边就是len/2
 				}
 			}
 			//参数截取位置， 和截取的数量。数量肯定是end-start +1)
 			return s.substr(start, end - start + 1);
 		}
-
 
 		int longestPalindrome_expan(string s, int L, int R) {
 
@@ -10912,6 +10917,47 @@ namespace DynamicPlanning
 			}
 			return R - L - 1;//不确定的时候 找个例子算算 比如aba 在遍历到b的时候i=1，第一次l=0 r=2，第二次i=-1，r=3. 这时候长度就是3- -1 =4 长度为4然后-1得到3
 		}
+
+
+
+
+
+
+
+
+
+
+
+		int longestPalindrome_expan2(const string &s, int L, int R) {
+			while (L >= 0 && R < s.size() && s[L] == s[R])
+			{
+				L--;
+				R++;
+			}
+			return R - L - 1;
+		}
+
+		//5. 最长回文子串--二刷
+		string longestPalindrome2(string s) {
+			if (s.size() < 1) return"";
+			int start = 0, end = 0;
+
+			for (size_t i = 0; i < s.size(); i++)
+			{
+				int len1 = longestPalindrome_expan2(s, i, i);
+				int len2 = longestPalindrome_expan2(s, i, i + 1);
+				int len = max(len1, len2);
+				if (len > end - start) {
+					start = i - (len - 1) / 2;//这两句记住就行
+					end = i + len / 2;
+				}
+			}
+			return s.substr(start, end - start + 1);
+		}
+
+
+
+
 
 
 		void test()
