@@ -13137,11 +13137,14 @@ namespace {
 	public:
 		/*
 		136. 只出现一次的数字
+		题意:
+			给你一个 非空 整数数组 nums ，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
 		参考:
 			https://leetcode.cn/problems/single-number/solutions/2361995/136-zhi-chu-xian-yi-ci-de-shu-zi-wei-yun-iyd0/?envType=study-plan-v2&envId=top-100-liked
 		思路：
 			异或，相异为1，相同为0.
-			最后异或出来的数，就是那个孤独的数
+			最后异或出来的数，就是那个孤独的数.
+			具体我还真不好解释,总之这是没错的.
 		*/
 		int singleNumber(vector<int>& nums) {
 			int x = 0;
@@ -13150,6 +13153,17 @@ namespace {
 			}
 			return x;
 		}
+
+		//136. 只出现一次的数字--二刷
+		int singleNumber2(vector<int>& nums) {
+			int x = 0;
+
+			for (int num : nums)
+				x = num ^ x;
+			return x;
+		}
+
+
 
 		/*
 		75. 颜色分类
