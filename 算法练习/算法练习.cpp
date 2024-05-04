@@ -77,11 +77,7 @@ public:
 };
 
 
-struct CmpByValue {
-	bool operator()(const int& k1, const int& k2) const {
-		return k1 > k2;
-	}
-};
+
 
 
 //字符串和数组
@@ -226,28 +222,7 @@ namespace String_Array
 			return nums.size();
 		}
 
-		int majorityElement1(vector<int>& nums) {
-			map<int, int>index_num;/*nums中每中元素的数量 key每种元素 value每种元素数量*/
-			for (size_t i = 0; i < nums.size(); i++)
-			{
-				index_num[nums[i]]++;/*这种元素的数量*/
-			}
 
-			auto iter = index_num.end();
-			iter--;
-			cout << (iter)->second << endl;
-			//cout << (index_num.end()--)->second << endl;
-			return (--index_num.end())->second;
-		}
-
-		int majorityElement(vector<int>& nums) {
-			map<int, int, CmpByValue> index_num;
-			for (size_t i = 0; i < nums.size(); i++)
-			{
-				index_num[nums[i]]++;
-			}
-			return index_num.begin()->first;
-		}
 
 		/*
 		189. 轮转数组
@@ -13162,6 +13137,40 @@ namespace {
 				x = num ^ x;
 			return x;
 		}
+
+
+
+		/*
+		169. 多数元素
+		题意:
+			给定一个大小为 n 的数组 nums ，返回其中的多数元素。多数元素是指在数组中出现次数 大于  n/2  的元素。
+			你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+			输入：nums = [2,2,1,1,1,2,2]
+			输出：2
+		参考:
+			https://leetcode.cn/problems/majority-element/solutions/2362000/169-duo-shu-yuan-su-mo-er-tou-piao-qing-ledrh/?envType=study-plan-v2&envId=top-100-liked
+			链接中的"摩尔投票",我没有采用它的方法.
+			我不知道从哪找到的新的方法.
+		思路:
+			元素做key,次数做value.
+			保存出现的最大的次数,每次这个次数更新,就要保留这个元素,
+			最后返回这个元素即可.
+		*/
+		int majorityElement(vector<int>& nums) {
+			map<int, int> index_num;
+			int maxCount = 0;//出现的最大次数
+			int maxNum = 0;//出现的最大的值
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				index_num[nums[i]]++;
+				if (index_num[nums[i]] > maxCount) {
+					maxCount = index_num[nums[i]];
+					maxNum = nums[i];
+				}
+			}
+			return maxNum;
+		}
+
 
 
 
