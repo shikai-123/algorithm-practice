@@ -13176,14 +13176,40 @@ namespace {
 
 		/*
 		75. 颜色分类
+		题意:
+			给定一个包含红色、白色和蓝色、共 n 个元素的数组 nums ，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+			我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+			必须在不使用库内置的 sort 函数的情况下解决这个问题
 		参考:
 			https://leetcode.cn/problems/sort-colors/solutions/2651983/yi-kan-jiu-dong-de-dai-ma-by-bo-bo-t1-jlht/?envType=study-plan-v2&envId=top-100-liked
 		思路：
-			把0放在左边：某个数和0交换，0放在左边后，这个0不需要在移动了，所以i和left都要++
-			2放在右边：某个数和2交换，2放在右边后，right--，这个换过来的数还要再判断一次来确定位置。
-			剩下的1就在中间了：1就在中间，哪里都不要放，
+			把0放在左边：
+				某个数和0交换，0放在左边后，这个0不需要在移动了，所以i和left都要++.
+			2放在右边：
+				某个数和2交换，2放在右边后，right--，这个换过来的"某个数"有可能还是2,所以要再判断一次来确定位置。
+			剩下的1就在中间了：
+				1就在中间，哪里都不要放
+			为什么0交换后,不需要再判断一次呢?
+				因为与0交换的都是比0大的,或者等于0的,不会让比0大的元素放到0的前面,怎么放都是0的后面,这是符合题目的判断的.
+				而2,则会出现把2放到它的前面,这种等于情况.而这种是不符合题目的,所以需要再次判断一次.
 		*/
 		void sortColors(vector<int>& nums) {
+			int i = 0, left = 0, right = nums.size() - 1;
+			while (i <= right)//!!是小于等于,并且是i<=right;这样才能对整个数组检查一遍.
+			{
+				if (nums[i] == 0)
+					swap(nums[i++], nums[left++]);
+				else if (nums[i] == 2)
+					swap(nums[i], nums[right--]);
+				else
+					i++;
+			}
+		}
+
+
+
+		//75. 颜色分类--二刷
+		void sortColors2(vector<int>& nums) {
 			int i = 0, left = 0, right = nums.size() - 1;
 			while (i <= right)
 			{
@@ -13194,7 +13220,10 @@ namespace {
 				else
 					i++;
 			}
+			return;
 		}
+
+
 
 		/*
 		31. 下一个排列
