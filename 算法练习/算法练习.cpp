@@ -13294,10 +13294,16 @@ namespace {
 
 		/*
 		287. 寻找重复数
+		题意:
+			给定一个包含 n + 1 个整数的数组 nums ，其数字都在 [1, n] 范围内（包括 1 和 n），可知至少存在一个重复的整数。
+			假设 nums 只有 一个重复的整数 ，返回 这个重复的数 。
+			你设计的解决方案必须 不修改 数组 nums 且只用常量级 O(1) 的额外空间。
 		参考：
-			这个题目和某个题目，应该是链表中的思路很像，但是我想不来了。
+			这个题目和链表中的"142.环形链表II"思路很像.
+			https://leetcode.cn/problems/find-the-duplicate-number/solutions/58841/287xun-zhao-zhong-fu-shu-by-kirsche/?envType=study-plan-v2&envId=top-100-liked
+			思路上是一样的,代码上有细微差别.
 		思路：
-			根据题目的条件可知，这个数组的元素一定是连续的。并且数组中一定含有重复元素。
+			根据题目的条件可知，这个数组的元素一定是连续的。(如果不是连续的,那么就会出现数组越界)并且数组中一定含有重复元素。
 			元素[1,2,3]报错'nums' must consist of values from 1 to 2 only.
 			1、先有个快慢指针，这里的快慢很有意思  slow = nums[slow]  fast = nums[nums[fast]] 这样相当于fast每次会走两次
 			2、直到快慢指针相遇，也就是两者的值相同
@@ -13307,7 +13313,7 @@ namespace {
 		int findDuplicate(vector<int>& nums) {
 			int slow = 0, fast = 0;
 			slow = nums[slow];
-			fast = nums[nums[fast]];
+			fast = nums[nums[fast]];//这两块别删除,要不然进不去下面的循环
 			while (slow != fast)
 			{
 				slow = nums[slow];
@@ -13315,11 +13321,6 @@ namespace {
 			}
 
 			int pre = 0;
-			//pre = nums[0]; 这个不能有！！如果有pre = nums[0]; 就相当于pre多走了一步，slow并没有多走。
-			//而下面的while中的就出现不了“pre != slow”情况，while卡死在里面。
-			//改成下面就可以了，让他俩各自走一步，或者他俩都不要，都在while开始走第一步
-			pre = nums[0];
-			slow = nums[slow];
 			while (pre != slow)
 			{
 				pre = nums[pre];
@@ -13327,6 +13328,26 @@ namespace {
 			}
 			return pre;
 		}
+
+
+
+		//287. 寻找重复数---二刷
+		int findDuplicate2(vector<int>& nums) {
+			int slow = 0, fast = 0;
+			slow = nums[slow];
+			fast = nums[nums[fast]];
+			while (slow != fast) {
+				slow = nums[slow];
+				fast = nums[nums[fast]];
+			}
+			int pre = 0;
+			while (slow != fast) {
+				slow = nums[slow];
+				pre = nums[pre];
+			}
+			return pre;
+		}
+
 
 	};
 }
