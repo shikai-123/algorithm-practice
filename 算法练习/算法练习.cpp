@@ -13227,23 +13227,33 @@ namespace {
 
 		/*
 		31. 下一个排列
+		题意:
+			看下面的思路;
 		参考：
 			https://leetcode.cn/problems/next-permutation/solutions/2680645/cong-hou-wang-qian-zhao-di-yi-ge-i-1iran-36ux/?envType=study-plan-v2&envId=top-100-liked
 		思路：
 			题解中的263541，例子不错，我用自己的话复述一遍
-			263541有很多的排列方式，对这些拍戏按照升序排序；要找到这个排列的下一个最更大的排列，如果他就是最大了，就返回排序中最小的。
-			263541，从后往钱看1,41,541，已经没有办法改变顺序造成一个更大的数，只有3541才有可能，也就是当num[i-1]<num[i]的时候。
+			263541有很多的排列方式，对这些排列按照升序排序；要找到这个排列的下一个最更大的排列，如果他就是最大了，就返回排序中最小的。
+			263541，从后往前看1,41,541，已经没有办法改变顺序造成一个更大的数，只有3541才有可能，也就是当num[i-1]<num[i]的时候。
 			那么3于后后面的那个交换呢？题目要求的是“下一个”，也就是只能组一个提升最小的，
 			那么与1交换这个数就变小了，不满足；于4交换，这个满足；与5交换这个数很明显这个数，变得比4大。
 			所以，与3交换的是，数组从后往前遍历中第一个遇到大于3的数。
 			交换完毕之后，264531.后面的531是“一定”是降序的。如果不是降序的（也就是从后往前是升序的），那么在第一步num[i-1]<num[i]早就实现了。
 			531是降序的，把他们变成“最”小的即可。也就是直接倒过来135
+			最后的结果就是264135.
+		总结:
+			从后往前遍历,遇到第一个比后面的数小的数,我称为a.
+			然后,再次从后往前遍历,以a为界,找第一个比a大的数,称为b.
+			然后,交换a和b,
+			然后,反转a位置之后的数.
+			最后就得到了我们想要的数.
+			如果没有反转,说明题目提供的数就是最大的数,根据题意,我们给他一个反转一下,得到最小的数即可.
 		*/
 		void nextPermutation(vector<int>& nums) {
 			bool IsHasReverse = false; // 是否发生了翻转.!!!这里一定要要设置值false，力扣的编译器默认IsHasReverse =true。导致代码错误
 			for (int i = nums.size() - 1; i > 0; i--) {
-				if (nums[i - 1] < nums[i]) {
-					for (int l = nums.size() - 1; l > i - 1; l--) { // l > i - 1;是3的位置，也就是与3交换位置的都是他后面的
+				if (nums[i - 1] < nums[i]) {//不要用nums[i + 1] ,会出现数组越界
+					for (int l = nums.size() - 1; l > i - 1; l--) { // l的范围是3到末尾的位置.  i - 1;是3的位置，也就是与3交换位置的都是他后面的
 						if (nums[l] > nums[i - 1]) { // 出现了第一个大于3的数据，
 							swap(nums[l], nums[i - 1]);
 							reverse(nums.begin() + i, nums.end()); // 3后面的部分，全部翻转
@@ -13251,12 +13261,35 @@ namespace {
 							break;//别忘了break。翻转完了就结束了。
 						}
 					}
-					break;
+					break;//位置也别错
 				}
 			}
 			if (!IsHasReverse)
 				reverse(nums.begin(), nums.end()); // 上面没有出现翻转，说明整个序列就是最大的。则应翻转成最小的。
 		}
+
+		//31. 下一个排列---二刷
+		void nextPermutation2(vector<int>& nums) {
+			bool IsHasReverse = false;
+
+			for (size_t i = nums.size() - 1; i > 0; i--) {
+				if (nums[i - 1] < nums[i]) {
+					for (size_t l = nums.size() - 1; l > i - 1; l--) {
+						if (nums[l] > nums[i - 1]) {
+							swap(nums[l], nums[i - 1]);
+							reverse(nums.begin() + i, nums.end());
+							IsHasReverse = true;
+							break;
+						}
+					}
+					break;
+				}
+			}
+			if (!IsHasReverse)
+				reverse(nums.begin(), nums.end());
+		}
+
+
 
 
 		/*
