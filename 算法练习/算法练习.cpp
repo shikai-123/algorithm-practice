@@ -1318,24 +1318,43 @@ namespace SlidingWindow
 			https://leetcode.cn/problems/longest-substring-without-repeating-characters/solutions/2361797/3-wu-zhong-fu-zi-fu-de-zui-chang-zi-chua-26i5/?envType=study-plan-v2&envId=top-100-liked
 		思路：
 			滑动窗口+哈希表
+			滑动窗口不断的往后移动,然后一旦在滑动窗口中发现了重复的元素,左边界要更新
+			然后不断的计算最大的ret,然后返回ret;
 			用abba来举例最合适。
 			遍历到第一个b的是时候，ret = 1-（-1）=2；能够计算出准确的值，“ ”这样的也能计算出正确的值，“abc”这样也能计算出正确的值
-			遍历到第二个b的时候，左边界就是和右边界相同的字符的b的位置，也就是左边界坐标更新到1；ret=max（2,2-1）
-			遍历到最后一个a的时候，如果	l = umap[s[r]];肯定不行，这个时候左边界l就=0了，正常来说应该是l = max(l, umap[s[r]]);
+			遍历到第二个b的时候，左边界坐标更新到第一个b的位置.也就是1；所以L=1;  ret=max（2,2-1）
+			遍历到最后一个a的时候，如果不用l = max(l, umap[s[cur]]);而是:l = umap[s[cur]];肯定不行，这个时候左边界l就=0了，所以该是l = max(l, umap[s[cur]]);
 		*/
 		int lengthOfLongestSubstring(string s) {
 			int ret = 0;
 			int l = -1;//滑动窗口的左边，初始化-1是因为s会是一个“ ”，带空格的字符。要求结果返回1
-			int r = 0;
 			unordered_map<char, int> umap;//umap中放元素和对应的下标。里面始终放不重复的子串
-			for (r; r < s.size(); r++) {
-				if (umap.find(s[r]) != umap.end())//如果umap中找到了已经存在的字符，说明滑动窗口的左边需要往前移动。
-					l = max(l, umap[s[r]]);//更新左边界的位置到
-				umap[s[r]] = r;//无论什么情况，右边界肯定要不断的移动，
-				ret = max(ret, r - l);//不用-1；理解1：看上面的思路中写的，理解2：左边界都是更新到和右边界相同的字符出，比如abca，左边界和右边界都是在a。那么长度就是3-0=3；
+			for (int cur = 0; cur < s.size(); cur++) {
+				if (umap.find(s[cur]) != umap.end())//如果umap中找到了已经存在的字符，说明滑动窗口的左边需要往前移动。
+					l = max(l, umap[s[cur]]);//更新左边界的位置到两个重复字符的中的那个下标更靠右(更大)的位置,来保证滑动窗口中没有重复字符.
+				umap[s[cur]] = cur;//无论什么情况，当前字符串的下标都要更新
+				ret = max(ret, cur - l);//不用+1；理解1：在计算的时候,l是左边界的左边;理解2：左边界都是更新到和右边界相同的字符出，比如abca，左边界和右边界都是在a。那么长度就是3-0=3；
 			}
 			return ret;
 		}
+
+		//二刷
+		int lengthOfLongestSubstring2(string s) {
+			int ret = 0;
+			int l = -1;
+			unordered_map<char, int> umap;//每个字符串的最靠右的下标 chat字符串 int下标
+			for (int cur = 0; cur < s.size(); cur++)
+			{
+				if (umap.find(s[cur]) != umap.end())
+					l = max(l, umap[s[cur]]);
+				umap[s[cur]] = cur;
+				ret = max(ret, cur - l);
+			}
+			return ret;
+		}
+
+
+
 
 		/*
 		30、串联所有单词的子串
