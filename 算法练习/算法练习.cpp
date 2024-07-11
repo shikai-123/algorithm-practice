@@ -1498,7 +1498,7 @@ namespace SlidingWindow
 		*/
 		vector<int> findAnagrams(string s, string p) {
 			vector<int> ret;
-			vector<int>vs(26, 0), vp(26, 0);//vp的长度也是26，跟p的长度无关，是根据26个字母来决定的
+			vector<int>vs(26, 0), vp(26, 0);//vp的长度也是26，跟p的长度无关，是根据26个字母来决定的 v是vec,vs是装s的vec,vp是装p的vec;
 			for (auto c : p)//统计p中各个字符出现的次数
 				vp[c - 'a']++;
 			for (size_t i = 0; i < s.size(); i++)
@@ -1511,6 +1511,30 @@ namespace SlidingWindow
 			}
 			return ret;
 		}
+
+
+
+		//二刷
+		vector<int> findAnagrams1(string s, string p) {
+			vector<int> ret;
+			vector<int> vp(26);//下标是每个字母,对应的元素值是出现次数
+			vector<int> vs(26);//这里用int,有的出现次数多,
+
+			for (auto c : p)
+				vp[c - 'a']++;
+
+			for (size_t i = 0; i < s.size(); i++)
+			{
+				vs[s[i] - 'a']++;
+				if (i > p.size() - 1)//-1是因为i是下标  后面比较的是size 比如长度3的情况. 第四个元素下标是3,然后3>2就满足删除的条件
+					vs[s[i - p.size()] - 'a']--;//i-p.size() 是得到滑动窗口左侧的元素位置
+				if (vs == vp)//两者相等,说明在关系顺序的情况下,两个数组含有的元素是一样的
+					ret.push_back(i - p.size() + 1);//还是按p的长度为3举例子.当i为2的时候,有三个元素,假设这三个元素都满足了.这个时候ret应该把0插进去;2-3=-1.然后加上1才能符合
+			}
+			return ret;
+		}
+
+
 
 		void test()
 		{
