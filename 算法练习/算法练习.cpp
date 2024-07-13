@@ -1453,35 +1453,68 @@ namespace SlidingWindow
 
 		/*
 		76. 最小覆盖子串
-			思路：这个思路和30题的思路有相似之处——用到了hash的思想
-			做两个hash，分别记录各自字符的数量。
+		题意:
+			返回s中,能包含(覆盖)t的最小的字串
+		参考:
+			https://leetcode.cn/problems/minimum-window-substring/solutions/872360/leetcode-76-zui-xiao-fu-gai-zi-chuan-cja-lmqz/?envType=study-plan-v2&envId=top-interview-150
+		思路：
+			如果hs哈希表中包含ht哈希表中的所有字符，并且对应的个数都不小于ht哈希表中各个字符的个数，那么说明当前的窗口是可行的，
+			注意一下几个点:
+			1.它的滑动窗口的大小不是固定的.
+			2.判断都是hs和ht的判断
 		*/
 		string minWindow(string s, string t) {
-			unordered_map<char, int> hs;//滑动窗口中的各个字符的数量
-			unordered_map<char, int> ht;//t中的各个字符的数量。
-			for (auto c : t) ht[c] ++;
+			unordered_map<char, int> hs;//hs哈希表维护的是s字符串中滑动窗口中各个字符出现多少次
+			unordered_map<char, int> ht;//ht哈希表维护的是t字符串各个字符出现多少次。
+			for (auto c : t)
+				ht[c] ++;//遍历t字符串，用ht哈希表记录t字符串各个字符出现的次数。
 			string res;
 			int cnt = 0;
-			for (int i = 0, j = 0; i < s.size(); i++) {
-				hs[s[i]] ++;
-				//滑动窗口中对应字符的数量没t中的多。说明当前新加入的字符s[i]是必需的，
-				if (hs[s[i]] <= ht[s[i]]) {//!ht在这里也会增加一个新的key，如果t中没有s中的这个字符的话，value初始化为0
-					cnt++;
-				}
-				//滑动窗口中左边对应字符的数量没t中的多。说明不需要删除。
-				//注意这是个while，删掉一个后，他会再次判断下个
-				//如果滑动窗口对应的字符比t中的字符多的那些字符都会删掉。不过得等到滑动窗口中的最左边的字符超过t中的才行。——相当于滑动窗口左边右移
-				//他不是hs任意一个字符超过了ht就去删除。这个就是不符合咱们的直觉，逻辑上很合理。
-				while (hs[s[j]] > ht[s[j]]) {
-					hs[s[j++]] --;
-				}
+			for (int l = 0, r = 0; r < s.size(); r++)//j指针用于收缩窗口，i指针用于延伸窗口，则区间[j,i]表示当前滑动窗口。
+			{
+				hs[s[r]] ++;//每次向右扩展滑动窗口一步，相当于滑动窗口维护的字符数加一，即hs[s[i]]++。
+				if (hs[s[r]] <= ht[s[r]]) //对于新加入的字符s[i],如果hs[s[i]] <= ht[s[i]]，说明当前新加入的字符s[i]是必需的.也就是滑动窗口中的某个字符的数量还没有t中的多,cnt++的含义就是相当于
+					cnt++;//只要t中存在这个字符串ht[s[i]]就不会为0,那么hs[s[i]] <= ht[s[i]]就说明,滑动窗口中对应的某个字符是少于t中的数量的.此时cnt++,来表明
+
+				while (hs[s[l]] > ht[s[l]])//!!必须while,if不行!!
+					hs[s[l++]] --;//这个不是传统的滑动窗口那种距离固定的,它的左边界的移动条件是,当右边界中第一次出现了左边界对应的重复字符后,左边界才开始移动.
+								  //左边界不断的移动,左边界对应的字符不断的变化,不断的判断左边界的字符和t中的数量问题.
+
 				if (cnt == t.size()) {
-					if (res.empty() || i - j + 1 < res.size())//1、当res从来没有被赋值的时候，或者新的滑动窗口中符合条件的字符，别上次还小的时候
-						res = s.substr(j, i - j + 1);
+					if (res.empty() || r - l + 1 < res.size())//1.当res从来没有被赋值的时候，2.新的滑动窗口中符合条件的字符，别上次还小的时候
+						res = s.substr(l, r - l + 1);
 				}
 			}
 			return res;
 		}
+
+
+
+
+		//76. 最小覆盖子串---二刷
+		string minWindow2(string s, string t) {
+			string ret;
+			map<char, int>ms;//每个字符的数量
+			map<char, int>mt;
+			int cnt = 0;//滑动窗口中拥有的t所有的字符的数量
+			for (char c : t)
+				mt[c]++;
+
+			for (size_t l = 0, r = 0; r < s.size(); r++)
+			{
+				ms[s[r]]++;
+				if (ms[s[r]] <= mt[s[r]])//!这里是<=,不是<就行了.因为mt[s[r]]++;在上面,假设mt是2,ms现在加完之后为2了,这个也得进这个if
+					cnt++;
+
+				while (ms[s[l]] > mt[s[l]])
+					ms[s[l++]]--;
+
+				if ((t.size() == cnt) && (ret.empty() || r - l + 1 < ret.size()))//别忘了.size() == cnt
+					ret = s.substr(l, r - l + 1);
+			}
+			return ret;
+		}
+
 
 		/*
 		438、找到字符串中所有字母异位词
