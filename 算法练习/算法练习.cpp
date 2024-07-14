@@ -854,7 +854,7 @@ namespace String_Array
 			unordered_map<int, int> umap;//key 从头到当前元素的累加和 value 出现的次数
 			umap[0] = 1;//和为0的情况，默认就是1个
 			int ret = 0;
-			int sum = 0;//
+			int sum = 0;
 			for (auto num : nums) {
 				sum += num;
 				if (umap.find(sum - k) != umap.end()) {//！！这个和下面的地方一定是sum - k，反过来就错
@@ -864,6 +864,28 @@ namespace String_Array
 			}
 			return ret;
 		}
+
+
+
+		//560. 和为 K 的子数组---二刷
+		int subarraySum2(vector<int>& nums, int k) {
+			int ret = 0;
+			unordered_map<int, int> mSum;//key是前缀和,value是每个和出现的次数
+			int sum = 0;
+			mSum[0] = 1;//!!这个少了过不去!!
+			for (int num : nums) {
+				sum += num;
+				if (mSum.find(sum - k) != mSum.end())//说明数组中找到了和k子数组
+					ret += mSum[sum - k];//既然找到了子数组,那么符合要求的结果的次数++
+
+				mSum[sum]++;
+			}
+			return ret;
+		}
+
+
+
+
 
 		/*
 		41. 缺失的第一个正数
@@ -3236,6 +3258,12 @@ namespace StackandQueue {
 			}
 			return ret;
 		}
+
+
+
+
+
+
 
 		/*
 		347.前 K 个高频元素
