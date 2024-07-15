@@ -322,6 +322,10 @@ namespace String_Array
 			https://leetcode.cn/problems/product-of-array-except-self/solutions/274152/cjian-ji-dai-ma-shuang-zhi-zhen-6xing-dai-ma-by-or/?envType=study-plan-v2&envId=top-100-liked
 			之前的方法复杂，现在换个的简单的。
 			利用双指针的思路
+		思路:
+			首先说明的是,这个双指针是两端往中间走,但不是走到中间就停止了,而是走到最后.
+			两个指针不断的往中间移动,
+			具体看注释吧
 		*/
 		vector<int> productExceptSelf(vector<int>& nums) {
 			int rightValue = 1, lightValue = 1;//数组左右元素左侧右侧的累乘积
@@ -329,17 +333,33 @@ namespace String_Array
 
 			for (size_t l = 0, r = nums.size() - 1; l < nums.size(); l++, r--)
 			{
-				//先更新ret，ret的值，因为题目要求不能包含自身的值。
-				//所以ret[l]的值是ret[l]=rightValue*ret[l]
-				ret[l] = lightValue * ret[l];
-				ret[r] = rightValue * ret[r];
+				ret[l] = lightValue * ret[l];//首先,把lightValue理解为上次的累乘积,其实他就是累成积.
+				ret[r] = rightValue * ret[r];//当前的元素乘以上次的累成积,得到这个位置的结果
+											 //这里的ret[r]积总是从右往左的,ret[l]是从左往右的,因为两个指针走到最后停止,ret[r]会再次和ret[l]的一些数据再次相乘.反之亦然!
 
-				//上面的结果已经算完了，那么开始更新左右的累乘积
-				rightValue = rightValue * nums[r];
+				rightValue = rightValue * nums[r];//更新左右的累成积
 				lightValue = lightValue * nums[l];
 			}
 			return ret;
 		}
+
+		//238. 除自身以外数组的乘积--二刷
+		vector<int> productExceptSelf2(vector<int>& nums) {
+			int rightValue = 1, leftValue = 1;
+			vector<int> ret(nums.size(), 1);//别忘了初始化大小,要不然越界
+			for (int l = 0, r = nums.size() - 1; l < nums.size(); l++, r--) {//别忘了r的初始大小是size()-1 要不然越界
+
+				ret[l] = ret[l] * leftValue;//更新数组结果
+				ret[r] = ret[r] * rightValue;
+
+				leftValue = leftValue * nums[l];
+				rightValue = rightValue * nums[r];
+			}
+			return ret;
+		}
+
+
+
 
 		int canCompleteCircuit1(vector<int>& gas, vector<int>& cost) {
 			int oil = 0;
@@ -8845,7 +8865,7 @@ namespace Greedy {
 			https://www.programmercarl.com/0056.%E5%90%88%E5%B9%B6%E5%8C%BA%E9%97%B4.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC
 			和他的思路一样的，但是代码不精简。！！！！
 		题意：
-			输入：intervals = [[1,3],[2,6],[8,10],[15,18]]。把其中不重复的区间合并就行了。
+			输入：intervals = [[1,3],[2,6],[8,10],[15,18]]。把其中重复的区间合并就行了。
 		思路：
 			和上面的思路很是接近。
 			首先，对数组排序。方便后续处理
@@ -8892,7 +8912,7 @@ namespace Greedy {
 				if (intervals[i][1] >= intervals[i + 1][0]) {//如果当前的右边界超过下个的左边界，那么就合并
 					int newRValue = max(ret.back()[1], intervals[i + 1][1]);//“结果中的右边界”和下个要合并的右边界，谁大要谁。
 					ret.back()[1] = newRValue;//更新结果中的右边界
-					intervals[i + 1][1] = newRValue;//更细数组中的右边界
+					intervals[i + 1][1] = newRValue;//更新数组中的右边界
 				}
 				else
 					ret.push_back(intervals[i + 1]);//注意这里！这是两个当前边界和下个边界不重复的时候，自然就是要放[i+1]的数据，不是[i]的。
