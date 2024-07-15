@@ -943,6 +943,31 @@ namespace String_Array
 			return  nums.size() + 1;//从头到尾啥也不缺，就是缺最后的元素的后一个
 		}
 
+
+
+
+
+		//41. 缺失的第一个正数--二刷
+		int firstMissingPositive1(vector<int>& nums) {
+
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				//假设源数组是312(顺序不重要);就是想构建一个123,这样的数组,凡是没在应该的位置,都要移动.
+				while (nums[i] >= 1 && nums[i] <= nums.size() && nums[i] != i + 1)//方便理解,长度为3的数组,元素123都是满足"范围条件".
+				{
+					swap(nums[i], nums[nums[i] - 1]);
+				}
+			}
+			for (size_t i = 0; i < nums.size(); i++)//判断移动后的数组中的哪个元素没有在合适的位置!就返回这个确实的元素的值.
+			{
+				if (nums[i] != i + 1)
+					return i + 1;
+			}
+			return *(nums.end() - 1) + 1;//!!别忘了+1,什么都不缺的时候,返回的是最后的一个元素后面,而不是最后的元素.
+		}
+
+
+
 		void test()
 		{
 			vector<int> nums = { 3,4,-1,1 };
