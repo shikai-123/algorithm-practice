@@ -3834,23 +3834,24 @@ namespace LinkedList
 		ListNode* addTwoNumbers3(ListNode *l1, ListNode *l2) {
 			int jinwei = 0;
 			ListNode *node = new ListNode;
-			ListNode *end = node;
+			ListNode *pre = node;//!!为什么要定义这个变量呢?是因为上面的note随着next,最后会移动到结尾.要返回整个链表肯定要返回链表最前的元素.
 			while (l1 || l2)//l1和l2的长度不一样，所以计算要到他们俩都到尾巴，才算结束
 			{
 				int top = l1 == nullptr ? 0 : l1->val;
 				int bottom = l2 == nullptr ? 0 : l2->val;
 				int sum = (top + bottom + jinwei) % 10;//如果sum大于10.因为要进位，所以需要保留余数
 				jinwei = (top + bottom + jinwei) / 10;
-				end->next = new ListNode(sum);
-				end = end->next;
+				node->next = new ListNode(sum);
+				node = node->next;
 				l1 = l1 == nullptr ? l1 : l1->next;//l1的next是空，就说走到了末尾，就赋值它本身，就不要走了往下。
 				l2 = l2 == nullptr ? l2 : l2->next;
 			}
 			if (jinwei > 0) {
-				end->next = new ListNode(jinwei);
-				end = end->next;
+				node->next = new ListNode(jinwei);
+				node = node->next;
 			}
-			return node->next;
+			return pre->next;
+			//return head;返回这个在默某些情况下是错误的.比如只有1个1的情况下.所以只能用上面这个.
 		}
 
 
@@ -5207,71 +5208,96 @@ namespace LinkedList
 			return head;
 		}
 
+
+		ListNode* ListNodeTest(ListNode* head, int n) {
+			ListNode* dummy = new ListNode;
+			dummy->next = head;
+			ListNode* fast = dummy;
+			ListNode* slow = dummy;
+
+			for (size_t i = 0; i < n + 1; i++)
+				fast = fast->next;
+
+			while (fast)
+			{
+				fast = fast->next;
+				slow = slow->next;
+			}
+			slow->next = slow->next->next;
+			//return head;
+			return dummy->next;
+		}
+
 		void test()
 		{
 			LinkedList::Solution a;
-			ListNode lb(2);
-			ListNode lb1(4);
+			ListNode lb(1);
+			ListNode lb1(2);
 			ListNode lb2(3);
-
-			ListNode lb3(5);
-			ListNode lb4(6);
+			ListNode lb3(4);
+			ListNode lb4(5);
 			ListNode lb5(4);
-			ListNode lb6(7);
-
-			ListNode* ret;
-			Node* nret;
-
+			ListNode lb6(7);/*
 			lb.next = &lb1;
 			lb1.next = &lb2;
+			lb2.next = &lb3;
+			lb3.next = &lb4;*/
 
-			lb3.next = &lb4;
-			lb4.next = &lb5;
-			/*lb2.next = &lb3;
+			ListNode* ret;
+			ret = ListNodeTest(&lb, 1);
+			while (ret != nullptr)
+			{
+				cout << ret->val << "  " << endl;
+				ret = ret->next;
+			}
+
+
+			/*lb4.next = &lb5;
+			lb2.next = &lb3;
 			lb3.next = &lb4;
 			lb4.next = &lb5;
 			lb5.next = &lb6;*/
 
+			//Node* nret;
+			//Node nb(7);
+			//Node nb1(13);
+			//Node nb2(11);
 
-			Node nb(7);
-			Node nb1(13);
-			Node nb2(11);
-
-			Node nb3(10);
-			Node nb4(1);
-			Node nb5(4);
-			Node nb6(7);
-
-
-			nb.next = &nb1;
-			nb.random = nullptr;
-
-			nb1.next = &nb2;
-			nb1.random = &nb;
-
-			nb2.next = &nb3;
-			nb2.random = &nb4;
-
-			nb3.next = &nb4;
-			nb3.random = &nb2;
+			//Node nb3(10);
+			//Node nb4(1);
+			//Node nb5(4);
+			//Node nb6(7);
 
 
-			nb4.next = nullptr;
-			nb4.random = &nb1;
+			//nb.next = &nb1;
+			//nb.random = nullptr;
+
+			//nb1.next = &nb2;
+			//nb1.random = &nb;
+
+			//nb2.next = &nb3;
+			//nb2.random = &nb4;
+
+			//nb3.next = &nb4;
+			//nb3.random = &nb2;
+
+
+			//nb4.next = nullptr;
+			//nb4.random = &nb1;
 
 
 
 
-			//ret = reverse_link(&lb);
-			//ret = reverse(&lb);
-			nret = a.copyRandomList(&nb);
-			//ret = a.reverseBetween(&lb,1,2);
+			////ret = reverse_link(&lb);
+			////ret = reverse(&lb);
+			//nret = a.copyRandomList(&nb);
+			////ret = a.reverseBetween(&lb,1,2);
 
-			while (nret != nullptr)
-			{
-				cout << nret->val << "  " << nret->random->val << endl;
-				nret = nret->next;
-			}
+			//while (nret != nullptr)
+			//{
+			//	cout << nret->val << "  " << nret->random->val << endl;
+			//	nret = nret->next;
+			//}
 		}
 		void testLRU()
 		{
@@ -13540,10 +13566,10 @@ int main()
 	//BackTracking::Solution tree;
 	//ERFENCAHZHAO::Solution tree;
 	//StackandQueue::Solution tree;
-	DynamicPlanning::Solution tree;
+	//DynamicPlanning::Solution tree;
 	//DoublePointer::Solution tree;
 	//Dandiaozhan::Solution tree;
-	//LinkedList::Solution tree;//tree.testLRU();
+	LinkedList::Solution tree;//tree.testLRU();
 	//Tree::Solution tree;
 	//StackandQueue::Solution tree;
 
