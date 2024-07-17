@@ -3692,17 +3692,14 @@ namespace LinkedList
 			如果发现了重复的指针，那么就是同一个节点，
 			说明该链表出现了环。
 		*/
-		bool hasCycle1(ListNode *head) {
-			unordered_set<ListNode *> p;
+		bool hasCycle1(ListNode* head) {
+			unordered_set<ListNode*> uset;
 			while (head != nullptr) {
-				if (p.find(head) == p.end())//找不到就放到map中，
-					p.insert(head);
-				else//找到重复的就说明出现了重复的，
+				if (uset.count(head) == 1)
 					return true;
+				uset.insert(head);
 				head = head->next;
 			}
-			if (p.size() == 1)//只有一个点肯定没有环
-				return false;
 			return false;
 		}
 
