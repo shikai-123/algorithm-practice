@@ -5056,6 +5056,24 @@ namespace LinkedList
 			return pa;
 		}
 
+		//160. 相交链表--二刷
+		ListNode *getIntersectionNode1(ListNode *headA, ListNode *headB) {
+			if (headA == nullptr || headB == nullptr)
+				return nullptr;
+			ListNode *pa = headA;
+			ListNode *pb = headB;
+			while (true)//while (true)不行,比如两个11,做个一个环,就会卡死在里面,所以先判断他俩不想等的情况
+			{
+				pa = pa == nullptr ? headB : pa->next;
+				pb = pb == nullptr ? headA : pb->next;
+				if (pb == pb)
+					return pb;
+			}
+			return nullptr;
+		}
+
+
+
 		/*
 		234. 回文链表
 		参考：
