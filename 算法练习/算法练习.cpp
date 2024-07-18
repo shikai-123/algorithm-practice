@@ -5184,10 +5184,48 @@ namespace LinkedList
 			2、然后截取链表，截成左右两部分。
 			3、通过递归不断不断的截取，截到只剩一个点
 			4、然后开始合并这些点，根据大小排序来和。
-			5、最后得到的就是题目要求的。
-		*/
+			5、最后得到的就是题目要求的
 
+			!!为什么fast是复制head->next,而slow是赋值head?
+			如果两个都是赋值head,就会导致slow在链表的后面,比如链表12,最后slow的位置在2这,
+			slow->next = nullptr;进行切割的时候,本来都为尾巴了,所以切割时无效的,然后ListNode* left = sortList(head);
+			再去切割的时候,因为切割失败,所以传递的还是12.无限重复下去.只有head和slow拉开,才能实现切割。
+		*/
+		//148. 排序链表--三刷;  第一个代码太复杂了,这个思路一样,代码没这么复杂--最后就用这个!不要再折腾了!
+		//参考:https://leetcode.cn/problems/sort-list/solutions/13728/sort-list-gui-bing-pai-xu-lian-biao-by-jyd/
 		ListNode* sortList(ListNode* head) {
+			if (head == nullptr || head->next == nullptr)
+				return head;
+			ListNode* fast = head->next, *slow = head; //为什么fast是复制head->next,而slow是赋值head?
+			while (fast != nullptr && fast->next != nullptr) {
+				slow = slow->next;
+				fast = fast->next->next;
+			}
+			ListNode* tmp = slow->next;//下面就要切除slow后面了,所以要保存slow后面的链表.
+			slow->next = nullptr;//从slow后面切断链表
+			ListNode* left = sortList(head);//递归进去再切割,把两个链表的头节点传进去接着割!
+			ListNode* right = sortList(tmp);//left, right 分别指向两链表头部
+
+			//下面是开始重新接节点!只要链表没有被切完,就走不到这
+			ListNode* newLN = new ListNode(0);//建立辅助 ListNode h 作为头部。
+			ListNode* pre = newLN;//因为newLN要往后移动,所以这里放个不会移动的辅助节点,这个你肯定明白的.
+			while (left != nullptr && right != nullptr) {
+				if (left->val < right->val) {
+					newLN->next = left;
+					left = left->next;
+				}
+				else {
+					newLN->next = right;
+					right = right->next;
+				}
+				newLN = newLN->next;
+			}
+			newLN->next = (left != nullptr) ? left : right;//上面切割的左右链表有可能长度不一样,那么最后就会空出左或者右节点.谁不空就空了谁,把它接上就行了.
+			return pre->next;
+		}
+
+
+		ListNode* sortList1(ListNode* head) {
 			//1、如果题目中的给的链表的长度为1，或者为1，直接返回
 			//2、这个函数本质就是分割链表的，所以当传进来的长度为 1的时候，没必要再分了。
 			if (head == nullptr || head->next == nullptr) return head;
@@ -5237,8 +5275,8 @@ namespace LinkedList
 			return tmp;
 		}
 
-
-		ListNode* sortList_easy(ListNode* head) {//先来个简单的，到手万一想不起来了，还有这个保底。
+		//148. 排序链表--先来个简单的，到手万一想不起来了，还有这个保底。就是性能差点
+		ListNode* sortList_easy(ListNode* head) {
 			multiset<int> worker;
 			auto sub = head;
 			while (sub) worker.insert(sub->val),
@@ -5248,6 +5286,11 @@ namespace LinkedList
 				sub->val = i, sub = sub->next;
 			return head;
 		}
+
+
+
+
+
 
 
 		ListNode* ListNodeTest(ListNode* head, int n) {
