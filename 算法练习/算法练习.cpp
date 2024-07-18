@@ -5139,6 +5139,32 @@ namespace LinkedList
 			return true;
 		}
 
+		//234. 回文链表--三刷
+		bool isPalindrome3(ListNode* head) {
+			ListNode* fast = head, *slow = head, *pre = head, *prepre = nullptr;
+			while (fast != nullptr && fast->next != nullptr) {
+				pre = slow;
+				fast = fast->next->next;
+				slow = slow->next;
+				pre->next = prepre;
+				prepre = pre;
+			}
+			if (fast != nullptr)
+				slow = slow->next;
+
+
+			while (slow != nullptr && pre != nullptr)
+			{
+				if (slow->val != pre->val)
+					return false;
+				slow = slow->next;
+				pre = pre->next;
+			}
+			return true;
+		}
+
+
+
 
 
 		/*
