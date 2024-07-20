@@ -6029,7 +6029,16 @@ namespace Tree {
 			return isSame(root->left, root->right);
 		}
 
-
+		//101. 对称二叉树---三刷
+		bool isSame3(TreeNode* L, TreeNode* R) {
+			if (L == nullptr && R == nullptr)return true;
+			if (L != nullptr && R == nullptr)return false;
+			if (L == nullptr && R != nullptr)return false;
+			if (L->val != R->val)return false;
+			bool Lret = isSame3(L->left, R->right);//Lret是当前层级节点左节点的左节点和右节点的右节点判断的结果
+			bool Rret = isSame3(L->right, R->left);
+			return Lret && Rret;//二叉树的遍历都是向上返回当前层级的结果,所以这里就是把当前层级的左结果和右结果'与运算',然后返回!
+		}
 
 
 		/*
