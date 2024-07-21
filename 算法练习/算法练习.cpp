@@ -7369,9 +7369,9 @@ namespace Tree {
 
 			vector<int> preorder{ 3,9,20,15,7 };
 			vector<int> inorder{ 9,3,15,20,7 };
-			vector<string> nodes = { "5","3","6","2","4","null","7 " };
+			vector<string> nodes = { "1","-2","-3" };
 			treeRoot = createBinaryTree(nodes);//构建树
-			cout << buildTree2(preorder, inorder) << endl;
+			cout << pathSum(treeRoot, -1) << endl;
 			/*vector<int> srtVec = lowestCommonAncestor(treeRoot);
 			for (size_t i = 0; i < srtVec.size(); i++)
 				std::cout << srtVec[i] << endl;
@@ -13666,8 +13666,8 @@ int main()
 	//DynamicPlanning::Solution tree;
 	//DoublePointer::Solution tree;
 	//Dandiaozhan::Solution tree;
-	LinkedList::Solution tree;//tree.testLRU();
-	//Tree::Solution tree;
+	//LinkedList::Solution tree;//tree.testLRU();
+	Tree::Solution tree;
 	//StackandQueue::Solution tree;
 
 	tree.test();
