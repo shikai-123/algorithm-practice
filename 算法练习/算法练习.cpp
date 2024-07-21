@@ -7150,7 +7150,7 @@ namespace Tree {
 		/*
 		543. 二叉树的直径
 		参考
-			https://leetcode.cn/problems/diameter-of-binary-tree/solutions/142094/shi-pin-jie-shi-di-gui-dai-ma-de-yun-xing-guo-chen/?envType=study-plan-v2&envId=top-100-liked：
+			https://leetcode.cn/problems/diameter-of-binary-tree/solutions/142094/shi-pin-jie-shi-di-gui-dai-ma-de-yun-xing-guo-chen/?envType=study-plan-v2&envId=top-100-liked
 			我的代码，和他的有些区别，但是是一样的思路，他的ppt做的很好
 		思路：
 			后序遍历二叉树，
