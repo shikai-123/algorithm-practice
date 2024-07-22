@@ -8322,9 +8322,9 @@ namespace BackTracking {
 		void generateParenthesis_bfs2(int n, int Ln, int Rn, string str, vector<string>& ret) {
 			if (n == Ln && n == Rn)
 				ret.push_back(str);
-			if (n > Ln)
+			if (Ln < n)//当左括号还没用完
 				generateParenthesis_bfs2(n, Ln + 1, Rn, str + "(", ret);
-			if (n > Rn && Rn < Ln)//右括号没用完,并且右括号的数量还小于左括号的时候.可以添加新的右括号了.
+			if (Rn < n && Rn < Ln)//右括号没用完,并且右括号的数量还小于左括号的时候.可以添加新的右括号了.
 				generateParenthesis_bfs2(n, Ln, Rn + 1, str + ")", ret);
 			return;
 		}
