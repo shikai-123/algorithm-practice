@@ -7802,20 +7802,17 @@ namespace BackTracking {
 		vector<vector<string>> partition2_ret;
 		vector<string> partition2_sigle;
 		void partition2_traval(string s, int startIndex) {
-			if (startIndex == s.size()) {
-				partition2_ret.push_back(partition2_sigle);
-				return;
-			}
 			for (size_t i = startIndex; i < s.size(); i++)
 			{
 				if (isPalindrome(s, startIndex, i)) {
 					string str = s.substr(startIndex, i - startIndex + 1);
 					partition2_sigle.push_back(str);
+					if (i == s.size() - 1)//当下标走到最后一个字符串的时候,上面已经判断是回文字符串了,就把子结果放到总结果中
+						partition2_ret.push_back(partition2_sigle);
 					partition2_traval(s, i + 1);
 					partition2_sigle.pop_back();
 				}
 			}
-
 		}
 		vector<vector<string>> partition2(string s) {
 			partition2_traval(s, 0);
@@ -8422,11 +8419,12 @@ namespace BackTracking {
 			//2.3、确定单层搜索的过程——！！for负责横向遍历，递归负责纵向遍历。
 			vector<	vector<char> > graph{ {'A','B','C','E'},
 			{'S','F','C','S'},{'A','D','E','E'} };
-			string s = "ABCCED";
+			string s = "bb";
 			vector<int> nums = { 1,1,2 };
-			cout << exist(graph, s);
+			vector<vector<string>> ret;
+			ret = partition2(s);
 
-			for (auto i : restoreIpAddresses_ret)
+			for (auto i : ret)
 			{
 				for (auto l : i)
 				{
@@ -13660,14 +13658,14 @@ int main()
 
 	//String_Array::Solution tree;
 	//TULUN::Solution tree;
-	//BackTracking::Solution tree;
+	BackTracking::Solution tree;
 	//ERFENCAHZHAO::Solution tree;
 	//StackandQueue::Solution tree;
 	//DynamicPlanning::Solution tree;
 	//DoublePointer::Solution tree;
 	//Dandiaozhan::Solution tree;
 	//LinkedList::Solution tree;//tree.testLRU();
-	Tree::Solution tree;
+	//Tree::Solution tree;
 	//StackandQueue::Solution tree;
 
 	tree.test();
