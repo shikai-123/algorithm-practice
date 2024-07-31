@@ -13463,6 +13463,21 @@ namespace {
 		}
 
 
+		// 169. 多数元素--二刷
+		int majorityElement2(vector<int>& nums) {
+			map<int, int>numsMap;
+			int maxCount = 0;
+			int Ret = 0;
+			for (size_t i = 0; i < nums.size(); i++)
+			{
+				numsMap[nums[i]]++;
+				if (numsMap[nums[i]] > maxCount) {
+					maxCount = numsMap[nums[i]];
+					Ret = nums[i];
+				}
+			}
+			return Ret;
+		}
 
 
 		/*
