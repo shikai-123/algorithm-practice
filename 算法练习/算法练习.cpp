@@ -87,6 +87,65 @@ namespace String_Array
 	public:
 
 		/*
+		88. 合并两个有序数组
+		*/
+		//思路就是 nums1数组最后的位置一定是0，没有0就不用排序了。 最后是0的话，就把0替换成nums2 然后再排序  他的编译器也会优化。用nums1.size() 不会造成性能损失。
+		//时间复杂的不行, 光sort就n*log2(n); 时间复杂度肯定不行
+		void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+			unsigned char size = nums1.size();
+			unsigned char  zeroNums1 = size - m;
+
+			for (unsigned char i1 = 0; i1 < zeroNums1; i1++)
+			{
+				if (nums1[size - i1 - 1] == 0)
+				{
+					nums1[size - i1 - 1] = nums2[0];
+					nums2.erase(nums2.begin());
+				}
+			}
+			sort(nums1.begin(), nums1.end());
+		}
+
+		/*
+		88. 合并两个有序数组
+		参考:
+			https://leetcode.cn/problems/merge-sorted-array/submissions/466208834/
+		思路:
+			先说题目,nums1的数组前面是数,后面全部是0;并且0的数量就是nums2的数量.
+			题目要求把nums2放到nums1中,且正好是正序的.
+			注意m是nums1中非0元素的数量,n是nums2中元素数量
+			然后比较nums1中非0元素和nums2的元素(出现0也无所谓)的大小,谁大谁先挪到nums1的后面
+			直到把这两个数组的元素都遍历完毕,
+			最后得到的数组nums1一定是正序的
+		*/
+		void merge1(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+			int i = nums1.size() - 1;//比较大小后,要放的最终位置下标
+			m--;//要被挪的nums1的元素下标
+			n--;//要被挪的nums2的元素下标
+			while (n >= 0) {
+				while (m >= 0 && nums1[m] > nums2[n]) {
+					swap(nums1[i--], nums1[m--]);
+				}
+				swap(nums1[i--], nums2[n--]);
+			}
+		}
+
+		//!!这种从逻辑上没有啥问题,但是架不住题目中有m=0的测试样例,第一个while直接进不去,然后就ac不了
+		void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+			int i = nums1.size() - 1;
+			m--;
+			n--;
+			while (m >= 0) {//一定要是先m再m,要不然就会出现上面说的问题
+				while (n >= 0 && nums1[m] < nums2[n]) {
+					swap(nums1[i--], nums2[n--]);
+				}
+				swap(nums1[i--], nums1[m--]);
+			}
+		}
+
+
+
+		/*
 		704. 二分查找
 		参考：
 			https://www.programmercarl.com/0704.%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE.html#%E6%80%9D%E8%B7%AF
