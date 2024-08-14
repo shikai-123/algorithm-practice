@@ -131,7 +131,7 @@ namespace String_Array
 		}
 
 		//!!这种从逻辑上没有啥问题,但是架不住题目中有m=0的测试样例,第一个while直接进不去,然后就ac不了
-		void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+		void merge2(vector<int>& nums1, int m, vector<int>& nums2, int n) {
 			int i = nums1.size() - 1;
 			m--;
 			n--;
@@ -7410,6 +7410,34 @@ namespace Tree {
 		}
 
 
+		//103. 二叉树的锯齿形层序遍历
+		vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
+			vector<vector<int>> ret;
+			queue<TreeNode* > que;
+			if (root)
+				que.push(root);//别忘了!!这个,要不然报错.题目中有空的树
+			while (!que.empty())
+			{
+				int size = que.size();
+				vector<int> tmp;
+				for (size_t i = 0; i < size; i++)
+				{
+					TreeNode* curNode = que.front();
+					tmp.push_back(curNode->val);
+					que.pop();
+					if (curNode->left)
+						que.push(curNode->left);
+					if (curNode->right)
+						que.push(curNode->right);
+				}
+				if (ret.size() % 2 == 1)
+					reverse(tmp.begin(), tmp.end());
+				ret.push_back(tmp);
+			}
+			return ret;
+		}
+
+
 
 		void test()
 		{
@@ -7428,13 +7456,23 @@ namespace Tree {
 
 			vector<int> preorder{ 3,9,20,15,7 };
 			vector<int> inorder{ 9,3,15,20,7 };
-			vector<string> nodes = { "1","-2","-3" };
+			vector<string> nodes = { "3","9","20","null","null","15","7" };
 			treeRoot = createBinaryTree(nodes);//构建树
-			cout << pathSum(treeRoot, -1) << endl;
+			//cout << pathSum(treeRoot, -1) << endl;
 			/*vector<int> srtVec = lowestCommonAncestor(treeRoot);
 			for (size_t i = 0; i < srtVec.size(); i++)
 				std::cout << srtVec[i] << endl;
 				*/
+
+
+
+			vector<vector<int>> srtVec = zigzagLevelOrder(treeRoot);
+			for (size_t i = 0; i < srtVec.size(); i++)
+				for (size_t l = 0; l < srtVec[i].size(); l++)
+					std::cout << srtVec[i][l] << endl;
+
+
+
 		}
 	};
 }
@@ -13732,14 +13770,14 @@ int main()
 
 	//String_Array::Solution tree;
 	//TULUN::Solution tree;
-	BackTracking::Solution tree;
+	//BackTracking::Solution tree;
 	//ERFENCAHZHAO::Solution tree;
 	//StackandQueue::Solution tree;
 	//DynamicPlanning::Solution tree;
 	//DoublePointer::Solution tree;
 	//Dandiaozhan::Solution tree;
 	//LinkedList::Solution tree;//tree.testLRU();
-	//Tree::Solution tree;
+	Tree::Solution tree;
 	//StackandQueue::Solution tree;
 
 	tree.test();
