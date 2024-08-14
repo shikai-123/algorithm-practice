@@ -7410,7 +7410,18 @@ namespace Tree {
 		}
 
 
-		//103. 二叉树的锯齿形层序遍历
+		/*
+		103. 二叉树的锯齿形层序遍历
+		题意:
+			就是二叉树层序遍历
+			只不过,先从左往右,然后从右往左.接着再从左往右......
+		参考:
+			https://leetcode.cn/problems/binary-tree-zigzag-level-order-traversal/submissions/555361472/
+		思路:
+			其实就是二叉树的层序遍历,然后多了两个部分
+			1.这个题目中会给一个空树,所以在刚开始往队列中添加的时候,记得判断根结点是否为空.纯"二叉树层序遍历"没有空树
+			2.根据题目要求,到了奇数层的时候,翻转这层二叉树的数据
+		*/
 		vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
 			vector<vector<int>> ret;
 			queue<TreeNode* > que;
