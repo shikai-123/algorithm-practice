@@ -4059,7 +4059,6 @@ namespace LinkedList
 
 		/*
 		92. 反转链表 II
-
 		思路：
 			具体思路参考：这个链接
 			另外的，关于链表翻转的好几种情况的写法，已经放在笔记中的-《链表》部分。
@@ -4084,19 +4083,6 @@ namespace LinkedList
 			return last;
 		}
 
-		/*
-		用3个节点的链表。m=n=3来表示
-
-		压栈
-		1 2 34
-
-		出栈
-		返回翻转的43
-		head->next接43  然后返回head 2
-		再然后返回 head->next接2  然后返回head 1
-		最后，上面返回的这个1即使整个链表的头指针
-		12 43
-		*/
 		ListNode* reverseBetween(ListNode* head, int m, int n) {
 			//n==1代表链表反转到最后一个点了。这个递归该结束了
 			if (m == 1) {
@@ -4107,15 +4093,21 @@ namespace LinkedList
 			return head;//返回一定要是head，具体看注释
 		}
 
+
+
+		/*
+		92. 反转链表 II ---- 二刷
+		思路:
+			把要反转的节点放到栈中,利用栈中元素先进后出的原则,就能实现反转.
+			!!!!这个代码过不去!!!!.不知道哪个地方的问题
+		*/
 		ListNode* reverseBetween1(ListNode* head, int left, int right) {
 			stack<ListNode*> stk;
-			int index = 1;
+			int index = 1;//定义为1,因为左右表达的意思是第几个元素,不是下标
 			ListNode* Lhead = head;
 
 			ListNode* note = new ListNode(0);
 			ListNode* end = note;
-
-
 
 			while (head != nullptr)
 			{
@@ -4128,18 +4120,15 @@ namespace LinkedList
 			}
 			head = Lhead;
 			index = 1;
-
-
 			while (head != nullptr)
 			{
 				if (left <= index && index <= right)
 				{
 					while (!stk.empty())
 					{
-						/*
-						！有问题在于stk.top()返回的不是一个点，而是返回的是这个点以及之后到尾巴的链表。
-						*/
-						end->next = stk.top();
+						//！有问题在于stk.top()返回的不是一个点，而是返回的是这个点以及之后到尾巴的链表。
+						//我后来换成下面的用new的方式也不行
+						end->next = new ListNode(stk.top()->val);
 						end = end->next;
 						stk.pop();
 
@@ -4149,11 +4138,9 @@ namespace LinkedList
 				}
 				end->next = head;
 				end = end->next;
-
-				index++;
 				head = head->next;
+				index++;
 			}
-
 			return note->next;
 		}
 
