@@ -4061,7 +4061,7 @@ namespace LinkedList
 		92. 反转链表 II
 		思路：
 			具体思路参考：这个链接
-			另外的，关于链表翻转的好几种情况的写法，已经放在笔记中的-《链表》部分。
+			另外的，关于链表翻转的好几种情况的写法，已经放在笔记中的-《hot100 链表笔记》部分。
 			这个一定要看看
 		参考：
 		https://leetcode.cn/problems/reverse-linked-list-ii/solutions/37247/bu-bu-chai-jie-ru-he-di-gui-di-fan-zhuan-lian-biao/?envType=study-plan-v2&envId=top-interview-150
