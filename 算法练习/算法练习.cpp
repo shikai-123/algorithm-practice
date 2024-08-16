@@ -4065,7 +4065,6 @@ namespace LinkedList
 			这个一定要看看
 		参考：
 		https://leetcode.cn/problems/reverse-linked-list-ii/solutions/37247/bu-bu-chai-jie-ru-he-di-gui-di-fan-zhuan-lian-biao/?envType=study-plan-v2&envId=top-interview-150
-
 		*/
 		ListNode* successor = nullptr; // 后驱节点
 
