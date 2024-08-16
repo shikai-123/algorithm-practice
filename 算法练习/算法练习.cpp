@@ -1369,6 +1369,98 @@ namespace DoublePointer
 		}
 
 
+		/*
+		912. 排序数组
+		参考:
+			https://blog.csdn.net/justidle/article/details/104203963
+		说明:
+			它的思路在选基数的时候都是数组第一个,这样的话时间上过不去.
+			我换成了随机选择就没有问题!
+			另外,思路和他链接中的思路不一致.
+			但是代码能过AC
+
+		思路:
+			随机挑选一个节点,把这个节点挪到最左边(这个我没有很好的解释; 但是所有的快排基准点都是左边的,现在是随机选择的所以把这个点和最左边的点交换一下)
+			先右边操作(别错了)
+			右边满足>=base的,下标就不断的移动.直到出现了不满足的情况.
+			左边满足<=base的,下标就不断的移动.直到出现了不满足的情况.
+			然后交换这个两个不满足条件的元素.然后 交换这两个元素.
+			然后不断的循环这个操作.直到本层递归的while结束.
+			这个时候整个数组,i左边是小于base的.i右边是大于base的.
+			然后把最左边的元素(base)和下标i的元素交换.
+			然后进入下层递归!
+
+		易错点:
+			和base比较的时候,一定时>=或<=;哪个=缺失了,都报错
+		*/
+		void QuickSort(vector<int>& nums, int left, int right) {
+			int i = left;
+			int j = right;
+			if (i >= j) {
+				return;
+			}
+			int x = left + rand() % (right - left + 1);//在left和right之间随机选择一个; 举例下标012; 2-0=2,然后取余是取不到2.所以加1
+			swap(nums[left], nums[x]);//!!把随机点和左边的节点交换一下!一定要换,否则报错
+			int base = nums[left];
+			while (i != j) {
+				while (nums[j] >= base && i < j) {
+					j--;
+				}
+				while (nums[i] <= base && i < j) {
+					i++;
+				}
+				if (i < j) {
+					swap(nums[i], nums[j]);
+				}
+			}
+			swap(nums[left], nums[i]);// 将基准base放于自己的位置，（第i个位置）.因为上面while已经基于base的大小,分了两部分,i左边是小于base的.i右边是大于base的.所以这个时候base应该从最左边移动到中间来
+			QuickSort(nums, left, i - 1);
+			QuickSort(nums, i + 1, right);
+		}
+
+		/*
+		912. 排序数组----推荐用这个代码,毕竟和文章中的思路是一样的!
+		参考:
+			只参考这篇文章的思路.代码不参考.因为文章的代码和他说的思路不一致.我写这个才是文章中的思路
+			https://blog.csdn.net/justidle/article/details/104203963
+		思路:
+			看文章中的吧,这个花了我很长时间了,不具体写了
+		*/
+		void quickSort(vector<int>& nums, int left, int right) {
+			// 数组有多个元素进行排序
+			if (left < right) {
+				int i = left; // 左指针
+				int l = right;  // 右指针
+
+				int x = left + rand() % (right - left + 1);
+				swap(nums[left], nums[x]);
+				int base = nums[left];
+
+				while (i < l) {
+					while (i < l && nums[l] >= base) {// 从右向左找，比base大，right--
+						l--;
+					}
+					nums[i] = nums[l];// 比base小，替换left所在位置的数字
+
+					while (i < l && nums[i] <= base) {// 从左向右找，比base小，left++
+						i++;
+					}
+					nums[l] = nums[i];// 比base大，替换right所在位置的数字
+				}
+				nums[i] = base; // 此时left=right，用base替换这个位置的数字
+
+				quickSort(nums, left, i - 1);// 排列比base小的数字的数组
+				quickSort(nums, i + 1, right);// 排列比base大的数字的数组
+			}
+		}
+
+		vector<int> sortArray(vector<int>& nums) {
+			quickSort(nums, 0, nums.size() - 1);
+			return nums;
+		}
+
+
+
 
 		void test()
 		{
