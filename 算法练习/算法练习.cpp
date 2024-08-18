@@ -1019,6 +1019,33 @@ namespace String_Array
 		}
 
 
+		/*
+		415. 字符串相加
+		参考:
+			https://leetcode.cn/problems/add-strings/solutions/12250/add-strings-shuang-zhi-zhen-fa-by-jyd/
+		思路:
+			和"2. 两数相加"相似.
+			具体思路看题解吧
+		*/
+		string addStrings(string num1, string num2) {
+			std::string res;
+			int i = num1.length() - 1, j = num2.length() - 1, carry = 0;
+			while (i >= 0 || j >= 0) {
+				int n1 = i >= 0 ? num1[i] - '0' : 0;
+				int n2 = j >= 0 ? num2[j] - '0' : 0;
+				int tmp = n1 + n2 + carry;
+				carry = tmp / 10;
+				res.push_back(tmp % 10 + '0');//tmp % 10 + '0' 其实就是tmp % 10这个数的ASCII
+				i--;
+				j--;
+			}
+			if (carry > 0) {
+				res.push_back(carry + '0');
+			}
+			std::reverse(res.begin(), res.end());
+			return res;
+		}
+
 
 		void test()
 		{
