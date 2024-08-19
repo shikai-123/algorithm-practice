@@ -13816,6 +13816,27 @@ namespace {
 		}
 
 
+		/*
+		69.x的平方根
+		参考:
+			https://leetcode.cn/problems/sqrtx/solutions/7568/niu-dun-die-dai-fa-by-loafer/
+			牛顿迭代法
+		思路:
+			首先随便猜一个近似值 ret，然后不断令 ret 等于 ret 和 x/ret 的平均数，迭代个六七次后 ret 的值就已经相当精确了。
+		*/
+		int mySqrt(int x) {
+			if (x == 0)
+				return 0;
+			double last = 0;//last和ret不一样就行
+			double ret = 1;//ret随便赋值,我这弄个1
+			while (ret != last) {
+				last = ret;
+				ret = (ret + x / ret) / 2;
+			}
+			return int(ret);//题目要求的返回整数
+		}
+
+
 	};
 }
 int main()
