@@ -3051,6 +3051,40 @@ namespace StackandQueue {
 	};
 
 
+	//232.用栈实现队列--二刷
+	class MyQueue1 {
+		stack<int>stkin;
+		stack<int>stkout;
+
+		void push(int x) {
+			stkin.push(x);
+		}
+
+		int pop() {
+			if (stkout.empty())
+			{
+				while (!stkin.empty())
+				{
+					stkout.push(stkin.top());
+					stkin.pop();
+				}
+			}
+			int ret = stkout.top();
+			stkout.pop();
+			return ret;
+		}
+
+		//返回第一个元素的时候,一定要用pop函数.要不然不对!有因为pop函数会删除掉一个元素,所以要把删除掉的元素再加上
+		int peek() {
+			int ret = pop();
+			stkout.push(ret);
+			return ret;
+		}
+
+		bool empty() {
+			return (stkin.empty() && stkout.empty());
+		}
+	};
 	/*
 	225. 用队列实现栈
 	参考：
