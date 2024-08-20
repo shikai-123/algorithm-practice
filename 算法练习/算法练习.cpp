@@ -5404,7 +5404,68 @@ namespace LinkedList
 		}
 
 
+		/*
+		143. 重排链表
+		参考:
+			https://leetcode.cn/problems/reorder-list/solutions/2843011/yi-mu-liao-ran-de-tu-shi-bu-zou-by-shawx-k3o8/
+		思路:
+			1.找到链表中点,按照中点把链表拆分成两个部分
+			2.然后反转后面那部分的链表
+			3.按照题目要求再把链表合起来
 
+			这个题目考察的点很多.题目代码很多,但实际上理解起来不难.不明白就看链接中的图
+		*/
+		//找到链表的中点--定义快慢指针,快指针走到末尾,慢指针就走到中点.
+		ListNode* findMid(ListNode* head) {
+			ListNode* fast = head;
+			ListNode* slow = head;
+			while (fast->next &&
+				fast->next->next) { //!!都是对fast指针的判断,且两个先后顺序别乱
+				fast = fast->next->next;
+				slow = slow->next;
+			}
+			return slow;
+		}
+
+		ListNode* reverseListNode(ListNode* head) {//最后反转的结果一定要用返回值翻出去,用形参head传出去,不行!不知道为啥
+			ListNode* pre = nullptr;
+			ListNode* cur = head;
+			while (cur) { // 对cur判断,不是对head,
+				ListNode* tmp = cur->next;
+				cur->next = pre;
+				pre = cur;
+				cur = tmp;
+			}
+			return pre;
+		}
+
+		void mergeListNode(ListNode* l, ListNode* r) {
+
+			ListNode* ltmp;
+			ListNode* rtmp;
+
+			while (l && r) {
+				ltmp = l->next;
+				rtmp = r->next;
+
+				l->next = r;
+				l = ltmp;
+
+				r->next = l;
+				r = rtmp;
+			}
+		}
+
+		void reorderList(ListNode* head) {
+			ListNode* mid = findMid(head); // 找链表的中点
+
+			ListNode* lList = head;
+			ListNode* rList = mid->next;
+			mid->next = nullptr; // 从mid,把链表分为两部分
+
+			rList = reverseListNode(rList); // 反转链表
+			mergeListNode(lList, rList);
+		}
 
 
 
