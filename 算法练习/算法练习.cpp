@@ -6621,6 +6621,12 @@ namespace Tree {
 			一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 。
 		参考：
 			https://www.programmercarl.com/0110.%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91.html
+		思路:
+			就是判断某一点的左右子树的高度,
+			如果高度差超过1,就是不平衡的,这个时候返回-1;然后不断的向上传递
+			上面再判断此层级的左右子树的高度差,如果还是-1,然后继续返回-1
+			如果不是,则取左右子树的高度差的绝对值,只要>1,还是不平衡,然后继续返回-1
+			如果此层级的左右子树是平衡的,就返回此层级的左右子树哪个高,就返回高的+1.
 		*/
 		// 返回以该节点为根节点的二叉树的高度，如果不是平衡二叉树了则返回-1
 		int getHeight(TreeNode* node) {
@@ -6628,9 +6634,11 @@ namespace Tree {
 				return 0;
 			}
 			int leftHeight = getHeight(node->left); // （左） 当前节点为根节点的左节点的高度
-			if (leftHeight == -1) return -1;//如果发现这个子树不平衡了，啥也不用做，直接返回吧。
+			if (leftHeight == -1)
+				return -1;//如果发现这个子树不平衡了，啥也不用做，直接返回吧。
 			int rightHeight = getHeight(node->right); // （右）当前节点为根节点的右节点的高度
-			if (rightHeight == -1) return -1;//如果发现这个子树不平衡了，啥也不用做，直接返回吧。
+			if (rightHeight == -1)
+				return -1;//如果发现这个子树不平衡了，啥也不用做，直接返回吧。
 
 			int result;
 			if (abs(leftHeight - rightHeight) > 1) {  // （中） 高度差大于1就说明树不平衡
@@ -6644,6 +6652,35 @@ namespace Tree {
 		bool isBalanced(TreeNode* root) {
 			return getHeight(root) == -1 ? false : true;
 		}
+
+
+
+		//110. 平衡二叉树--二刷
+		int getHeight1(TreeNode* root) {
+			if (root == nullptr)
+				return 0;
+
+			int lh = getHeight1(root->left);
+			if (lh == -1)
+				return -1;
+
+			int rh = getHeight1(root->right);
+			if (rh == -1)
+				return -1;
+
+			if (abs(rh - lh) > 1)
+				return -1;
+			return max(rh, lh) + 1;
+		}
+
+		bool isBalanced1(TreeNode* root) {
+
+			if (getHeight1(root) == -1)
+				return false;
+			return true;
+		}
+
+
 
 		/*
 		257. 二叉树的所有路径
