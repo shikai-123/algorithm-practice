@@ -4210,6 +4210,44 @@ namespace LinkedList
 			return umap[head];
 		}
 
+
+		/*
+		92. 反转链表 II--最终用这个思路,其他的都不参考了
+		思路：
+			具体思路参考：这个链接
+			以及我本文档中的图片
+		参考：
+			https://leetcode.cn/problems/reverse-linked-list-ii/solutions/1992226/you-xie-cuo-liao-yi-ge-shi-pin-jiang-tou-teqq/?envType=study-plan-v2&envId=top-interview-150
+		*/
+		ListNode* reverseBetween(ListNode* head, int left, int right) {
+			ListNode* dummy = new ListNode(0);
+			dummy->next = head;
+			ListNode* p0 = dummy;//p0节点的位置位于翻转的链表之前
+			//移动p0到翻转位置前面
+			for (size_t i = 0; i < left - 1; i++)//left - 1是因为题目的中left=1的时候,是代表链表的第0个节点
+			{
+				p0 = p0->next;
+			}
+
+			//翻转链表-和"翻转链表1"思路一样.反转后从原链表来看,pre在反转后的末尾,cur在pre的后面
+			//不同的是:翻转一部分链表.所以不用while,而是for来限定范围
+			ListNode* cur = p0->next;//cur在反转前,代表的是翻转的起始位置,head就错了
+			ListNode* pre = nullptr;
+			for (int i = 0; i < right - left + 1; i++)//right-left+1代表 right到left之前的元素数量
+			{
+				ListNode* tmp = cur->next;
+				cur->next = pre;
+				pre = cur;
+				cur = tmp;
+			}
+
+			p0->next->next = cur;
+			p0->next = pre;
+
+			return dummy->next;
+		}
+
+
 		/*
 		92. 反转链表 II
 		思路：
@@ -4220,7 +4258,6 @@ namespace LinkedList
 		https://leetcode.cn/problems/reverse-linked-list-ii/solutions/37247/bu-bu-chai-jie-ru-he-di-gui-di-fan-zhuan-lian-biao/?envType=study-plan-v2&envId=top-interview-150
 		*/
 		ListNode* successor = nullptr; // 后驱节点
-
 		// 反转以 head 为起点的 n 个节点，返回新的头结点
 		ListNode* reverseN(ListNode* head, int n) {
 			if (n == 1) {//n==1代表链表反转到最后一个点了。这个递归该结束了
@@ -4235,7 +4272,7 @@ namespace LinkedList
 			return last;
 		}
 
-		ListNode* reverseBetween(ListNode* head, int m, int n) {
+		ListNode* reverseBetween1(ListNode* head, int m, int n) {
 			//n==1代表链表反转到最后一个点了。这个递归该结束了
 			if (m == 1) {
 				return reverseN(head, n);
@@ -4247,54 +4284,7 @@ namespace LinkedList
 
 
 
-		/*
-		92. 反转链表 II ---- 二刷
-		思路:
-			把要反转的节点放到栈中,利用栈中元素先进后出的原则,就能实现反转.
-			!!!!这个代码过不去!!!!.不知道哪个地方的问题
-		*/
-		ListNode* reverseBetween1(ListNode* head, int left, int right) {
-			stack<ListNode*> stk;
-			int index = 1;//定义为1,因为左右表达的意思是第几个元素,不是下标
-			ListNode* Lhead = head;
 
-			ListNode* note = new ListNode(0);
-			ListNode* end = note;
-
-			while (head != nullptr)
-			{
-				if (left <= index && index <= right)
-				{
-					stk.push(head);
-				}
-				index++;
-				head = head->next;
-			}
-			head = Lhead;
-			index = 1;
-			while (head != nullptr)
-			{
-				if (left <= index && index <= right)
-				{
-					while (!stk.empty())
-					{
-						//！有问题在于stk.top()返回的不是一个点，而是返回的是这个点以及之后到尾巴的链表。
-						//我后来换成下面的用new的方式也不行
-						end->next = new ListNode(stk.top()->val);
-						end = end->next;
-						stk.pop();
-
-						index++;
-						head = head->next;
-					}
-				}
-				end->next = head;
-				end = end->next;
-				head = head->next;
-				index++;
-			}
-			return note->next;
-		}
 
 
 		/*
