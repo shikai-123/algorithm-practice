@@ -7977,6 +7977,9 @@ namespace BackTracking {
 		93. 复原 IP 地址
 		参考：
 			https://www.programmercarl.com/0093.%E5%A4%8D%E5%8E%9FIP%E5%9C%B0%E5%9D%80.html
+		思路:
+			不断的递归,每次递归移动一个位置,然后检查切除来的数据是否合法!
+			具体还是看链接,这说不清楚
 		注意：
 			1、递归不满足的时候，要看看用continue还是break
 			2、s = "10.10.23. 这种情况，别忘了
@@ -8000,14 +8003,14 @@ namespace BackTracking {
 			{
 				if (isValid(s, startIndex, i))//当前ip合法，才有往下走的必要
 				{
-					s.insert(s.begin() + 1 + i, '.');//+1的原因是因为 要把.插入到i的后面
+					s.insert(s.begin() + i + 1, '.');//+1的原因是因为 要把.插入到i的后面
 					pointNum += 1;
 					restoreIpAddressesTrack(s, i + 2, pointNum);// 插入逗点之后下一个子串的起始位置为i+2
 					pointNum -= 1;
-					s.erase(s.begin() + 1 + i);
+					s.erase(s.begin() + i + 1);
 				}
 				else
-					break;
+					break;//!!一定要用break.比如01,01已经不合法了,后面的更不合法,看isValid所有的不合法的条件,都一样,前面的不合法,后面的更不合法
 			}
 		}
 		bool isValid(const string& s, int start, int end)
@@ -8017,25 +8020,15 @@ namespace BackTracking {
 			if (start > end) {//!!还真有这个情况
 				return false;
 			}
-			if (s[start] == '0' && start != end) { // 0开头的数字不合法
+			if (s[start] == '0' && start != end) { // 0开头的数字不合法,除非是单个的0
 				return false;
 			}
-			int num = 0;
-			//!!用atoi简化！！！
-			for (int i = start; i <= end; i++) {
-				if (s[i] > '9' || s[i] < '0') { // 遇到非数字字符不合法
-					return false;
-				}
-				num = num * 10 + (s[i] - '0');
-				if (num > 255) { // 如果大于255了不合法
-					return false;
-				}
-			}
+			if (stol(s.substr(start, end - start + 1)) > 255)//stoi范围太小
+				return false;
 			return true;
 		}
 
 		vector<string> restoreIpAddresses(string s) {
-
 			if (s.size() < 4)return vector<string>();
 			restoreIpAddressesTrack(s, 0, 0);
 			return restoreIpAddresses_ret;
