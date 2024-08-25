@@ -1096,6 +1096,20 @@ namespace String_Array
 			return 0;//比较完了,上面没有return,就说明两个值是相等的
 		}
 
+		/*
+		LCR 140. 训练计划 II
+		很简单,就是快慢指针;
+		*/
+		ListNode* trainingPlan(ListNode* head, int cnt) {
+			ListNode *fast = head, *slow = head;
+			for (int i = 0; i < cnt; i++)
+				fast = fast->next;
+			while (fast != nullptr) {
+				fast = fast->next;
+				slow = slow->next;
+			}
+			return slow;
+		}
 
 		void test()
 		{
