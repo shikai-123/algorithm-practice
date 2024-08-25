@@ -1111,6 +1111,35 @@ namespace String_Array
 			return slow;
 		}
 
+
+		/*
+		43. 字符串相乘
+		参考:
+			https://leetcode.cn/problems/multiply-strings/solutions/29100/you-hua-ban-shu-shi-da-bai-994-by-breezean/
+		思路:
+			具体看图和参考
+		*/
+		string multiply(string num1, string num2) {
+			int n1 = num1.size();
+			int n2 = num2.size();
+			string res(n1 + n2, '0');
+
+			for (int j = n1 - 1; j >= 0; j--) {//可以颠倒顺序
+				for (int i = n2 - 1; i >= 0; i--) {
+					int temp =
+						(res[i + j + 1] - '0') + (num1[j] - '0') * (num2[i] - '0');//num1和num2两个元素相乘,再加上 上次的值,得到这次的值.上次值就是res[i + j].经过for 变成i-1,j; 所以加一后就是上次的res[i + j]
+					res[i + j + 1] = temp % 10 + '0'; //很简单的逻辑,低位是%,高位是/
+					res[i + j] = res[i + j] + temp / 10; //!!这没有加'0',是因为res数组已经初始化为'0',在加上某个值,自然就是这个结果的ASCII编码
+				}
+			}
+			// 去除首位'0'
+			for (int i = 0; i < n1 + n2; i++) {
+				if (res[i] != '0')
+					return res.substr(i);//从i截到尾巴
+			}
+			return "0";
+		}
+
 		void test()
 		{
 			vector<int> nums = { 3,4,-1,1 };
