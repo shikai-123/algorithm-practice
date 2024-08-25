@@ -1075,6 +1075,28 @@ namespace String_Array
 		}
 
 
+		/*
+		165. 比较版本号
+		参考:
+			https://leetcode.cn/problems/compare-version-numbers/solutions/969237/bi-jiao-ban-ben-hao-shuang-zhi-zhen-suan-bcv7/
+		思路:
+			计算两个..之前的数据大小,然后比较大小.一直比下去
+		*/
+		int compareVersion(string v1, string v2) {
+			int i = 0, j = 0;
+			while (i < v1.size() || j < v2.size())//每次while,都是计算两个..之前的数据大小,然后比较大小
+			{
+				long long num1 = 0, num2 = 0;   //数据加强了，这里要用long long
+				while (i < v1.size() && v1[i] != '.') num1 = num1 * 10 + v1[i++] - '0';
+				while (j < v2.size() && v2[j] != '.') num2 = num2 * 10 + v2[j++] - '0';
+				if (num1 > num2) return 1;
+				else if (num1 < num2) return -1;
+				i++, j++;
+			}
+			return 0;//比较完了,上面没有return,就说明两个值是相等的
+		}
+
+
 		void test()
 		{
 			vector<int> nums = { 3,4,-1,1 };
