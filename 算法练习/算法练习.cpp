@@ -586,8 +586,11 @@ namespace String_Array
 
 		/*
 		151.翻转字符串里的单词
-		参考：
-			https://www.programmercarl.com/0151.%E7%BF%BB%E8%BD%AC%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%87%8C%E7%9A%84%E5%8D%95%E8%AF%8D.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+		思路:
+			每次读取单词后，使用 insert 函数将 res 插入到 temp 的开头，并且插入一个空格以分隔单词。
+			循环结束后，temp 中的单词顺序是反转的，但是第一个单词前会多出一个空格。
+			使用 erase 函数删除 temp 开头的第一个字符（即多出的空格）。
+			返回处理后的字符串 temp。
 		*/
 		string reverseWords(string s) {
 			string temp;
