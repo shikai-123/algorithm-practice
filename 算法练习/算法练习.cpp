@@ -1046,6 +1046,34 @@ namespace String_Array
 			return res;
 		}
 
+		/*
+		8. 字符串转换整数 (atoi)
+		参考:
+			https://leetcode.cn/problems/string-to-integer-atoi/solutions/2361399/8-zi-fu-chuan-zhuan-huan-zheng-shu-atoiq-a2e8/
+		思路:
+			先去掉空格
+			再判断符号
+			然后再计算值
+			再判断判断越界不
+			最后返回值
+		*/
+		int myAtoi(string s) {
+			int res = 0, bndry = INT_MAX / 10;//boundary边界;一定要/10;在for中,每次*10.超了边界再返回就晚了
+			int i = 0, sign = 1;//根据题目,没有符号,默认是正数
+			if (s.size() == 0) return 0;
+			while (s[i] == ' ')//去掉前面的空格
+				if (++i == s.size()) return 0;
+			if (s[i] == '-') sign = -1;
+			if (s[i] == '-' || s[i] == '+') i++;//去掉符号
+			for (i; i < s.size(); i++) {
+				if (s[i] < '0' || s[i] > '9') break;
+				if (res > bndry || res == bndry && s[i] > '7')//看图就明白.
+					return sign == 1 ? INT_MAX : INT_MIN;//超了边界,根据符号,返回对应的最大值
+				res = res * 10 + (s[i] - '0');
+			}
+			return sign * res;
+		}
+
 
 		void test()
 		{
