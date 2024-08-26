@@ -1143,6 +1143,29 @@ namespace String_Array
 			return "0";
 		}
 
+
+
+		/*
+		14. 最长公共前缀
+
+		参考:
+			https://leetcode.cn/problems/longest-common-prefix/solutions/2801713/jian-dan-ti-jian-dan-zuo-pythonjavaccgoj-478q/
+		思路:
+			看注释和链接
+		*/
+		string longestCommonPrefix(vector<string>& strs) {
+			string& s0 = strs[0];
+			for (int j = 0; j < s0.size(); j++) {
+				for (string& s : strs) {
+					if (j == s.size() || s[j] != s0[j]) {
+						return s0.substr(0, j);
+					}
+				}
+			}
+			return s0;
+		}
+
+
 		void test()
 		{
 			vector<int> nums = { 3,4,-1,1 };
