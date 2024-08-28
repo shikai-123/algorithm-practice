@@ -6603,6 +6603,24 @@ namespace Tree {
 				root = root->right;
 			}
 		}
+
+
+		/*
+		112. 路径总和——代码简洁，思路复杂一些!!推荐这个!!
+		思路：
+			一般来说,首先会想到累加节点上的值,然后判断累加值是否等于targetSum.
+			这里是targetSum往下减,每遍历到的一个节点,就减掉这个值,
+			然后到了叶子节点就判断,剩余的targetSum是否和叶子结点的值相等
+			如果相等就说明,刚才走的路是满足题目要求的,返回true.否则不行.
+		*/
+		bool hasPathSum(TreeNode* root, int targetSum) {
+			if (root == nullptr) return false;//都走到叶子节点的后面了，还没有减到合适的值，就说明不满足。
+			if (root->left == nullptr &&root->right == nullptr && targetSum != root->val) return false;//
+			if (root->left == nullptr &&root->right == nullptr && targetSum == root->val) return true;//走到了叶子节点，并且targetSum和当前节点的值相同。
+
+			return hasPathSum(root->left, targetSum - root->val) || hasPathSum(root->right, targetSum - root->val);//左右两条路，有一条满足要求就行
+		}
+
 		/*
 		112. 路径总和——复杂但思路清晰的写法
 		思路：
@@ -6640,24 +6658,7 @@ namespace Tree {
 			//这里要传,targetSum- root->val而不能targetSum。是因为traversal调用之后，里面处理的是root的子节点，肯定要传减去 root->val 之后的值
 		}
 
-		/*
-		112. 路径总和——代码简洁，思路复杂一些
-		思路：
-			先遍历左边的左边，一直到底，不行了就往右一个一个遍历。直到成功，否则就是false
-			无论是那种方式，思路都是一样的。
 
-		总结：
-			像这种返回bool的递归，一定要确定什么时候返回true，什么时候返回false。
-			然后在return的地方调用递归。
-			参考101. 对称二叉树、112. 路径总和
-		*/
-		bool hasPathSum(TreeNode* root, int targetSum) {
-			if (root == nullptr) return false;//都走到叶子节点的后面了，还没有减到合适的值，就说明不满足。
-			if (root->left == nullptr &&root->right == nullptr && targetSum != root->val) return false;//走到了叶子节点，并且targetSum和当前节点的值不相同相同。说明不行，这句话可以不用加，不加的话，他会继续往下走，就会在if (root == nullptr) return false;返回法拉瑟
-			if (root->left == nullptr &&root->right == nullptr && targetSum == root->val) return true;//走到了叶子节点，并且targetSum和当前节点的值相同。
-
-			return hasPathSum(root->left, targetSum - root->val) || hasPathSum(root->right, targetSum - root->val);//左右两条路，有一条满足要求就行
-		}
 
 		/*
 		199. 二叉树的右视图
