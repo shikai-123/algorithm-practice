@@ -7710,6 +7710,40 @@ namespace Tree {
 		}
 
 
+		/*
+		662. 二叉树最大宽度
+		参考:
+			https://leetcode.cn/problems/maximum-width-of-binary-tree/solutions/735988/c-z-by-zrita-m6wf/
+			是这个思路,但是代码做了一些改进,参考评论区
+		思路:
+			层序遍历,然后记录每层的最大宽度.
+			另外,二叉树最大直径和二叉树最大宽度是不一样的.
+		*/
+		int widthOfBinaryTree(TreeNode* root) {
+			if (!root)
+				return 0;
+			int width = INT_MIN;
+			std::queue<std::pair<TreeNode*, size_t>> que;//前面的是节点,后面的接的索引
+			que.push({ root, 1 });//其实的索引是0还是1,哪怕都是2都无所谓,因为要求的直径是个差值.
+
+			while (!que.empty()) {
+				size_t size = que.size();
+				size_t start = que.front().second;
+				size_t end = que.back().second;
+				width = max(width, (int)(end - start + 1));//计算当前层级的最大的直径,因为max要求两个参数的类型必须一样,所有后面要转成int
+				while (size--) {
+					TreeNode* pNode = que.front().first;
+					size_t index = que.front().second;//index是本层当前遍历到的节点的索引
+					que.pop();
+
+					if (pNode->left)
+						que.push({ pNode->left, 2 * index });//左子树的索引是父节点的index * 2,
+					if (pNode->right)
+						que.push({ pNode->right, 2 * index + 1 });//右子树的索引是父节点的index * 2 + 1
+				}
+			}
+			return width;
+		}
 
 		void test()
 		{
