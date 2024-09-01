@@ -1143,6 +1143,29 @@ namespace String_Array
 			return "0";
 		}
 
+
+
+		/*
+		14. 最长公共前缀
+
+		参考:
+			https://leetcode.cn/problems/longest-common-prefix/solutions/2801713/jian-dan-ti-jian-dan-zuo-pythonjavaccgoj-478q/
+		思路:
+			看注释和链接
+		*/
+		string longestCommonPrefix(vector<string>& strs) {
+			string& s0 = strs[0];
+			for (int j = 0; j < s0.size(); j++) {
+				for (string& s : strs) {
+					if (j == s.size() || s[j] != s0[j]) {
+						return s0.substr(0, j);
+					}
+				}
+			}
+			return s0;
+		}
+
+
 		void test()
 		{
 			vector<int> nums = { 3,4,-1,1 };
@@ -6580,6 +6603,24 @@ namespace Tree {
 				root = root->right;
 			}
 		}
+
+
+		/*
+		112. 路径总和——代码简洁，思路复杂一些!!推荐这个!!
+		思路：
+			一般来说,首先会想到累加节点上的值,然后判断累加值是否等于targetSum.
+			这里是targetSum往下减,每遍历到的一个节点,就减掉这个值,
+			然后到了叶子节点就判断,剩余的targetSum是否和叶子结点的值相等
+			如果相等就说明,刚才走的路是满足题目要求的,返回true.否则不行.
+		*/
+		bool hasPathSum(TreeNode* root, int targetSum) {
+			if (root == nullptr) return false;//都走到叶子节点的后面了，还没有减到合适的值，就说明不满足。
+			if (root->left == nullptr &&root->right == nullptr && targetSum != root->val) return false;//
+			if (root->left == nullptr &&root->right == nullptr && targetSum == root->val) return true;//走到了叶子节点，并且targetSum和当前节点的值相同。
+
+			return hasPathSum(root->left, targetSum - root->val) || hasPathSum(root->right, targetSum - root->val);//左右两条路，有一条满足要求就行
+		}
+
 		/*
 		112. 路径总和——复杂但思路清晰的写法
 		思路：
@@ -6617,24 +6658,7 @@ namespace Tree {
 			//这里要传,targetSum- root->val而不能targetSum。是因为traversal调用之后，里面处理的是root的子节点，肯定要传减去 root->val 之后的值
 		}
 
-		/*
-		112. 路径总和——代码简洁，思路复杂一些
-		思路：
-			先遍历左边的左边，一直到底，不行了就往右一个一个遍历。直到成功，否则就是false
-			无论是那种方式，思路都是一样的。
 
-		总结：
-			像这种返回bool的递归，一定要确定什么时候返回true，什么时候返回false。
-			然后在return的地方调用递归。
-			参考101. 对称二叉树、112. 路径总和
-		*/
-		bool hasPathSum(TreeNode* root, int targetSum) {
-			if (root == nullptr) return false;//都走到叶子节点的后面了，还没有减到合适的值，就说明不满足。
-			if (root->left == nullptr &&root->right == nullptr && targetSum != root->val) return false;//走到了叶子节点，并且targetSum和当前节点的值不相同相同。说明不行，这句话可以不用加，不加的话，他会继续往下走，就会在if (root == nullptr) return false;返回法拉瑟
-			if (root->left == nullptr &&root->right == nullptr && targetSum == root->val) return true;//走到了叶子节点，并且targetSum和当前节点的值相同。
-
-			return hasPathSum(root->left, targetSum - root->val) || hasPathSum(root->right, targetSum - root->val);//左右两条路，有一条满足要求就行
-		}
 
 		/*
 		199. 二叉树的右视图
@@ -7686,6 +7710,40 @@ namespace Tree {
 		}
 
 
+		/*
+		662. 二叉树最大宽度
+		参考:
+			https://leetcode.cn/problems/maximum-width-of-binary-tree/solutions/735988/c-z-by-zrita-m6wf/
+			是这个思路,但是代码做了一些改进,参考评论区
+		思路:
+			层序遍历,然后记录每层的最大宽度.
+			另外,二叉树最大直径和二叉树最大宽度是不一样的.
+		*/
+		int widthOfBinaryTree(TreeNode* root) {
+			if (!root)
+				return 0;
+			int width = INT_MIN;
+			std::queue<std::pair<TreeNode*, size_t>> que;//前面的是节点,后面的接的索引
+			que.push({ root, 1 });//其实的索引是0还是1,哪怕都是2都无所谓,因为要求的直径是个差值.
+
+			while (!que.empty()) {
+				size_t size = que.size();
+				size_t start = que.front().second;
+				size_t end = que.back().second;
+				width = max(width, (int)(end - start + 1));//计算当前层级的最大的直径,因为max要求两个参数的类型必须一样,所有后面要转成int
+				while (size--) {
+					TreeNode* pNode = que.front().first;
+					size_t index = que.front().second;//index是本层当前遍历到的节点的索引
+					que.pop();
+
+					if (pNode->left)
+						que.push({ pNode->left, 2 * index });//左子树的索引是父节点的index * 2,
+					if (pNode->right)
+						que.push({ pNode->right, 2 * index + 1 });//右子树的索引是父节点的index * 2 + 1
+				}
+			}
+			return width;
+		}
 
 		void test()
 		{
