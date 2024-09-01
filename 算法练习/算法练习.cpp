@@ -14013,6 +14013,28 @@ namespace {
 			return int(ret);//题目要求的返回整数
 		}
 
+		/*
+		179. 最大数
+		参考:
+			https://leetcode.cn/problems/largest-number/solutions/716725/gong-shui-san-xie-noxiang-xin-ke-xue-xi-vn86e/
+			思路是一样的,用的是它评论中的代码,这会更简洁
+		思路:
+			先对数组排序,按照a+b和b+a,看谁的字符大,谁大就排到前面
+			然后就累加这些字符,就是最后的结果,
+			然后对结果进行0判断,最后的结果是个最大值了已经,如果 ans[0] == '0' ,也就说明最后的结果是0
+		*/
+		string largestNumber(vector<int>& nums) {
+			vector<string> vs;
+			for (auto x : nums) vs.push_back(to_string(x));
+			sort(vs.begin(), vs.end(), [](const auto& A, const auto& B) {
+				return A + B > B + A;// 这里是字符 比如 30 和 3;303和330谁大就把谁放前面
+			});
+			string ans;
+			for (const auto& x : vs)
+				ans += x;
+			return ans[0] == '0' ? "0" : ans;
+		}
+
 
 	};
 }
