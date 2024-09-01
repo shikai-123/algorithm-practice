@@ -1654,8 +1654,7 @@ namespace SlidingWindow
 				//这个地方一定是得是while，我当时写成了if，如果是if的话，滑动窗口的左边的下标如果能移动两次的话，就会造成只能移动一次！
 				while (sum >= target)
 				{
-					int step = R - L + 1;
-					minStep = step <= minStep ? step : minStep;
+					minStep = min(minStep, min(R - L + 1));
 					sum -= nums[L];
 					L++;
 				}
