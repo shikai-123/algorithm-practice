@@ -7770,6 +7770,35 @@ namespace Tree {
 			return width;
 		}
 
+
+		/*
+		113. 路径总和 II
+		参考:
+			https://leetcode.cn/problems/path-sum-ii/description/
+		思路:
+			和"112. 路径总和 I"非常相似,参考I就可以理解.
+		*/
+		vector<vector<int>> pathSum113(TreeNode* root, int targetSum) {
+			recur(root, targetSum);
+			return res;
+		}
+		vector<vector<int>> res;
+		vector<int> path;
+		void recur(TreeNode* root, int targetSum) {
+			if (root == nullptr) return;
+			path.push_back(root->val);
+			targetSum -= root->val;
+			if (targetSum == 0 && root->left == nullptr && root->right == nullptr)
+				res.push_back(path);
+			recur(root->left, targetSum);
+			recur(root->right, targetSum);
+			path.pop_back();
+			return;//向上递归的时候,别忘了删除path中的元素.
+		}
+
+
+
+
 		void test()
 		{
 			cout << "测试树结构" << endl;
