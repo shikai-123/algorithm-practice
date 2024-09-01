@@ -5602,6 +5602,27 @@ namespace LinkedList
 		}
 
 
+		/*
+		83. 删除排序链表中的重复元素
+		参考:
+			https://leetcode.cn/problems/remove-duplicates-from-sorted-list/solutions/8176/hua-jie-suan-fa-83-shan-chu-pai-xu-lian-biao-zhong/
+		思路:
+			看代码把,很简单
+		*/
+		ListNode* deleteDuplicates(ListNode* head) {
+			ListNode* cur = head;
+			while (cur != NULL && cur->next != NULL) {
+				if (cur->val == cur->next->val) {
+					ListNode* temp = cur->next;
+					cur->next = cur->next->next;
+					delete temp; // 释放重复节点的内存
+				}
+				else {
+					cur = cur->next;
+				}
+			}
+			return head;
+		}
 
 
 		ListNode* ListNodeTest(ListNode* head, int n) {
