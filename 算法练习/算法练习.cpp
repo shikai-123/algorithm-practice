@@ -1166,6 +1166,32 @@ namespace String_Array
 		}
 
 
+		/*
+		162. 寻找峰值
+		参考：
+			https://leetcode.cn/problems/find-peak-element/solutions/6695/hua-jie-suan-fa-162-xun-zhao-feng-zhi-by-guanpengc/
+		思路：
+			利用二分法的想法，但不完全是二分法。
+			具体看链接。
+			这里摘抄了评论中的思路：
+			这道题，最最最重要的是条件，条件，条件，两边都是负无穷，数组当中可能有很多波峰，也可能只有一个，如果尝试画图，就跟股票信息一样，没有规律，如果根据中点値判断我们的二分方向该往何处取， 这道题还有只是返回一个波峰。你这样想，中点所在地方，可能是某座山的山峰，山的下坡处，山的上坡处，如果是山峰，最后会二分终止也会找到，关键是我们的二分方向，并不知道山峰在我们左边还是右边，送你两个字你就明白了，爬山（没错，就是带你去爬山），如果你往下坡方向走，也许可能遇到新的山峰，但是也许是一个一直下降的坡，最后到边界。但是如果你往上坡方向走，就算最后一直上的边界，由于最边界是负无穷，所以就一定能找到山峰，总的一句话，往递增的方向上，二分，一定能找到，往递减的方向只是可能找到，也许没有。
+		*/
+		int findPeakElement(vector<int>& nums) {
+			int left = 0, right = nums.size() - 2;//-2可以理解,下面要mid+1,如果mid刚好落到了右边界上了,right = nums.size() - 2+1;正好不会越界
+			while (left <= right) {
+				int mid = left + (right - left) / 2;
+				if (nums[mid] > nums[mid + 1]) {//核心就是上山,走到边界一定会有峰值,所以我们判断mid的左右哪个是往上走的,mid就往那走
+					right = mid - 1;//左边比右边高,所以往左走,所以右面的边界往左靠近.
+				}
+				else {
+					left = mid + 1;//右边的比左边的高,所以往右走,所以,左边的边界往右靠近
+				}
+			}
+			return left;
+		}
+
+
+
 		void test()
 		{
 			vector<int> nums = { 3,4,-1,1 };
@@ -1654,7 +1680,7 @@ namespace SlidingWindow
 				//这个地方一定是得是while，我当时写成了if，如果是if的话，滑动窗口的左边的下标如果能移动两次的话，就会造成只能移动一次！
 				while (sum >= target)
 				{
-					minStep = min(minStep, min(R - L + 1));
+					minStep = min(minStep, int(R - L + 1));
 					sum -= nums[L];
 					L++;
 				}
