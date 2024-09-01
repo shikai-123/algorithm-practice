@@ -12201,12 +12201,10 @@ namespace TULUN
 				{
 					if (!visited[i][l] && grid[i][l] == 1)
 					{
-						//ret++;
 						//maxAreaOfIsland_bfs(grid, visited, i, l);
 						ret = max(ret, maxAreaOfIsland_bfs(grid, visited, i, l));
 						//在这个函数功能：找到xy所在岛屿的所有的坐标，并标记visited[i][l]=true;
 						//所以这个if每进来一次，就说明出现了的新的“没有标记的”。
-						//这就是新的岛屿，所以ret++;
 					}
 				}
 			}
