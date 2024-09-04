@@ -13833,8 +13833,8 @@ namespace KUAIPAI
 		}
 
 
-
-		int findKthLargest_kuaipai2(vector<int>& nums, int k) {
+		//215. 数组中的第K个最大元素--二刷---合并成一个函数
+		int findKthLargest2(vector<int>& nums, int k) {
 			vector<int> equ, big, sma;
 			int base = nums[rand() % nums.size()];
 			for (size_t i = 0; i < nums.size(); i++)
@@ -13847,19 +13847,11 @@ namespace KUAIPAI
 					big.push_back(nums[i]);
 			}
 			if (k <= big.size())
-				return findKthLargest_kuaipai2(big, k);//!!别忘了添加return,比如在第k大的元素在big中,那么就一直在这个区间中找了,找完了之后就返回,你不加return的话,就还会往下走,返回base,这个是不对的
+				return findKthLargest2(big, k);//!!别忘了添加return,比如在第k大的元素在big中,那么就一直在这个区间中找了,找完了之后就返回,你不加return的话,就还会往下走,返回base,这个是不对的
 			else if (k > (big.size() + equ.size()))//k在small的区间中,
-				return findKthLargest_kuaipai2(sma, k - big.size() - equ.size());//equ的区间中.本开的第k大,在这个区间中就是k - big.size()大
+				return findKthLargest2(sma, k - big.size() - equ.size());//equ的区间中.本开的第k大,在这个区间中就是k - big.size()大
 			return base;
 		}
-
-
-		//215. 数组中的第K个最大元素--二刷
-		int findKthLargest2(vector<int>& nums, int k) {
-			return findKthLargest_kuaipai2(nums, k);
-		}
-
-
 
 	};
 }
