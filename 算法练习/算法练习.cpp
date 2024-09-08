@@ -1077,6 +1077,24 @@ namespace String_Array
 			return sign * res;
 		}
 
+		//8. 字符串转换整数 (atoi)--二刷,换个简单的思路
+		int myAtoi2(string s) {
+			long res = 0, maxvalue = INT_MAX, minvalue = INT_MIN;
+			int i = 0, sign = 1;//根据题目,没有符号,默认是正数
+			if (s.size() == 0) return 0;
+			// 跳过前导空格
+			while (s[i] == ' ') i++;
+			if (s[i] == '-') sign = -1;
+			if (s[i] == '-' || s[i] == '+') i++;//去掉符号
+			for (i; i < s.size(); i++) {
+				if (s[i] < '0' || s[i] > '9') break;
+				res = res * 10 + (s[i] - '0');
+				if (res > maxvalue || res < minvalue)
+					return sign == 1 ? INT_MAX : INT_MIN;//超了边界,根据符号,返回对应的最大值
+			}
+			return sign * res;
+		}
+
 
 		/*
 		165. 比较版本号
@@ -4498,7 +4516,7 @@ namespace LinkedList
 			最后,跳出while之后,也就是说明tail已经把能接的点都结完了,这个时候tail->next=nullptr;
 			来代表整个链表结束.
 		*/
-		ListNode* deleteDuplicates(ListNode* head) {
+		ListNode* deleteDuplicates2(ListNode* head) {
 			ListNode* dummy = new ListNode(-1);
 			ListNode* tail = dummy;//新的链表节点都接在tail的后面
 			while (head) {//if中存在head->next的访问,所以一定要判断head->next的有效性
