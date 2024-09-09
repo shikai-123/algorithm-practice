@@ -7480,12 +7480,24 @@ namespace Tree {
 
 		/*
 		129. 求根节点到叶节点数字之和
-		很明显是回溯的思想，学完回溯，二刷的时候再再来把
+		参考:
+			https://leetcode.cn/problems/sum-root-to-leaf-numbers/
+		思路:
+			前序遍历,往下走的时候,不断的更新从根结点到当前层级的点的值,
+			然后把这个值往下传递,传递给下个层级,让他去计算.
+			直到叶子结点.开始返回值这个值.
+			返回到上个层级,这个层级的值就等于他的左右节点的和.
+			直到返回到根节点
 		*/
-		int sumNumbers(TreeNode* root) {
-			if (root->left == nullptr && root->right == nullptr) return root->val;
-			sumNumbers(root->left);
+		int sumNumbers(TreeNode* root) { return helper(root, 0); }
 
+		int helper(TreeNode* root, int i) {
+			if (root == nullptr)
+				return 0;
+			int temp = i * 10 + root->val;
+			if (root->left == nullptr && root->right == nullptr)
+				return temp;
+			return helper(root->left, temp) + helper(root->right, temp);
 		}
 
 		/*
