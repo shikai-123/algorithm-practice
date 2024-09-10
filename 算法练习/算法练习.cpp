@@ -1619,30 +1619,31 @@ namespace DoublePointer
 		void quickSort(vector<int>& nums, int left, int right) {
 			// 数组有多个元素进行排序
 			if (left < right) {
-				int i = left; // 左指针
-				int l = right;  // 右指针
+				int l = left; // 左指针
+				int r = right;  // 右指针
 
 				int x = left + rand() % (right - left + 1);
 				swap(nums[left], nums[x]);
 				int base = nums[left];
 
-				while (i < l) {
-					while (i < l && nums[l] >= base) {// 从右向左找，比base大，right--
-						l--;
+				while (l < r) {
+					while (l < r && nums[r] >= base) {// 从右向左找，比base大，right--
+						r--;
 					}
-					nums[i] = nums[l];// 比base小，替换left所在位置的数字
+					nums[l] = nums[r];// 比base小，替换left所在位置的数字
 
-					while (i < l && nums[i] <= base) {// 从左向右找，比base小，left++
-						i++;
+					while (l < r && nums[l] <= base) {// 从左向右找，比base小，left++
+						l++;
 					}
-					nums[l] = nums[i];// 比base大，替换right所在位置的数字
+					nums[r] = nums[l];// 比base大，替换right所在位置的数字
 				}
-				nums[i] = base; // 此时left=right，用base替换这个位置的数字
+				nums[l] = base; // 此时left=right，用base替换这个位置的数字
 
-				quickSort(nums, left, i - 1);// 排列比base小的数字的数组
-				quickSort(nums, i + 1, right);// 排列比base大的数字的数组
+				quickSort(nums, left, l - 1);// 排列比base小的数字的数组
+				quickSort(nums, l + 1, right);// 排列比base大的数字的数组
 			}
 		}
+
 
 		vector<int> sortArray(vector<int>& nums) {
 			quickSort(nums, 0, nums.size() - 1);
