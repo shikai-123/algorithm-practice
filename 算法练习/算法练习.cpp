@@ -7490,7 +7490,9 @@ namespace Tree {
 			返回到上个层级,这个层级的值就等于他的左右节点的和.
 			直到返回到根节点
 		*/
-		int sumNumbers(TreeNode* root) { return helper(root, 0); }
+		int sumNumbers(TreeNode* root) {
+			return helper(root, 0);
+		}
 
 		int helper(TreeNode* root, int i) {
 			if (root == nullptr)
@@ -7498,7 +7500,9 @@ namespace Tree {
 			int temp = i * 10 + root->val;
 			if (root->left == nullptr && root->right == nullptr)
 				return temp;
-			return helper(root->left, temp) + helper(root->right, temp);
+			int lret = helper(root->left, temp);
+			int rret = helper(root->right, temp);
+			return lret + rret;
 		}
 
 		/*
