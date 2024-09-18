@@ -5406,24 +5406,25 @@ namespace LinkedList
 
 		//234. 回文链表--三刷
 		bool isPalindrome3(ListNode* head) {
-			ListNode* fast = head, *slow = head, *pre = head, *prepre = nullptr;
-			while (fast != nullptr && fast->next != nullptr) {
-				pre = slow;
-				fast = fast->next->next;
-				slow = slow->next;
-				pre->next = prepre;
-				prepre = pre;
-			}
-			if (fast != nullptr)
-				slow = slow->next;
-
-
-			while (slow != nullptr && pre != nullptr)
+			ListNode* fast = head, *slow = head, *cur = head, *pre = nullptr;//之前是pre和prepre,为了和"206反转链表"一样,方便记忆改成cur和pre
+			while (fast != nullptr&&fast->next != nullptr)
 			{
-				if (slow->val != pre->val)
+				cur = slow;//cur是跟在slow后面的指针，在这里先更新cur，后面slow接着就往后走了。这样就完成了cur在slow后面。
+				slow = slow->next;
+				fast = fast->next->next;
+
+				cur->next = pre;//cur接反转的链表
+				pre = cur;//pprerepre也在往前走。
+			}
+			if (fast != nullptr)//fast不是空说明链表是奇数个。
+				slow = slow->next;//slow还是要往后走一个
+
+			while (slow != nullptr&&cur != nullptr)
+			{
+				if (slow->val != cur->val)
 					return false;
 				slow = slow->next;
-				pre = pre->next;
+				cur = cur->next;
 			}
 			return true;
 		}
