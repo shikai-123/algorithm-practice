@@ -7984,7 +7984,37 @@ namespace BackTracking {
 			combine_backtrak(n, k, 1);
 			return combine_ret;
 		}
+		vector<int>combine_signal;//单个的结果
+		vector<vector<int>> combine_ret;//总的结果
 
+		//2.1、确定返回值和参数
+		void combine_backtrak(int n, int k, int statrIndex)
+		{
+			//2.2、确定回溯函数结束条件
+			if (combine_signal.size() == k)
+			{
+				combine_ret.push_back(combine_signal);
+				return;
+			}
+
+			//2.3、确定单层搜索的过程——就是for和递归搭配。
+			for (int i = statrIndex; i <= n; i++)
+			{
+				combine_signal.push_back(i);//递归，纵向遍历，增加单组元素数量，
+				combine_backtrak(n, k, i + 1);
+				combine_signal.pop_back();
+				//增加的数量到了2，就返回，然后删除最后的元素， 从12到了1
+				//然后下次for，进入所谓的横向递归，
+
+				//!这里面面走的是12 13 14
+			}
+			return;//12 13 14走完了之后，开始走这，然后开始23 24 4
+		}
+
+		vector<vector<int>> combine(int n, int k) {
+			combine_backtrak(n, k, 1);
+			return combine_ret;
+		}
 
 
 		/*
